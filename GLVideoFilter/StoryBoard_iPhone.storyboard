@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="3084" systemVersion="12D76" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="JDV-vs-bhg">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="2083"/>
+    </dependencies>
+    <scenes>
+        <!--Filter View Controller-->
+        <scene sceneID="ZbW-fh-x7J">
+            <objects>
+                <viewController id="JDV-vs-bhg" customClass="FilterViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Oug-gN-tbM" customClass="GLKView">
+                        <rect key="frame" x="0.0" y="0.0" width="568" height="320"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Mode" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sbh-T4-r6u">
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="21" id="8Lf-3X-KUP"/>
+                                    <constraint firstAttribute="width" constant="285" id="cpH-D2-h9J"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <gestureRecognizers/>
+                        <constraints>
+                            <constraint firstItem="sbh-T4-r6u" firstAttribute="top" secondItem="Oug-gN-tbM" secondAttribute="top" constant="20" symbolic="YES" type="default" id="Bmt-7M-6TD"/>
+                            <constraint firstItem="sbh-T4-r6u" firstAttribute="leading" secondItem="Oug-gN-tbM" secondAttribute="leading" constant="20" symbolic="YES" type="default" id="GjU-nV-0OB"/>
+                        </constraints>
+                        <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="sUq-b8-gJv" appends="YES" id="INB-xX-Ncw"/>
+                            <outletCollection property="gestureRecognizers" destination="rE0-7o-Yhk" appends="YES" id="ztE-q4-L5R"/>
+                        </connections>
+                    </view>
+                    <nil key="simulatedStatusBarMetrics"/>
+                    <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
+                    <connections>
+                        <outlet property="statusLabel" destination="sbh-T4-r6u" id="z5a-Ou-eWv"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="8BK-16-CE7" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="sUq-b8-gJv">
+                    <connections>
+                        <action selector="tapGestureRecgonizer:" destination="JDV-vs-bhg" id="kcQ-rY-0BD"/>
+                        <outlet property="delegate" destination="Oug-gN-tbM" id="eVN-Ge-SeE"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer numberOfTouchesRequired="2" id="rE0-7o-Yhk">
+                    <connections>
+                        <action selector="tapGestureRecgonizer:" destination="JDV-vs-bhg" id="CAd-Ek-v7V"/>
+                        <outlet property="delegate" destination="Oug-gN-tbM" id="vGW-wf-8Yp"/>
+                    </connections>
+                </tapGestureRecognizer>
+            </objects>
+            <point key="canvasLocation" x="96" y="-6"/>
+        </scene>
+    </scenes>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination" type="retina4"/>
+    </simulatedMetricsContainer>
+</document>
