@@ -9,6 +9,8 @@ Note: This only runs on actual devices, and will not run in the simulator. I can
 ---Description---
 Real-time image processing on a live video stream on iOS devices.
 
+Inspired by accessibility research by Isla Schanuel (http://www.islaes.com), the purpose of this app was to evaluate the feasibility of edge detection techniques as an accessibility tool. While the screen size and form-factor of iOS devices is not conducive to real-world use, this was intended as a early prototype to test generating an accessible video stream from a non-stereoscopic video stream. As a result, the selection of filters is somewhat narrow in scope and is centered around providing meaningful ways of either enhancing a live video stream (by highlighting object edges) or transforming it entirely into a format that is easier for persons with reduced vision to see. 
+
 The following filters have been implemented:
 -Sobel operator using an RGB video stream as source
 -Sobel operator using an Grayscale video stream source
