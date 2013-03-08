@@ -1,5 +1,5 @@
 GLVideoFilter
-Luke Groeninger - 2013
+Luke Groeninger
 <luke.groeninger@colorado.edu>
 
 This project was based on the GLCameraRipple demo (http://developer.apple.com/library/ios/#samplecode/GLCameraRipple/Introduction/Intro.html) was used as a basis for this project.
