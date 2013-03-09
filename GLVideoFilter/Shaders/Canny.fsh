@@ -26,7 +26,6 @@ mediump float sampleTheta(highp float dx, highp float dy)
     return theta;
 }
 
-const mediump float blur = 1.0 / 13.0;
 void main()
 {
     highp float dX = texelSize.x;

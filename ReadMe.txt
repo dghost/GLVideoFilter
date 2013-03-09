@@ -9,13 +9,14 @@ Note: This only runs on actual devices, and will not run in the simulator. I can
 ---Description---
 Real-time image processing on a live video stream on iOS devices.
 
-Inspired by accessibility research by Isla Schanuel <http://www.islaes.com>, the purpose of this app was to evaluate the feasibility of edge detection techniques as an accessibility tool. While the screen size and form-factor of iOS devices is not conducive to real-world use, this was intended as a early prototype to test generating an accessible video stream from a non-stereoscopic video stream. As a result, the selection of filters is somewhat narrow in scope and is centered around providing meaningful ways of either enhancing a live video stream (by highlighting object edges) or transforming it entirely into a format that is easier for persons with reduced vision to see. 
+Inspired by accessibility research by Isla S. <http://www.islaes.com>, the purpose of this app was to evaluate the feasibility of edge detection techniques as an accessibility tool. While the screen size and form-factor of iOS devices is not conducive to real-world use, this was intended as a early prototype to test generating an accessible video stream from a non-stereoscopic video stream. As a result, the selection of filters is somewhat narrow in scope and is centered around providing meaningful ways of either enhancing a live video stream (by highlighting object edges) or transforming it entirely into a format that is easier for persons with reduced vision to see. 
 
 The following filters have been implemented:
 -Sobel operator using an RGB video stream as source
 -Sobel operator using an Grayscale video stream source
 -A blended Sobel operator that adds 50% of the grayscale result to the RGB result
 -A composite that overlays the result of the Sobel operator on the grayscale video stream.
+-A composite that overlays the result of the Sobel operator on the RGB video stream.
 -Canny edge detector using a low threshold of 0.15
 -A composite that overlays the Canny edge detection results on the grayscale video stream.
 

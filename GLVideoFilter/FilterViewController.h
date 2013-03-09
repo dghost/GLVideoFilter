@@ -24,7 +24,6 @@ enum
 enum
 {
     LAYER_RGB_YUV,
-    BLUR,
     EFFECT1,
     EFFECT2,
     NUM_LAYERS
@@ -36,6 +35,7 @@ enum
     SOBEL_BW,
     SOBEL_BLEND,
     SOBEL_COMPOSITE,
+    SOBEL_COMPOSITE_RGB,
     CANNY,
     CANNY_COMPOSITE,
     NUM_EFFECTS
@@ -49,8 +49,8 @@ typedef struct shaderType {
 
 @interface FilterViewController : GLKViewController <AVCaptureVideoDataOutputSampleBufferDelegate>  {
     
-    shader_t _progFetch;
-    shader_t _blurShader;
+    shader_t _YUVtoRGB;
+    shader_t _YUVtoRGBblur;
     shader_t _effect[NUM_EFFECTS];
     shader_t _passthrough;
     shader_t _cannySobel;

@@ -6,6 +6,4 @@
 
 @property (strong, nonatomic) UIWindow *window;
 
-//@property (strong, nonatomic) HW7ViewController *viewController;
-
 @end

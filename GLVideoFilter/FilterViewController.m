@@ -181,9 +181,15 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     
-
+    
     // bind the Y'UV to RGB/Y shader
-    [self setProgram:_progFetch];
+    if (_blur)
+    {
+            [self setProgram:_YUVtoRGBblur];
+    } else {
+            [self setProgram:_YUVtoRGB];
+    }
+
     glBindFramebuffer(GL_FRAMEBUFFER, _fbo[LAYER_RGB_YUV]);
     glViewport(0, 0, _textureHeight,_textureWidth);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -322,11 +328,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [EAGLContext setCurrentContext:_context];
 
     
-    [self loadShader:&_progFetch withVertex:@"quadInvertY" withFragment:@"yuvToRGB"];
-    [self loadShader:&_blurShader withVertex:@"quadPassthrough" withFragment:@"blur"];
+    [self loadShader:&_YUVtoRGB withVertex:@"quadInvertY" withFragment:@"yuv2rgb"];
+    [self loadShader:&_YUVtoRGBblur withVertex:@"quadInvertY" withFragment:@"yuv2rgbBlur"];
     [self loadShader:&_effect[SOBEL] withVertex:@"quadPassthrough" withFragment:@"Sobel"];
     [self loadShader:&_effect[SOBEL_BW] withVertex:@"quadPassthrough" withFragment:@"SobelBW"];
     [self loadShader:&_effect[SOBEL_COMPOSITE] withVertex:@"quadPassthrough" withFragment:@"SobelBWComposite"];
+    [self loadShader:&_effect[SOBEL_COMPOSITE_RGB] withVertex:@"quadPassthrough" withFragment:@"SobelRGBComposite"];
     [self loadShader:&_effect[SOBEL_BLEND] withVertex:@"quadPassthrough" withFragment:@"SobelBlend"];
     [self loadShader:&_effect[CANNY] withVertex:@"quadPassthrough" withFragment:@"Canny"];
     [self loadShader:&_effect[CANNY_COMPOSITE] withVertex:@"quadPassthrough" withFragment:@"CannyComposite"];
@@ -342,14 +349,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     glDeleteBuffers(1, &_texcoordVBO);
     glDeleteBuffers(1, &_indexVBO);
     
-    if (_progFetch.handle) {
-        glDeleteProgram(_progFetch.handle);
-        _progFetch.handle = 0;
+    if (_YUVtoRGB.handle) {
+        glDeleteProgram(_YUVtoRGB.handle);
+        _YUVtoRGB.handle = 0;
     }
     
-    if (_blurShader.handle) {
-        glDeleteProgram(_blurShader.handle);
-        _blurShader.handle = 0;
+    if (_YUVtoRGBblur.handle) {
+        glDeleteProgram(_YUVtoRGBblur.handle);
+        _YUVtoRGBblur.handle = 0;
     }
     
     if (_passthrough.handle) {
@@ -401,13 +408,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     glActiveTexture(GL_TEXTURE0);
     int fboNum = LAYER_RGB_YUV;
     
-    // if using blur, create a blurred texture
-    if (_blur)
-    {
-        if ([self drawIntoFBO:(fboNum+1) WithShader:_blurShader sourceTexture:fboNum])
-            fboNum++;
-    }
-    
     // if the mode is either the Canny or Canny Composite edge detectors, execute a Sobel pass first
     if (_mode == CANNY || _mode == CANNY_COMPOSITE)
     {
@@ -458,7 +458,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             filter = [filter stringByAppendingString:@"Sobel BW"];
             break;
         case SOBEL_COMPOSITE:
-            filter = [filter stringByAppendingString:@"Sobel Composite"];
+            filter = [filter stringByAppendingString:@"Sobel BW Composite"];
+            break;
+        case SOBEL_COMPOSITE_RGB:
+            filter = [filter stringByAppendingString:@"Sobel RGB Composite"];
             break;
         case SOBEL_BLEND:
             filter = [filter stringByAppendingString:@"Sobel Blended"];
@@ -526,7 +529,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             glDeleteShader(fragShader);
             fragShader = 0;
         }
-        if (_progFetch.handle) {
+        if (_YUVtoRGB.handle) {
             glDeleteProgram(program->handle);
             program->handle = 0;
         }

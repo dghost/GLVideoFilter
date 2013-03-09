@@ -28,13 +28,14 @@
 		B69AAFE313FC965400B7125C /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69AAFE213FC965400B7125C /* CoreVideo.framework */; };
 		B69AAFE513FC972A00B7125C /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69AAFE413FC972A00B7125C /* CoreMedia.framework */; };
 		DF05AA2416E6614E00911782 /* Canny.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF05AA2316E6614700911782 /* Canny.fsh */; };
+		DF143B7416EB317E006D35F9 /* SobelRGBComposite.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF143B7116EB316B006D35F9 /* SobelRGBComposite.fsh */; };
+		DF143B7516EB317E006D35F9 /* yuv2rgb.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF143B7216EB316B006D35F9 /* yuv2rgb.fsh */; };
+		DF143B7616EB317E006D35F9 /* yuv2rgbBlur.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF143B7316EB316B006D35F9 /* yuv2rgbBlur.fsh */; };
 		DF2BE98516E6939600FF0C90 /* SobelCanny.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF2BE98416E6796E00FF0C90 /* SobelCanny.fsh */; };
 		DF2BE98716E69BE000FF0C90 /* StoryBoard_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DF2BE98616E69BE000FF0C90 /* StoryBoard_iPhone.storyboard */; };
 		DF2BE98916E69BFC00FF0C90 /* StoryBoard_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DF2BE98816E69BFC00FF0C90 /* StoryBoard_iPad.storyboard */; };
 		DF4740B516E6EEFA0073DDB8 /* SobelBlend.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF4740B416E6EEEC0073DDB8 /* SobelBlend.fsh */; };
 		DF4740B716E6F2D10073DDB8 /* CannyComposite.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF4740B616E6F2B70073DDB8 /* CannyComposite.fsh */; };
-		DF59483A16E5878500C16079 /* yuvToRGB.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF59483816E5877700C16079 /* yuvToRGB.fsh */; };
-		DF59483C16E5883E00C16079 /* blur.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF59483B16E5883500C16079 /* blur.fsh */; };
 		DF59483E16E5B91E00C16079 /* quadPassthrough.vsh in Resources */ = {isa = PBXBuildFile; fileRef = DF59483D16E5B90F00C16079 /* quadPassthrough.vsh */; };
 		DF59484016E5BB0900C16079 /* passthrough.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF59483F16E5BB0000C16079 /* passthrough.fsh */; };
 		DF93BCCA16E4983C00C062FC /* SobelBW.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF93BCC816E495B200C062FC /* SobelBW.fsh */; };
@@ -72,13 +73,14 @@
 		B69AAFE213FC965400B7125C /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		B69AAFE413FC972A00B7125C /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		DF05AA2316E6614700911782 /* Canny.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = Canny.fsh; path = Shaders/Canny.fsh; sourceTree = "<group>"; };
+		DF143B7116EB316B006D35F9 /* SobelRGBComposite.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SobelRGBComposite.fsh; path = Shaders/SobelRGBComposite.fsh; sourceTree = "<group>"; };
+		DF143B7216EB316B006D35F9 /* yuv2rgb.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = yuv2rgb.fsh; path = Shaders/yuv2rgb.fsh; sourceTree = "<group>"; };
+		DF143B7316EB316B006D35F9 /* yuv2rgbBlur.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = yuv2rgbBlur.fsh; path = Shaders/yuv2rgbBlur.fsh; sourceTree = "<group>"; };
 		DF2BE98416E6796E00FF0C90 /* SobelCanny.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SobelCanny.fsh; path = Shaders/SobelCanny.fsh; sourceTree = "<group>"; };
 		DF2BE98616E69BE000FF0C90 /* StoryBoard_iPhone.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = StoryBoard_iPhone.storyboard; sourceTree = "<group>"; };
 		DF2BE98816E69BFC00FF0C90 /* StoryBoard_iPad.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = StoryBoard_iPad.storyboard; sourceTree = "<group>"; };
 		DF4740B416E6EEEC0073DDB8 /* SobelBlend.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SobelBlend.fsh; path = Shaders/SobelBlend.fsh; sourceTree = "<group>"; };
 		DF4740B616E6F2B70073DDB8 /* CannyComposite.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = CannyComposite.fsh; path = Shaders/CannyComposite.fsh; sourceTree = "<group>"; };
-		DF59483816E5877700C16079 /* yuvToRGB.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = yuvToRGB.fsh; path = Shaders/yuvToRGB.fsh; sourceTree = "<group>"; };
-		DF59483B16E5883500C16079 /* blur.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = blur.fsh; path = Shaders/blur.fsh; sourceTree = "<group>"; };
 		DF59483D16E5B90F00C16079 /* quadPassthrough.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = quadPassthrough.vsh; path = Shaders/quadPassthrough.vsh; sourceTree = "<group>"; };
 		DF59483F16E5BB0000C16079 /* passthrough.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = passthrough.fsh; path = Shaders/passthrough.fsh; sourceTree = "<group>"; };
 		DF93BCC816E495B200C062FC /* SobelBW.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = SobelBW.fsh; path = Shaders/SobelBW.fsh; sourceTree = "<group>"; };
@@ -184,18 +186,19 @@
 		B6836C54141AE2AA005DB1A4 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				DF4740B416E6EEEC0073DDB8 /* SobelBlend.fsh */,
 				DF05AA2316E6614700911782 /* Canny.fsh */,
 				DF4740B616E6F2B70073DDB8 /* CannyComposite.fsh */,
-				DF2BE98416E6796E00FF0C90 /* SobelCanny.fsh */,
-				DF59483B16E5883500C16079 /* blur.fsh */,
-				DF59483816E5877700C16079 /* yuvToRGB.fsh */,
-				DF93BCC816E495B200C062FC /* SobelBW.fsh */,
-				DFC750F416E5C3E80036CDD8 /* SobelBWComposite.fsh */,
-				B66E3E4613E9E79C00D2ACF0 /* Sobel.fsh */,
+				DF59483F16E5BB0000C16079 /* passthrough.fsh */,
 				B66E3E4813E9E79C00D2ACF0 /* quadInvertY.vsh */,
 				DF59483D16E5B90F00C16079 /* quadPassthrough.vsh */,
-				DF59483F16E5BB0000C16079 /* passthrough.fsh */,
+				B66E3E4613E9E79C00D2ACF0 /* Sobel.fsh */,
+				DF4740B416E6EEEC0073DDB8 /* SobelBlend.fsh */,
+				DF93BCC816E495B200C062FC /* SobelBW.fsh */,
+				DFC750F416E5C3E80036CDD8 /* SobelBWComposite.fsh */,
+				DF2BE98416E6796E00FF0C90 /* SobelCanny.fsh */,
+				DF143B7116EB316B006D35F9 /* SobelRGBComposite.fsh */,
+				DF143B7216EB316B006D35F9 /* yuv2rgb.fsh */,
+				DF143B7316EB316B006D35F9 /* yuv2rgbBlur.fsh */,
 			);
 			name = Shaders;
 			sourceTree = "<group>";
@@ -250,6 +253,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF143B7416EB317E006D35F9 /* SobelRGBComposite.fsh in Resources */,
+				DF143B7516EB317E006D35F9 /* yuv2rgb.fsh in Resources */,
+				DF143B7616EB317E006D35F9 /* yuv2rgbBlur.fsh in Resources */,
 				DF4740B716E6F2D10073DDB8 /* CannyComposite.fsh in Resources */,
 				DF4740B516E6EEFA0073DDB8 /* SobelBlend.fsh in Resources */,
 				DF2BE98516E6939600FF0C90 /* SobelCanny.fsh in Resources */,
@@ -257,8 +263,6 @@
 				DFC750F516E5C4340036CDD8 /* SobelBWComposite.fsh in Resources */,
 				DF59484016E5BB0900C16079 /* passthrough.fsh in Resources */,
 				DF59483E16E5B91E00C16079 /* quadPassthrough.vsh in Resources */,
-				DF59483C16E5883E00C16079 /* blur.fsh in Resources */,
-				DF59483A16E5878500C16079 /* yuvToRGB.fsh in Resources */,
 				DF93BCCA16E4983C00C062FC /* SobelBW.fsh in Resources */,
 				B66E3E4713E9E79C00D2ACF0 /* Sobel.fsh in Resources */,
 				B66E3E4913E9E79C00D2ACF0 /* quadInvertY.vsh in Resources */,

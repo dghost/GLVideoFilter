@@ -32,6 +32,7 @@ void main()
     mediump float m32 = sample(0.0,-dY);
     mediump float m33 = sample(+dX,-dY);
     
+    mediump vec3 inColor = sampleRGB(0.0,0.0);
   
     // calculate sobel values
     mediump float H = -m11 - 2.0*m12 - m13 +m31 + 2.0*m32 + m33;
@@ -39,7 +40,7 @@ void main()
     mediump float sobel = sqrt(H*H+V*V);
 
     // set base value to be grayscale value at that pixel
-    mediump vec4 outColor = vec4(vec3(m22),1.0);
+    mediump vec4 outColor = vec4(inColor,1.0);
 
     // add sobel result to red channel
     outColor.r += sobel;

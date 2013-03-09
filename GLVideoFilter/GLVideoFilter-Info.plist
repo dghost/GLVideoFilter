@@ -57,9 +57,9 @@
 	<key>UIApplicationExitsOnSuspend</key>
 	<true/>
 	<key>UIMainStoryboardFile</key>
-	<string>HW7StoryBoard_iPhone</string>
+	<string>StoryBoard_iPhone</string>
 	<key>UIMainStoryboardFile~ipad</key>
-	<string>HW7StoryBoard_iPad</string>
+	<string>StoryBoard_iPad</string>
 	<key>UIPrerenderedIcon</key>
 	<true/>
 	<key>UIRequiredDeviceCapabilities</key>
