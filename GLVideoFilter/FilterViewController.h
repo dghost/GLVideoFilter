@@ -31,6 +31,7 @@ enum
 
 enum
 {
+    NONE,
     SOBEL,
     SOBEL_BW,
     SOBEL_BLEND,

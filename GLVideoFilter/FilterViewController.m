@@ -24,7 +24,7 @@
     }
     
     _blur = false;
-    self.statusLabel.text = @"Blur: Off Filter: Sobel RGB";
+    self.statusLabel.text = @"Blur: Off Filter: None";
     GLKView *view = (GLKView *)self.view;
     view.context = _context;
     self.preferredFramesPerSecond = 60;
@@ -416,7 +416,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
     
     // process the last generated texture with selected effect
-    if ([self drawIntoFBO:(fboNum+1) WithShader:_effect[_mode] sourceTexture:fboNum])
+    if (_mode && [self drawIntoFBO:(fboNum+1) WithShader:_effect[_mode] sourceTexture:fboNum])
         fboNum++;
     
     
@@ -451,6 +451,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // update the overlay
     NSString *filter = @"Filter: ";
     switch (_mode) {
+        case NONE:
+            filter = [filter stringByAppendingString:@"None"];
+            break;
         case SOBEL:
             filter = [filter stringByAppendingString:@"Sobel RGB"];
             break;
