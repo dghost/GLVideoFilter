@@ -9,7 +9,7 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // local initialization here
-    
+        
     }
     return self;
 }
@@ -35,7 +35,7 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
     {
-
+        
         // Choosing bigger preset for bigger screen.
         _sessionPreset = AVCaptureSessionPreset1280x720;
     }
@@ -43,6 +43,7 @@
     {
         // use a 640x480 video stream for iPhones
         _sessionPreset = AVCaptureSessionPreset640x480;
+        //_sessionPreset = AVCaptureSessionPreset1280x720;
     }
     
     [self setupGL];
@@ -182,20 +183,43 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     
     
+    int fboNum;
+    if (_mode)
+        fboNum = FBO_RGB_YUV;
+    else
+        fboNum = FBO_FINAL;
+    
+    // if the mode is either the Canny or Canny Composite edge detectors, execute a Sobel pass first
+    
+    
     // bind the Y'UV to RGB/Y shader
     if (_blur)
     {
-            [self setProgram:_YUVtoRGBblur];
+        [self setProgram:_YUVtoRGBblur];
     } else {
-            [self setProgram:_YUVtoRGB];
+        [self setProgram:_YUVtoRGB];
     }
-
-    glBindFramebuffer(GL_FRAMEBUFFER, _fbo[LAYER_RGB_YUV]);
+    
+    
+    glActiveTexture(GL_TEXTURE0);
+    
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, _fbo[fboNum]);
     glViewport(0, 0, _textureHeight,_textureWidth);
     glClear(GL_COLOR_BUFFER_BIT);
     
     // Render the camera frame into intermediate texture
     glDrawElements(GL_TRIANGLE_STRIP, [_quad getIndexCount], GL_UNSIGNED_SHORT, 0);
+    
+    if (_mode == CANNY || _mode == CANNY_COMPOSITE)
+    {
+        [self drawIntoFBO:(FBO_TEMP) WithShader:_cannySobel sourceTexture:FBO_RGB_YUV];
+        [self drawIntoFBO:(FBO_FINAL) WithShader:_effect[_mode] sourceTexture:FBO_TEMP];
+    } else if (_mode)
+    {
+        // process the last generated texture with selected effect
+        [self drawIntoFBO:(FBO_FINAL) WithShader:_effect[_mode] sourceTexture:FBO_RGB_YUV];
+    }
     
 }
 
@@ -278,10 +302,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, 2*sizeof(GLfloat), 0);
     
     // genereate textures and FBO's
-    glGenTextures(NUM_LAYERS, &_fboTextures[0]);
-    glGenFramebuffers(NUM_LAYERS, &_fbo[0]);
+    glGenTextures(NUM_FBOS, &_fboTextures[0]);
+    glGenFramebuffers(NUM_FBOS, &_fbo[0]);
     
-    for (int i = 0; i < NUM_LAYERS; i++)
+    for (int i = 0; i < NUM_FBOS; i++)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, _fbo[i]);
         glBindTexture(GL_TEXTURE_2D, _fboTextures[i]);
@@ -326,7 +350,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 - (void)setupGL
 {
     [EAGLContext setCurrentContext:_context];
-
+    
     
     [self loadShader:&_YUVtoRGB withVertex:@"quadInvertY" withFragment:@"yuv2rgb"];
     [self loadShader:&_YUVtoRGBblur withVertex:@"quadInvertY" withFragment:@"yuv2rgbBlur"];
@@ -363,7 +387,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         glDeleteProgram(_passthrough.handle);
         _passthrough.handle = 0;
     }
-
+    
     if (_cannySobel.handle) {
         glDeleteProgram(_cannySobel.handle);
         _cannySobel.handle = 0;
@@ -376,8 +400,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             _effect[i].handle = 0;
         }
     }
-    glDeleteTextures(NUM_LAYERS, &_fboTextures[0]);
-    glDeleteFramebuffers(NUM_LAYERS, &_fbo[0]);
+    glDeleteTextures(NUM_FBOS, &_fboTextures[0]);
+    glDeleteFramebuffers(NUM_FBOS, &_fbo[0]);
 }
 
 #pragma mark - GLKView and GLKViewController delegate methods
@@ -386,7 +410,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 // Render from one texture into another FBO
 - (BOOL)drawIntoFBO: (int) fboNum WithShader:(shader_t) shader sourceTexture:(int)texNum
 {
-    if (fboNum >= 0 && fboNum < NUM_LAYERS && texNum >= 0 && texNum < NUM_LAYERS)
+    if (fboNum >= 0 && fboNum < NUM_FBOS && texNum >= 0 && texNum < NUM_FBOS)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, _fbo[fboNum]);
         glViewport(0, 0, _textureHeight, _textureWidth);
@@ -405,26 +429,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
     
-    glActiveTexture(GL_TEXTURE0);
-    int fboNum = LAYER_RGB_YUV;
-    
-    // if the mode is either the Canny or Canny Composite edge detectors, execute a Sobel pass first
-    if (_mode == CANNY || _mode == CANNY_COMPOSITE)
-    {
-        if ([self drawIntoFBO:(fboNum+1) WithShader:_cannySobel sourceTexture:fboNum])
-            fboNum++;
-    }
-    
-    // process the last generated texture with selected effect
-    if (_mode && [self drawIntoFBO:(fboNum+1) WithShader:_effect[_mode] sourceTexture:fboNum])
-        fboNum++;
-    
-    
     // draw the texture to the screen
     [self setProgram:_passthrough];
     [view bindDrawable];
     glViewport(0, 0, view.drawableWidth, view.drawableHeight);
-    glBindTexture(GL_TEXTURE_2D, _fboTextures[fboNum]);
+    glBindTexture(GL_TEXTURE_2D, _fboTextures[FBO_FINAL]);
     glClear(GL_COLOR_BUFFER_BIT);
     
     glDrawElements(GL_TRIANGLE_STRIP, [_quad getIndexCount], GL_UNSIGNED_SHORT, 0);

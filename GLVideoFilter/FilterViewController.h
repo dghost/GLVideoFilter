@@ -23,10 +23,10 @@ enum
 
 enum
 {
-    LAYER_RGB_YUV,
-    EFFECT1,
-    EFFECT2,
-    NUM_LAYERS
+    FBO_RGB_YUV,
+    FBO_TEMP,
+    FBO_FINAL,
+    NUM_FBOS
 };
 
 enum
@@ -63,8 +63,8 @@ typedef struct shaderType {
     GLuint _texcoordVBO;
     GLuint _indexVBO;
     
-    GLuint _fboTextures[NUM_LAYERS];
-    GLuint _fbo[NUM_LAYERS];
+    GLuint _fboTextures[NUM_FBOS];
+    GLuint _fbo[NUM_FBOS];
        
     CGFloat _screenWidth;
     CGFloat _screenHeight;
