@@ -8,6 +8,10 @@ varying highp vec2 texCoordVarying;
 
 uniform highp vec2 texelSize;
 
+uniform mediump mat3 rgbConvolution;
+uniform mediump mat3 colorConvolution;
+uniform mediump mat3 rgb2lms;
+uniform mediump mat3 lms2rgb;
 
 mediump vec3 sampleYUV(highp float dx, highp float dy)
 {
@@ -39,12 +43,14 @@ void main()
     mediump vec3 accumulated = m11 + 2.0 * m12 + m13
                         + 2.0 * m21 + m22 + 2.0 * m23
                         + m31 + 2.0 * m32 + m33;
+    
     accumulated *= blur;
     
-    mediump vec3 rgb = mat3(      1,       1,      1,
-                            0, -.18732, 1.8556,
-                            1.57481, -.46813,      0) * accumulated;
-    
+    mediump vec3 rgb = clamp(rgbConvolution * accumulated,0.0,1.0);
+    rgb = clamp(rgb2lms * rgb, 0.0,1.0);
+    rgb = clamp(colorConvolution * rgb,0.0,1.0);
+    rgb = clamp(lms2rgb * rgb,0.0,1.0);
+
     
     gl_FragColor = vec4(rgb,accumulated.x);
 }

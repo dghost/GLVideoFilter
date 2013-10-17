@@ -10,6 +10,11 @@ enum
     UNIFORM_UV,
     UNIFORM_RGB,
     UNIFORM_TEXELSIZE,
+    UNIFORM_RGBCONVOLUTION,
+    UNIFORM_COLORCONVOLUTION,
+    UNIFORM_RGB2LMS,
+    UNIFORM_LMS2RGB,
+    UNIFORM_ERROR,
     NUM_UNIFORMS
 };
 
@@ -21,13 +26,13 @@ enum
     NUM_ATTRIBUTES
 };
 
-enum
-{
-    FBO_RGB_YUV,
-    FBO_TEMP,
+
+typedef enum {
+    FBO_PING,
+    FBO_PONG,
     FBO_FINAL,
     NUM_FBOS
-};
+} buff_t;
 
 enum
 {
@@ -41,6 +46,16 @@ enum
     CANNY_COMPOSITE,
     NUM_EFFECTS
 };
+
+enum
+{
+    REGULAR,
+    PROTANOPE,
+    DEUTERANOPE,
+    TRITANOPE,
+    NUM_CONVOLUTIONS
+};
+
 typedef struct shaderType {
     GLuint handle;
     GLint attributes[NUM_ATTRIBUTES];
@@ -56,6 +71,15 @@ typedef struct shaderType {
     shader_t _passthrough;
     shader_t _cannySobel;
     
+    GLKMatrix3 _rgbConvolution;
+    GLKMatrix3 _colorConvolution;
+    GLKMatrix3 _finalConvolution;
+
+    GLKMatrix3 _cvdConvolutions[NUM_CONVOLUTIONS];
+    GLKMatrix3 _lms2rgb;
+    GLKMatrix3 _rgb2lms;
+    GLKMatrix3 _error;
+    
     bool _blur;
     
     int _mode;
@@ -65,7 +89,7 @@ typedef struct shaderType {
     
     GLuint _fboTextures[NUM_FBOS];
     GLuint _fbo[NUM_FBOS];
-       
+
     CGFloat _screenWidth;
     CGFloat _screenHeight;
     size_t _textureWidth;

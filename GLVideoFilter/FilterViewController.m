@@ -23,6 +23,41 @@
         NSLog(@"Failed to create ES context");
     }
     
+    _rgbConvolution = GLKMatrix3Make(  1       ,1          ,      1,
+                                     0       ,-.18732    , 1.8556,
+                                     1.57481 , -.46813   ,      0);
+    
+    _colorConvolution = GLKMatrix3Identity;
+    
+    
+    _rgb2lms = GLKMatrix3MakeAndTranspose(17.8824,43.5161,4.11935,
+                              3.45565,27.1554,3.86714,
+                              0.0299566,0.184309,1.46709);
+    /*
+    _lms2rgb =  GLKMatrix3Make(0.0809444479, -0.0102485335, -0.000365296938,
+                               -0.130504409, 0.0540193266, -0.00412161469,
+                               0.116721066, -0.113614708, 0.693511405);
+    */
+    _lms2rgb = GLKMatrix3Invert(_rgb2lms, NULL);
+    
+    _cvdConvolutions[REGULAR] = GLKMatrix3Identity;
+    _cvdConvolutions[PROTANOPE] = GLKMatrix3MakeAndTranspose(0.0, 2.02344, -2.52581,
+                                                             0.0, 1.0,      0.0,
+                                                             0.0, 0.0,      1.0);
+    
+    _cvdConvolutions[DEUTERANOPE] = GLKMatrix3MakeAndTranspose(1.0,      0.0, 0.0,
+                                                               0.494207, 0.0, 1.24827,
+                                                               0.0,      0.0, 1.0);
+    
+    _cvdConvolutions[TRITANOPE] = GLKMatrix3MakeAndTranspose(1.0,       0.0,      0.0,
+                                                             0.0,       1.0,      0.0,
+                                                             -0.395913, 0.801109, 0.0);
+    
+    _error = GLKMatrix3MakeAndTranspose(0.0, 0.0, 0.0,
+                                        0.7, 1.0, 0.0,
+                                        0.7, 0.0, 1.0);
+    
+    _colorConvolution = _cvdConvolutions[DEUTERANOPE];
     _blur = false;
     self.statusLabel.text = @"Blur: Off Filter: None";
     GLKView *view = (GLKView *)self.view;
@@ -42,8 +77,9 @@
     else
     {
         // use a 640x480 video stream for iPhones
-        _sessionPreset = AVCaptureSessionPreset640x480;
+        // _sessionPreset = AVCaptureSessionPreset640x480;
         //_sessionPreset = AVCaptureSessionPreset1280x720;
+        _sessionPreset = AVCaptureSessionPresetiFrame960x540;
     }
     
     [self setupGL];
@@ -185,13 +221,13 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     int fboNum;
     if (_mode)
-        fboNum = FBO_RGB_YUV;
+        fboNum = FBO_PING;
     else
         fboNum = FBO_FINAL;
     
     // if the mode is either the Canny or Canny Composite edge detectors, execute a Sobel pass first
     
-    
+
     // bind the Y'UV to RGB/Y shader
     if (_blur)
     {
@@ -203,7 +239,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     glActiveTexture(GL_TEXTURE0);
     
-    
+
     glBindFramebuffer(GL_FRAMEBUFFER, _fbo[fboNum]);
     glViewport(0, 0, _textureHeight,_textureWidth);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -213,12 +249,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     if (_mode == CANNY || _mode == CANNY_COMPOSITE)
     {
-        [self drawIntoFBO:(FBO_TEMP) WithShader:_cannySobel sourceTexture:FBO_RGB_YUV];
-        [self drawIntoFBO:(FBO_FINAL) WithShader:_effect[_mode] sourceTexture:FBO_TEMP];
+        [self drawIntoFBO:(!fboNum) WithShader:_cannySobel sourceTexture:fboNum];
+        fboNum = !fboNum;
+        [self drawIntoFBO:(FBO_FINAL) WithShader:_effect[_mode] sourceTexture:fboNum];
+        
     } else if (_mode)
     {
         // process the last generated texture with selected effect
-        [self drawIntoFBO:(FBO_FINAL) WithShader:_effect[_mode] sourceTexture:FBO_RGB_YUV];
+        [self drawIntoFBO:(FBO_FINAL) WithShader:_effect[_mode] sourceTexture:fboNum];
     }
     
 }
@@ -554,6 +592,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     program->uniforms[UNIFORM_UV] = glGetUniformLocation(program->handle, "SamplerUV");
     program->uniforms[UNIFORM_RGB] = glGetUniformLocation(program->handle, "SamplerRGB");
     program->uniforms[UNIFORM_TEXELSIZE] = glGetUniformLocation(program->handle, "texelSize");
+    program->uniforms[UNIFORM_RGBCONVOLUTION] = glGetUniformLocation(program->handle, "rgbConvolution");
+    program->uniforms[UNIFORM_COLORCONVOLUTION] = glGetUniformLocation(program->handle, "colorConvolution");
+    program->uniforms[UNIFORM_RGB2LMS] = glGetUniformLocation(program->handle, "rgb2lms");
+    program->uniforms[UNIFORM_LMS2RGB] = glGetUniformLocation(program->handle, "lms2rgb");
+    program->uniforms[UNIFORM_ERROR] = glGetUniformLocation(program->handle, "error");
     
     // Release vertex and fragment shaders.
     if (vertShader) {
@@ -639,7 +682,18 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     } else {
         glUniform1i(program.uniforms[UNIFORM_RGB], 0);
     }
-    glUniform2fv(program.uniforms[UNIFORM_TEXELSIZE], 1, (GLfloat *) &_texelSize);
+    if (program.uniforms[UNIFORM_TEXELSIZE] > -1)
+        glUniform2fv(program.uniforms[UNIFORM_TEXELSIZE], 1, (GLfloat *) &_texelSize);
+    if (program.uniforms[UNIFORM_RGBCONVOLUTION] > -1)
+        glUniformMatrix3fv(program.uniforms[UNIFORM_RGBCONVOLUTION], 1, GL_FALSE, _rgbConvolution.m);
+    if (program.uniforms[UNIFORM_COLORCONVOLUTION] > -1)
+        glUniformMatrix3fv(program.uniforms[UNIFORM_COLORCONVOLUTION], 1, GL_FALSE, _colorConvolution.m);
+    if (program.uniforms[UNIFORM_RGB2LMS] > -1)
+        glUniformMatrix3fv(program.uniforms[UNIFORM_RGB2LMS], 1, GL_FALSE, _rgb2lms.m);
+    if (program.uniforms[UNIFORM_LMS2RGB] > -1)
+        glUniformMatrix3fv(program.uniforms[UNIFORM_LMS2RGB], 1, GL_FALSE, _lms2rgb.m);
+    if (program.uniforms[UNIFORM_ERROR] > -1)
+        glUniformMatrix3fv(program.uniforms[UNIFORM_ERROR], 1, GL_FALSE, _error.m);
 }
 
 @end
