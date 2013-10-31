@@ -4,29 +4,33 @@
 
 uniform sampler2D SamplerRGB;
 
-uniform highp vec2 texelSize;
-varying highp vec2 texCoordVarying;
+varying mediump vec2 tc11;
+varying mediump vec2 tc12;
+varying mediump vec2 tc13;
+varying mediump vec2 tc21;
+varying mediump vec2 tc22;
+varying mediump vec2 tc23;
+varying mediump vec2 tc31;
+varying mediump vec2 tc32;
+varying mediump vec2 tc33;
 
-mediump vec4 sampleRGBA(highp float dx, highp float dy)
-{
-    return texture2D(SamplerRGB, texCoordVarying + vec2(dx,dy));
-}
 
-const mediump float pi2 = 1.0 /  3.1415926535 ;
+//const mediump float pi2 = 1.0 /  3.1415926535;
+
+#define sampleRGBA(tc) (texture2D(SamplerRGB, tc).rgba)
+
 void main()
 {
-    highp float dX = texelSize.x;
-    highp float dY = texelSize.y;
-    
-    mediump vec4 m11 = sampleRGBA(-dX,+dY);
-    mediump vec4 m12 = sampleRGBA(0.0,+dY);
-    mediump vec4 m13 = sampleRGBA(+dX,+dY);
-    mediump vec4 m21 = sampleRGBA(-dX,0.0);
-    //mediump float m22 = sample(0.0,0.0);
-    mediump vec4 m23 = sampleRGBA(+dX,0.0);
-    mediump vec4 m31 = sampleRGBA(-dX,-dY);
-    mediump vec4 m32 = sampleRGBA(0.0,-dY);
-    mediump vec4 m33 = sampleRGBA(+dX,-dY);
+
+    mediump vec4 m11 = sampleRGBA(tc11);
+    mediump vec4 m12 = sampleRGBA(tc12);
+    mediump vec4 m13 = sampleRGBA(tc13);
+    mediump vec4 m21 = sampleRGBA(tc21);
+    //mediump float m22 = sample(tc22);
+    mediump vec4 m23 = sampleRGBA(tc23);
+    mediump vec4 m31 = sampleRGBA(tc31);
+    mediump vec4 m32 = sampleRGBA(tc32);
+    mediump vec4 m33 = sampleRGBA(tc33);
     
     // calculate the sobel value for the RGB and Grayscale values
     mediump vec4 H = -m11 - 2.0*m12 - m13 +m31 + 2.0*m32 + m33;

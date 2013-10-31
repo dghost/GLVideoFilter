@@ -76,7 +76,7 @@
                                         0.7, 1.0, 0.0,
                                         0.7, 0.0, 1.0);
     
-    _colorConvolution = _cvdConvolutions[DEUTERANOPE];
+    _colorConvolution = _cvdConvolutions[REGULAR];
     _blur = false;
     self.statusLabel.text = @"Blur: Off Filter: None";
     GLKView *view = (GLKView *)self.view;
@@ -98,7 +98,7 @@
         // use a 640x480 video stream for iPhones
         // _sessionPreset = AVCaptureSessionPreset640x480;
         //_sessionPreset = AVCaptureSessionPreset1280x720;
-        _sessionPreset = AVCaptureSessionPresetiFrame960x540;
+        _sessionPreset = AVCaptureSessionPreset1280x720;
     }
     
     [self setupGL];
@@ -411,14 +411,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     [self loadShader:&_YUVtoRGB withVertex:@"quadInvertY" withFragment:@"yuv2rgb"];
     [self loadShader:&_YUVtoRGBblur withVertex:@"quadInvertY" withFragment:@"yuv2rgbBlur"];
-    [self loadShader:&_effect[SOBEL] withVertex:@"quadPassthrough" withFragment:@"Sobel"];
-    [self loadShader:&_effect[SOBEL_BW] withVertex:@"quadPassthrough" withFragment:@"SobelBW"];
-    [self loadShader:&_effect[SOBEL_COMPOSITE] withVertex:@"quadPassthrough" withFragment:@"SobelBWComposite"];
-    [self loadShader:&_effect[SOBEL_COMPOSITE_RGB] withVertex:@"quadPassthrough" withFragment:@"SobelRGBComposite"];
-    [self loadShader:&_effect[SOBEL_BLEND] withVertex:@"quadPassthrough" withFragment:@"SobelBlend"];
-    [self loadShader:&_effect[CANNY] withVertex:@"quadPassthrough" withFragment:@"Canny"];
-    [self loadShader:&_effect[CANNY_COMPOSITE] withVertex:@"quadPassthrough" withFragment:@"CannyComposite"];
-    [self loadShader:&_cannySobel withVertex:@"quadPassthrough" withFragment:@"SobelCanny"];
+    [self loadShader:&_effect[SOBEL] withVertex:@"quadKernel" withFragment:@"Sobel"];
+    [self loadShader:&_effect[SOBEL_BW] withVertex:@"quadKernel" withFragment:@"SobelBW"];
+    [self loadShader:&_effect[SOBEL_COMPOSITE] withVertex:@"quadKernel" withFragment:@"SobelBWComposite"];
+    [self loadShader:&_effect[SOBEL_COMPOSITE_RGB] withVertex:@"quadKernel" withFragment:@"SobelRGBComposite"];
+    [self loadShader:&_effect[SOBEL_BLEND] withVertex:@"quadKernel" withFragment:@"SobelBlend"];
+    [self loadShader:&_effect[CANNY] withVertex:@"quadKernel" withFragment:@"Canny"];
+    [self loadShader:&_effect[CANNY_COMPOSITE] withVertex:@"quadKernel" withFragment:@"CannyComposite"];
+    [self loadShader:&_cannySobel withVertex:@"quadKernel" withFragment:@"SobelCanny"];
     [self loadShader:&_passthrough withVertex:@"quadPassthrough" withFragment:@"passthrough"];
 }
 

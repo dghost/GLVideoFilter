@@ -2,35 +2,35 @@
 
 uniform sampler2D SamplerRGB;
 
-uniform highp vec2 texelSize;
-varying highp vec2 texCoordVarying;
+varying mediump vec2 tc11;
+varying mediump vec2 tc12;
+varying mediump vec2 tc13;
+varying mediump vec2 tc21;
+varying mediump vec2 tc22;
+varying mediump vec2 tc23;
+varying mediump vec2 tc31;
+varying mediump vec2 tc32;
+varying mediump vec2 tc33;
 
-mediump float sample(highp float dx, highp float dy)
-{
-    return texture2D(SamplerRGB, texCoordVarying + vec2(dx,dy)).a;
-}
-mediump vec3 sampleRGB(highp float dx, highp float dy)
-{
-    mediump vec3 rgb;
-    rgb = texture2D(SamplerRGB, texCoordVarying + vec2(dx,dy)).rgb;
-    return rgb;
-}
+//const mediump float pi2 = 1.0 /  3.1415926535;
+const mediump float pi = 3.1415926535;
 
-const mediump float pi = 1.0 /  3.1415926535 ;
+#define sampleRGBA(tc) (texture2D(SamplerRGB, tc))
+#define sampleRGB(tc) (texture2D(SamplerRGB, tc).rgb)
+#define sampleA(tc) (texture2D(SamplerRGB, tc).a)
+
 void main()
 {
-    highp float dX = texelSize.x;
-    highp float dY = texelSize.y;
     
-    mediump float m11 = sample(-dX,+dY);
-    mediump float m12 = sample(0.0,+dY);
-    mediump float m13 = sample(+dX,+dY);
-    mediump float m21 = sample(-dX,0.0);
-    mediump float m22 = sample(0.0,0.0);
-    mediump float m23 = sample(+dX,0.0);
-    mediump float m31 = sample(-dX,-dY);
-    mediump float m32 = sample(0.0,-dY);
-    mediump float m33 = sample(+dX,-dY);
+    mediump float m11 = sampleA(tc11);
+    mediump float m12 = sampleA(tc12);
+    mediump float m13 = sampleA(tc13);
+    mediump float m21 = sampleA(tc21);
+    mediump float m22 = sampleA(tc22);
+    mediump float m23 = sampleA(tc23);
+    mediump float m31 = sampleA(tc31);
+    mediump float m32 = sampleA(tc32);
+    mediump float m33 = sampleA(tc33);
     
   
     
