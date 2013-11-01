@@ -14,6 +14,7 @@ varying mediump vec2 tc31;
 varying mediump vec2 tc32;
 varying mediump vec2 tc33;
 
+
 uniform mediump mat3 rgbConvolution;
 uniform mediump mat3 colorConvolution;
 uniform mediump mat3 rgb2lms;
@@ -31,7 +32,9 @@ mediump vec3 sampleYUV(highp vec2 tc)
 }
 */
 
-const mediump float blur = 1.0 / 13.0;
+const mediump float blur1 = 1.0 / 16.0;
+const mediump float blur2 = 2.0 / 16.0;
+const mediump float blur4 = 4.0 / 16.0;
 
 void main()
 {
@@ -47,11 +50,9 @@ void main()
     
 
 
-    mediump vec3 accumulated = m11 + 2.0 * m12 + m13
-                        + 2.0 * m21 + m22 + 2.0 * m23
-                        + m31 + 2.0 * m32 + m33;
-    
-    accumulated *= blur;
+    mediump vec3 accumulated    = blur1 * (m11 + m13 + m31 + m33)
+                                + blur2 * (m12 + m21 + m23 + m32)
+                                + blur4 * m22;
     
     mediump vec3 rgb = clamp(rgbConvolution * accumulated,0.0,1.0);
     rgb = clamp(colorConvolution * rgb,0.0,1.0);

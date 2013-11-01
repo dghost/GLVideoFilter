@@ -61,10 +61,10 @@ void main()
     || ((angle <= 77.5 && angle >= 22.5)&&(m22 > m11 && m22 > m33))
     || ((angle >= 112.5 && angle <= 157.5)&&(m22 > m13 && m22 > m31));
     // canny edge detection
-    result = mix(0.0,m22,float(test));
     
     // set low threshold
-    result = mix(0.0,1.0,float(result>0.15));
+    result = mix(0.0,1.0,float(test && (m22>0.15)));
+    
     //    result = (result > 0.15) ? 1.0 : 0.0;
 
     // set pixel to white if it passed, or black otherwise
