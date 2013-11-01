@@ -30,7 +30,7 @@
 		DF05AA2416E6614E00911782 /* Canny.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF05AA2316E6614700911782 /* Canny.fsh */; };
 		DF143B7416EB317E006D35F9 /* SobelRGBComposite.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF143B7116EB316B006D35F9 /* SobelRGBComposite.fsh */; };
 		DF143B7516EB317E006D35F9 /* yuv2rgb.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF143B7216EB316B006D35F9 /* yuv2rgb.fsh */; };
-		DF143B7616EB317E006D35F9 /* yuv2rgbBlur.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF143B7316EB316B006D35F9 /* yuv2rgbBlur.fsh */; };
+		DF143B7616EB317E006D35F9 /* blurSinglePass.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF143B7316EB316B006D35F9 /* blurSinglePass.fsh */; };
 		DF2BE98516E6939600FF0C90 /* SobelCanny.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF2BE98416E6796E00FF0C90 /* SobelCanny.fsh */; };
 		DF2BE98716E69BE000FF0C90 /* StoryBoard_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DF2BE98616E69BE000FF0C90 /* StoryBoard_iPhone.storyboard */; };
 		DF2BE98916E69BFC00FF0C90 /* StoryBoard_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DF2BE98816E69BFC00FF0C90 /* StoryBoard_iPad.storyboard */; };
@@ -48,7 +48,6 @@
 
 /* Begin PBXFileReference section */
 		B6198C4816C05C04000B9C73 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
-		B62EA05A140EF97B00074406 /* ReadMe.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ReadMe.txt; sourceTree = "<group>"; };
 		B6388B26141AB58300DA02FB /* Icon-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72.png"; sourceTree = "<group>"; };
 		B6388B27141AB58300DA02FB /* Icon-Small-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small-50.png"; sourceTree = "<group>"; };
 		B6388B28141AB58300DA02FB /* Icon-Small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small.png"; sourceTree = "<group>"; };
@@ -77,7 +76,7 @@
 		DF05AA2316E6614700911782 /* Canny.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = Canny.fsh; path = Shaders/Canny.fsh; sourceTree = "<group>"; };
 		DF143B7116EB316B006D35F9 /* SobelRGBComposite.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SobelRGBComposite.fsh; path = Shaders/SobelRGBComposite.fsh; sourceTree = "<group>"; };
 		DF143B7216EB316B006D35F9 /* yuv2rgb.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = yuv2rgb.fsh; path = Shaders/yuv2rgb.fsh; sourceTree = "<group>"; };
-		DF143B7316EB316B006D35F9 /* yuv2rgbBlur.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = yuv2rgbBlur.fsh; path = Shaders/yuv2rgbBlur.fsh; sourceTree = "<group>"; };
+		DF143B7316EB316B006D35F9 /* blurSinglePass.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = blurSinglePass.fsh; path = Shaders/blurSinglePass.fsh; sourceTree = "<group>"; };
 		DF2BE98416E6796E00FF0C90 /* SobelCanny.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SobelCanny.fsh; path = Shaders/SobelCanny.fsh; sourceTree = "<group>"; };
 		DF2BE98616E69BE000FF0C90 /* StoryBoard_iPhone.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = StoryBoard_iPhone.storyboard; sourceTree = "<group>"; };
 		DF2BE98816E69BFC00FF0C90 /* StoryBoard_iPad.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = StoryBoard_iPad.storyboard; sourceTree = "<group>"; };
@@ -129,7 +128,6 @@
 		B66E3E2313E9E79C00D2ACF0 = {
 			isa = PBXGroup;
 			children = (
-				B62EA05A140EF97B00074406 /* ReadMe.txt */,
 				B66E3E3A13E9E79C00D2ACF0 /* GLVideoFilter */,
 				B66E3E3113E9E79C00D2ACF0 /* Frameworks */,
 				B66E3E2F13E9E79C00D2ACF0 /* Products */,
@@ -202,7 +200,7 @@
 				DF2BE98416E6796E00FF0C90 /* SobelCanny.fsh */,
 				DF143B7116EB316B006D35F9 /* SobelRGBComposite.fsh */,
 				DF143B7216EB316B006D35F9 /* yuv2rgb.fsh */,
-				DF143B7316EB316B006D35F9 /* yuv2rgbBlur.fsh */,
+				DF143B7316EB316B006D35F9 /* blurSinglePass.fsh */,
 			);
 			name = Shaders;
 			sourceTree = "<group>";
@@ -265,7 +263,7 @@
 				DF3F45581821C7A80069D69F /* quadKernel.vsh in Resources */,
 				DF143B7416EB317E006D35F9 /* SobelRGBComposite.fsh in Resources */,
 				DF143B7516EB317E006D35F9 /* yuv2rgb.fsh in Resources */,
-				DF143B7616EB317E006D35F9 /* yuv2rgbBlur.fsh in Resources */,
+				DF143B7616EB317E006D35F9 /* blurSinglePass.fsh in Resources */,
 				DF4740B716E6F2D10073DDB8 /* CannyComposite.fsh in Resources */,
 				DF4740B516E6EEFA0073DDB8 /* SobelBlend.fsh in Resources */,
 				DF2BE98516E6939600FF0C90 /* SobelCanny.fsh in Resources */,

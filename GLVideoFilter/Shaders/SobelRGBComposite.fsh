@@ -19,6 +19,7 @@ const mediump float pi = 3.1415926535;
 #define sampleRGBA(tc) (texture2D(SamplerRGB, tc))
 #define sampleRGB(tc) (texture2D(SamplerRGB, tc).rgb)
 #define sampleA(tc) (texture2D(SamplerRGB, tc).a)
+
 void main()
 {
     

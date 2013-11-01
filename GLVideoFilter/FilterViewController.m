@@ -76,8 +76,10 @@
                                         0.7, 1.0, 0.0,
                                         0.7, 0.0, 1.0);
     
+    
     _colorConvolution = _cvdConvolutions[REGULAR];
     _blur = false;
+    _newFrame = false;
     self.statusLabel.text = @"Blur: Off Filter: None";
     GLKView *view = (GLKView *)self.view;
     view.context = _context;
@@ -97,7 +99,6 @@
     {
         // use a 640x480 video stream for iPhones
         // _sessionPreset = AVCaptureSessionPreset640x480;
-        //_sessionPreset = AVCaptureSessionPreset1280x720;
         _sessionPreset = AVCaptureSessionPreset1280x720;
     }
     
@@ -238,45 +239,22 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     
     
-    int fboNum;
-    if (_mode)
-        fboNum = FBO_PING;
-    else
-        fboNum = FBO_FINAL;
-    
-    // if the mode is either the Canny or Canny Composite edge detectors, execute a Sobel pass first
-    
+ 
 
     // bind the Y'UV to RGB/Y shader
-    if (_blur)
-    {
-        [self setProgram:_YUVtoRGBblur];
-    } else {
-        [self setProgram:_YUVtoRGB];
-    }
+    [self setProgram:_YUVtoRGB];
     
     
     glActiveTexture(GL_TEXTURE0);
     
 
-    glBindFramebuffer(GL_FRAMEBUFFER, _fbo[fboNum]);
-    glViewport(0, 0, _textureHeight,_textureWidth);
+    glBindFramebuffer(GL_FRAMEBUFFER, _fbo[FBO_RGB]);
+    glViewport(0, 0, _textureWidth,_textureHeight);
     glClear(GL_COLOR_BUFFER_BIT);
     
     // Render the camera frame into intermediate texture
     glDrawElements(GL_TRIANGLE_STRIP, [_quad getIndexCount], GL_UNSIGNED_SHORT, 0);
-    
-    if (_mode == CANNY || _mode == CANNY_COMPOSITE)
-    {
-        [self drawIntoFBO:(!fboNum) WithShader:_cannySobel sourceTexture:fboNum];
-        fboNum = !fboNum;
-        [self drawIntoFBO:(FBO_FINAL) WithShader:_effect[_mode] sourceTexture:fboNum];
-        
-    } else if (_mode)
-    {
-        // process the last generated texture with selected effect
-        [self drawIntoFBO:(FBO_FINAL) WithShader:_effect[_mode] sourceTexture:fboNum];
-    }
+    _newFrame = true;
     
 }
 
@@ -370,7 +348,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         glTexImage2D( GL_TEXTURE_2D,
                      0,
                      GL_RGBA,
-                     _textureHeight, _textureWidth,
+                     _textureWidth, _textureHeight,
                      0,
                      GL_RGBA,
                      GL_UNSIGNED_BYTE,
@@ -410,7 +388,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     
     [self loadShader:&_YUVtoRGB withVertex:@"quadInvertY" withFragment:@"yuv2rgb"];
-    [self loadShader:&_YUVtoRGBblur withVertex:@"quadInvertY" withFragment:@"yuv2rgbBlur"];
+    [self loadShader:&_blurShader withVertex:@"quadKernel" withFragment:@"blurSinglePass"];
     [self loadShader:&_effect[SOBEL] withVertex:@"quadKernel" withFragment:@"Sobel"];
     [self loadShader:&_effect[SOBEL_BW] withVertex:@"quadKernel" withFragment:@"SobelBW"];
     [self loadShader:&_effect[SOBEL_COMPOSITE] withVertex:@"quadKernel" withFragment:@"SobelBWComposite"];
@@ -435,9 +413,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         _YUVtoRGB.handle = 0;
     }
     
-    if (_YUVtoRGBblur.handle) {
-        glDeleteProgram(_YUVtoRGBblur.handle);
-        _YUVtoRGBblur.handle = 0;
+    if (_blurShader.handle) {
+        glDeleteProgram(_blurShader.handle);
+        _blurShader.handle = 0;
     }
     
     if (_passthrough.handle) {
@@ -470,7 +448,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     if (fboNum >= 0 && fboNum < NUM_FBOS && texNum >= 0 && texNum < NUM_FBOS)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, _fbo[fboNum]);
-        glViewport(0, 0, _textureHeight, _textureWidth);
+        glViewport(0, 0, _textureWidth, _textureHeight);
         [self setProgram:shader];
         
         glBindTexture(GL_TEXTURE_2D, _fboTextures[texNum]);
@@ -483,14 +461,52 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     return NO;
 }
 
+- (void)processFrame:(GLuint) source intoFBO:(GLuint) dest
+{
+    GLuint currentSource = source;
+    GLuint currentDest = _mode ? FBO_PING : dest;
+    
+    // bind the Y'UV to RGB/Y shader
+    if (_blur)
+    {
+        [self drawIntoFBO:currentDest WithShader:_blurShader sourceTexture:currentSource];
+        currentSource = currentDest;
+        currentDest = (currentDest == FBO_PING) ? FBO_PONG : FBO_PING;
+   }
+    
+    if (_mode == CANNY || _mode == CANNY_COMPOSITE)
+    {
+        [self drawIntoFBO:currentDest WithShader:_cannySobel sourceTexture:currentSource];
+        [self drawIntoFBO:dest WithShader:_effect[_mode] sourceTexture:currentDest];
+        
+    } else if (_mode)
+    {
+        // process the last generated texture with selected effect
+        [self drawIntoFBO:dest WithShader:_effect[_mode] sourceTexture:currentSource];
+    }
+
+    
+}
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
+    
+    int fboNum;
+    if (_mode || _blur)
+    {
+        if (_newFrame)
+        {
+            [self processFrame:FBO_RGB intoFBO:FBO_FINAL];
+            _newFrame = false;
+        }
+        fboNum = FBO_FINAL;
+    } else
+        fboNum = FBO_RGB;
     
     // draw the texture to the screen
     [self setProgram:_passthrough];
     [view bindDrawable];
     glViewport(0, 0, view.drawableWidth, view.drawableHeight);
-    glBindTexture(GL_TEXTURE_2D, _fboTextures[FBO_FINAL]);
+    glBindTexture(GL_TEXTURE_2D, _fboTextures[fboNum]);
     glClear(GL_COLOR_BUFFER_BIT);
     
     glDrawElements(GL_TRIANGLE_STRIP, [_quad getIndexCount], GL_UNSIGNED_SHORT, 0);
@@ -564,14 +580,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // Create and compile vertex shader.
     vertShaderPathname = [[NSBundle mainBundle] pathForResource:vertexName ofType:@"vsh"];
     if (![self compileShader:&vertShader type:GL_VERTEX_SHADER file:vertShaderPathname]) {
-        NSLog(@"Failed to compile vertex shader");
+        NSLog(@"Failed to compile vertex shader '%@'",vertexName);
         return NO;
     }
     
     // Create and compile fragment shader.
     fragShaderPathname = [[NSBundle mainBundle] pathForResource:fragmentName ofType:@"fsh"];
     if (![self compileShader:&fragShader type:GL_FRAGMENT_SHADER file:fragShaderPathname]) {
-        NSLog(@"Failed to compile fragment shader");
+        NSLog(@"Failed to compile fragment shader '%@'",fragmentName);
         return NO;
     }
     
@@ -585,6 +601,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // This needs to be done prior to linking.
     glBindAttribLocation(program->handle, ATTRIB_VERTEX, "position");
     glBindAttribLocation(program->handle, ATTRIB_TEXCOORD, "texCoord");
+#ifdef DEBUG
+    NSLog(@"Linking program with vertex shader '%@' and fragment shader '%@'...",vertexName,fragmentName);
+
+#endif
     
     // Link program.
     if (![self linkProgram:program->handle]) {
@@ -613,10 +633,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     program->uniforms[UNIFORM_TEXELSIZE] = glGetUniformLocation(program->handle, "texelSize");
     program->uniforms[UNIFORM_RGBCONVOLUTION] = glGetUniformLocation(program->handle, "rgbConvolution");
     program->uniforms[UNIFORM_COLORCONVOLUTION] = glGetUniformLocation(program->handle, "colorConvolution");
-    program->uniforms[UNIFORM_RGB2LMS] = glGetUniformLocation(program->handle, "rgb2lms");
-    program->uniforms[UNIFORM_LMS2RGB] = glGetUniformLocation(program->handle, "lms2rgb");
-    program->uniforms[UNIFORM_ERROR] = glGetUniformLocation(program->handle, "error");
-    
+
     // Release vertex and fragment shaders.
     if (vertShader) {
         glDetachShader(program->handle, vertShader);
@@ -634,10 +651,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 {
     GLint status;
     const GLchar *source;
-    
     source = (GLchar *)[[NSString stringWithContentsOfFile:file encoding:NSUTF8StringEncoding error:nil] UTF8String];
     if (!source) {
-        NSLog(@"Failed to load shader");
+        NSLog(@"Failed to load shader '%@'",[file lastPathComponent]);
         return NO;
     }
     
@@ -651,7 +667,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     if (logLength > 0) {
         GLchar *log = (GLchar *)malloc(logLength);
         glGetShaderInfoLog(*shader, logLength, &logLength, log);
-        NSLog(@"Shader compile log:\n%s", log);
+        NSLog(@"Shader '%@' compile log:\n%s", [file lastPathComponent], log);
         free(log);
     }
 #endif
@@ -707,12 +723,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         glUniformMatrix3fv(program.uniforms[UNIFORM_RGBCONVOLUTION], 1, GL_FALSE, _rgbConvolution.m);
     if (program.uniforms[UNIFORM_COLORCONVOLUTION] > -1)
         glUniformMatrix3fv(program.uniforms[UNIFORM_COLORCONVOLUTION], 1, GL_FALSE, _colorConvolution.m);
-    if (program.uniforms[UNIFORM_RGB2LMS] > -1)
-        glUniformMatrix3fv(program.uniforms[UNIFORM_RGB2LMS], 1, GL_FALSE, _rgb2lms.m);
-    if (program.uniforms[UNIFORM_LMS2RGB] > -1)
-        glUniformMatrix3fv(program.uniforms[UNIFORM_LMS2RGB], 1, GL_FALSE, _lms2rgb.m);
-    if (program.uniforms[UNIFORM_ERROR] > -1)
-        glUniformMatrix3fv(program.uniforms[UNIFORM_ERROR], 1, GL_FALSE, _error.m);
 }
 
 @end

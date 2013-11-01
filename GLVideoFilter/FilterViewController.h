@@ -12,9 +12,6 @@ enum
     UNIFORM_TEXELSIZE,
     UNIFORM_RGBCONVOLUTION,
     UNIFORM_COLORCONVOLUTION,
-    UNIFORM_RGB2LMS,
-    UNIFORM_LMS2RGB,
-    UNIFORM_ERROR,
     NUM_UNIFORMS
 };
 
@@ -30,6 +27,7 @@ enum
 typedef enum {
     FBO_PING,
     FBO_PONG,
+    FBO_RGB,
     FBO_FINAL,
     NUM_FBOS
 } buff_t;
@@ -66,7 +64,7 @@ typedef struct shaderType {
 @interface FilterViewController : GLKViewController <AVCaptureVideoDataOutputSampleBufferDelegate>  {
     
     shader_t _YUVtoRGB;
-    shader_t _YUVtoRGBblur;
+    shader_t _blurShader;
     shader_t _effect[NUM_EFFECTS];
     shader_t _passthrough;
     shader_t _cannySobel;
@@ -83,6 +81,7 @@ typedef struct shaderType {
     bool _blur;
     
     int _mode;
+    bool _newFrame;
     GLuint _positionVBO;
     GLuint _texcoordVBO;
     GLuint _indexVBO;

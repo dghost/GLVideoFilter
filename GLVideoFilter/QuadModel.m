@@ -74,10 +74,8 @@
 - (void)freeBuffers
 {
     free(quadVertices);
-    
     free(quadIndicies);
     free(quadTexCoords);
-       
 }
 
 - (id)init
@@ -86,7 +84,6 @@
     
     if (self)
     {
-          
         [self initMesh];
     }
     

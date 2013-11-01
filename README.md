@@ -22,14 +22,20 @@ Additionally, an optional blur pre-pass can be enabled for any video filter.
 
 The program works by performing the following steps:
 
-- In the `captureOutput` callback, the Y'UV results of the latest camera frame are converted into RGB and the RGB/Y information rendered into a texture.
-    - If blurring is enabled, a gaussian blur is applied in Y'UV space prior to the conversion to RGB.
-- If Canny or Canny Composite filters are enabled, a Sobel pre-pass is run and the results are cached along with the original Y value.
-- The selected filter is applied and the result is cached.
-- When a redraw is triggered, the last processed frame is rendered to the screen. 
+- The `captureOutput:` delagate performs the following:
+	- Performs a colorspace conversion from Y'UV to RGB for each pixel
+	- Renders the RGB + Y data into a texture
+	- Sets a flag to indicate that the texture has been updated
+- During redraw, the 'glkView: drawInRect:' delegate performs the following:
+	- Checks if a new frame is available, and if so:
+		- It applies a gaussian blur if enabled
+		- It applies a pre-pass filter if either of the Canny filters are enabled
+		- The selected filter is applied and the result is cached
+		- The texture is marked as having been processed
+	- The appropriate texture is then rendered to the screen
 
-Due to the number of render passes executed, the intermediate textures are all the same size as the source video stream. On an iPad this is 1280x720, but on an iPhone this is 640x480. This can be changed easily in code but will affect performance.
+Due to the number of render passes executed, the intermediate textures are all the same size as the source video stream. This defaults to 1280x720 on all devices, but can be changed easily.
 
 ####Usage
-A one-finger tap toggles between filters.
+A one-finger tap cycles between filters.
 A two-finger tap toggles blurring on/off.
