@@ -91,8 +91,8 @@ typedef struct shaderType {
 
     CGFloat _screenWidth;
     CGFloat _screenHeight;
-    size_t _textureWidth;
-    size_t _textureHeight;
+    GLsizei _textureWidth;
+    GLsizei _textureHeight;
     
     EAGLContext *_context;
     QuadModel *_quad;

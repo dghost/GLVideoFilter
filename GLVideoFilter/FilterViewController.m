@@ -89,6 +89,18 @@
     _screenHeight = [UIScreen mainScreen].bounds.size.height;
     view.contentScaleFactor = [UIScreen mainScreen].scale;
     
+    
+
+#if __LP64__
+    _sessionPreset = AVCaptureSessionPreset1280x720;
+    NSLog(@"64bit executable");
+#else
+    _sessionPreset = AVCaptureSessionPreset640x480;
+    NSLog(@"32bit executable");
+#endif
+
+
+    /*
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
     {
         
@@ -98,9 +110,11 @@
     else
     {
         // use a 640x480 video stream for iPhones
+        
         // _sessionPreset = AVCaptureSessionPreset640x480;
         _sessionPreset = AVCaptureSessionPreset1280x720;
     }
+     */
     
     [self setupGL];
     
@@ -161,8 +175,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 {
     CVReturn err;
 	CVImageBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-    size_t width = CVPixelBufferGetWidth(pixelBuffer);
-    size_t height = CVPixelBufferGetHeight(pixelBuffer);
+    GLsizei width = (GLsizei) CVPixelBufferGetWidth(pixelBuffer);
+    GLsizei height = (GLsizei) CVPixelBufferGetHeight(pixelBuffer);
     
     if (!_videoTextureCache)
     {
@@ -505,7 +519,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // draw the texture to the screen
     [self setProgram:_passthrough];
     [view bindDrawable];
-    glViewport(0, 0, view.drawableWidth, view.drawableHeight);
+    glViewport(0, 0, (GLsizei) view.drawableWidth, (GLsizei) view.drawableHeight);
     glBindTexture(GL_TEXTURE_2D, _fboTextures[fboNum]);
     glClear(GL_COLOR_BUFFER_BIT);
     
