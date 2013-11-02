@@ -417,7 +417,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     
     [self loadShader:&_YUVtoRGB withVertex:@"quadInvertY" withFragment:@"yuv2rgb"];
-    [self loadShader:&_blur withVertex:@"quadKernel" withFragment:@"blurSinglePass"];
+    [self loadShader:&_blurSinglePass withVertex:@"quadKernel" withFragment:@"blurSinglePass"];
+    [self loadShader:&_blurTwoPass[0] withVertex:@"quadKernel" withFragment:@"blurXPass"];
+    [self loadShader:&_blurTwoPass[1] withVertex:@"quadKernel" withFragment:@"blurYPass"];
     [self loadShader:&_effect[SOBEL] withVertex:@"quadKernel" withFragment:@"Sobel"];
     [self loadShader:&_effect[SOBEL_BW] withVertex:@"quadKernel" withFragment:@"SobelBW"];
     [self loadShader:&_effect[SOBEL_COMPOSITE] withVertex:@"quadKernel" withFragment:@"SobelBWComposite"];
@@ -442,9 +444,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         _YUVtoRGB.handle = 0;
     }
     
-    if (_blur.handle) {
-        glDeleteProgram(_blur.handle);
-        _blur.handle = 0;
+    if (_blurSinglePass.handle) {
+        glDeleteProgram(_blurSinglePass.handle);
+        _blurSinglePass.handle = 0;
     }
     
     if (_passthrough.handle) {
@@ -493,15 +495,24 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 - (void)processFrame:(GLuint) source intoFBO:(GLuint) dest
 {
     GLuint currentSource = source;
-    GLuint currentDest = _filterMode ? FBO_PING : dest;
+    GLuint currentDest = !_filterMode ? dest : FBO_PING;
     
     // bind the Y'UV to RGB/Y shader
-    if (_blurMode)
+    
+    switch (_blurMode)
     {
-        [self drawIntoFBO:currentDest WithShader:_blur sourceTexture:currentSource];
-        currentSource = currentDest;
-        currentDest = (currentDest == FBO_PING) ? FBO_PONG : FBO_PING;
-   }
+        case BLUR_SINGLEPASS:
+            [self drawIntoFBO:currentDest WithShader:_blurSinglePass sourceTexture:currentSource];
+            currentSource = currentDest;
+            currentDest = (currentDest == FBO_PING) ? FBO_PONG : FBO_PING;
+            break;
+        case BLUR_TWOPASS:
+            [self drawIntoFBO:FBO_PONG WithShader:_blurTwoPass[0] sourceTexture:currentSource];
+            [self drawIntoFBO:currentDest WithShader:_blurTwoPass[1] sourceTexture:FBO_PONG];
+            currentSource = currentDest;
+            currentDest = (currentDest == FBO_PING) ? FBO_PONG : FBO_PING;
+            break;
+    }
     
     if (_filterMode == CANNY || _filterMode == CANNY_COMPOSITE)
     {
@@ -600,8 +611,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             blur = [blur stringByAppendingString:@"Off "];
             break;
         case BLUR_SINGLEPASS:
-            blur = [blur stringByAppendingString:@"On "];
+            blur = [blur stringByAppendingString:@"Single Pass "];
             break;
+        case BLUR_TWOPASS:
+            blur = [blur stringByAppendingString:@"Two Pass "];
+            break;
+
     }
     
     self.statusLabel.text = [blur stringByAppendingString:filter];

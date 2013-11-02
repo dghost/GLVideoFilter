@@ -40,6 +40,8 @@
 		DF59483E16E5B91E00C16079 /* quadPassthrough.vsh in Resources */ = {isa = PBXBuildFile; fileRef = DF59483D16E5B90F00C16079 /* quadPassthrough.vsh */; };
 		DF59484016E5BB0900C16079 /* passthrough.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF59483F16E5BB0000C16079 /* passthrough.fsh */; };
 		DF93BCCA16E4983C00C062FC /* SobelBW.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF93BCC816E495B200C062FC /* SobelBW.fsh */; };
+		DF9CAE8A1824C18800CE3945 /* blurXPass.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF9CAE881824C16800CE3945 /* blurXPass.fsh */; };
+		DF9CAE8B1824C18800CE3945 /* blurYPass.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF9CAE891824C16800CE3945 /* blurYPass.fsh */; };
 		DFC750F516E5C4340036CDD8 /* SobelBWComposite.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DFC750F416E5C3E80036CDD8 /* SobelBWComposite.fsh */; };
 		DFD5679C16E4A4EE003D5C96 /* Icon-72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFD5679B16E4A4EE003D5C96 /* Icon-72@2x.png */; };
 		DFD5679E16E4A550003D5C96 /* Icon-Small-50@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFD5679D16E4A550003D5C96 /* Icon-Small-50@2x.png */; };
@@ -85,6 +87,8 @@
 		DF59483D16E5B90F00C16079 /* quadPassthrough.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = quadPassthrough.vsh; path = Shaders/quadPassthrough.vsh; sourceTree = "<group>"; };
 		DF59483F16E5BB0000C16079 /* passthrough.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = passthrough.fsh; path = Shaders/passthrough.fsh; sourceTree = "<group>"; };
 		DF93BCC816E495B200C062FC /* SobelBW.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = SobelBW.fsh; path = Shaders/SobelBW.fsh; sourceTree = "<group>"; };
+		DF9CAE881824C16800CE3945 /* blurXPass.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = blurXPass.fsh; path = Shaders/blurXPass.fsh; sourceTree = "<group>"; };
+		DF9CAE891824C16800CE3945 /* blurYPass.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = blurYPass.fsh; path = Shaders/blurYPass.fsh; sourceTree = "<group>"; };
 		DFC750F416E5C3E80036CDD8 /* SobelBWComposite.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SobelBWComposite.fsh; path = Shaders/SobelBWComposite.fsh; sourceTree = "<group>"; };
 		DFD5679B16E4A4EE003D5C96 /* Icon-72@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72@2x.png"; sourceTree = "<group>"; };
 		DFD5679D16E4A550003D5C96 /* Icon-Small-50@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small-50@2x.png"; sourceTree = "<group>"; };
@@ -186,22 +190,40 @@
 		B6836C54141AE2AA005DB1A4 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				DF05AA2316E6614700911782 /* Canny.fsh */,
-				DF4740B616E6F2B70073DDB8 /* CannyComposite.fsh */,
-				DF59483F16E5BB0000C16079 /* passthrough.fsh */,
+				DF9CAE8C1824C19900CE3945 /* Blurs */,
+				DF9CAE8D1824C1B600CE3945 /* Filters */,
 				B66E3E4813E9E79C00D2ACF0 /* quadInvertY.vsh */,
 				DF3F45561821C4E50069D69F /* quadKernel.vsh */,
 				DF59483D16E5B90F00C16079 /* quadPassthrough.vsh */,
+				DF59483F16E5BB0000C16079 /* passthrough.fsh */,
+				DF143B7216EB316B006D35F9 /* yuv2rgb.fsh */,
+			);
+			name = Shaders;
+			sourceTree = "<group>";
+		};
+		DF9CAE8C1824C19900CE3945 /* Blurs */ = {
+			isa = PBXGroup;
+			children = (
+				DF9CAE881824C16800CE3945 /* blurXPass.fsh */,
+				DF9CAE891824C16800CE3945 /* blurYPass.fsh */,
+				DF143B7316EB316B006D35F9 /* blurSinglePass.fsh */,
+			);
+			name = Blurs;
+			sourceTree = "<group>";
+		};
+		DF9CAE8D1824C1B600CE3945 /* Filters */ = {
+			isa = PBXGroup;
+			children = (
+				DF05AA2316E6614700911782 /* Canny.fsh */,
+				DF4740B616E6F2B70073DDB8 /* CannyComposite.fsh */,
 				B66E3E4613E9E79C00D2ACF0 /* Sobel.fsh */,
 				DF4740B416E6EEEC0073DDB8 /* SobelBlend.fsh */,
 				DF93BCC816E495B200C062FC /* SobelBW.fsh */,
 				DFC750F416E5C3E80036CDD8 /* SobelBWComposite.fsh */,
 				DF2BE98416E6796E00FF0C90 /* SobelCanny.fsh */,
 				DF143B7116EB316B006D35F9 /* SobelRGBComposite.fsh */,
-				DF143B7216EB316B006D35F9 /* yuv2rgb.fsh */,
-				DF143B7316EB316B006D35F9 /* blurSinglePass.fsh */,
 			);
-			name = Shaders;
+			name = Filters;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -259,6 +281,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF9CAE8A1824C18800CE3945 /* blurXPass.fsh in Resources */,
+				DF9CAE8B1824C18800CE3945 /* blurYPass.fsh in Resources */,
 				DF3F45581821C7A80069D69F /* quadKernel.vsh in Resources */,
 				DF143B7416EB317E006D35F9 /* SobelRGBComposite.fsh in Resources */,
 				DF143B7516EB317E006D35F9 /* yuv2rgb.fsh in Resources */,

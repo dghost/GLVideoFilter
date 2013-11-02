@@ -50,6 +50,7 @@ enum
 {
     BLUR_NONE,
     BLUR_SINGLEPASS,
+    BLUR_TWOPASS,
     NUM_BLURS
 };
 
@@ -72,7 +73,9 @@ typedef struct shaderType {
 @interface FilterViewController : GLKViewController <AVCaptureVideoDataOutputSampleBufferDelegate>  {
     
     shader_t _YUVtoRGB;
-    shader_t _blur;
+    shader_t _blurSinglePass;
+    shader_t _blurTwoPass[2];
+    
     shader_t _effect[NUM_FILTERS];
     shader_t _passthrough;
     shader_t _cannySobel;
