@@ -767,10 +767,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     if (program.uniforms[UNIFORM_SCALE] > -1)
     {
-        float yScale = (self.interfaceOrientation == UIDeviceOrientationLandscapeRight) ? -1.0 : 1.0;
-        yScale *= _yScale;
-        
-        glUniform2f(program.uniforms[UNIFORM_SCALE], _xScale, yScale);
+        float orient = (self.interfaceOrientation == UIDeviceOrientationLandscapeRight) ? -1.0 : 1.0;
+        glUniform2f(program.uniforms[UNIFORM_SCALE], _xScale * orient, _yScale * orient);
     }
         
 }
