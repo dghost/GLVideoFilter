@@ -89,13 +89,39 @@
     _screenHeight = [UIScreen mainScreen].bounds.size.height;
     view.contentScaleFactor = [UIScreen mainScreen].scale;
     
-    
-
 #if __LP64__
-    _sessionPreset = AVCaptureSessionPreset1280x720;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+    {
+        
+        // Choosing bigger preset for bigger screen.
+        _sessionPreset = AVCaptureSessionPreset1280x720;
+    }
+    else
+    {
+        // use a 640x480 video stream for iPhones
+        
+        // _sessionPreset = AVCaptureSessionPreset640x480;
+        _sessionPreset = AVCaptureSessionPreset1280x720;
+    }
+
     NSLog(@"64bit executable");
 #else
-    _sessionPreset = AVCaptureSessionPreset640x480;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+    {
+        
+        // Choosing bigger preset for bigger screen.
+        if (view.contentScaleFactor == 2.0)
+            _sessionPreset = AVCaptureSessionPreset1280x720;
+        else
+            _sessionPreset = AVCaptureSessionPreset640x480;
+    }
+    else
+    {
+        // use a 640x480 video stream for iPhones
+        
+        // _sessionPreset = AVCaptureSessionPreset640x480;
+        _sessionPreset = AVCaptureSessionPreset640x480;
+    }
     NSLog(@"32bit executable");
 #endif
 
@@ -257,9 +283,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
     // bind the Y'UV to RGB/Y shader
     [self setProgram:_YUVtoRGB];
-    
-    
-    glActiveTexture(GL_TEXTURE0);
     
 
     glBindFramebuffer(GL_FRAMEBUFFER, _fbo[FBO_RGB]);
@@ -503,6 +526,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTexture(GL_TEXTURE0);
     
     int fboNum;
     if (_mode || _blur)
