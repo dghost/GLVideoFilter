@@ -78,15 +78,17 @@
     
     
     _colorConvolution = _cvdConvolutions[REGULAR];
-    _blur = false;
     _newFrame = false;
     self.statusLabel.text = @"Blur: Off Filter: None";
     GLKView *view = (GLKView *)self.view;
     view.context = _context;
     self.preferredFramesPerSecond = 60;
-    _mode = 0;
-    _screenWidth = [UIScreen mainScreen].bounds.size.width;
-    _screenHeight = [UIScreen mainScreen].bounds.size.height;
+    _filterMode = 0;
+    _blurMode = 0;
+
+    _screenHeight = [UIScreen mainScreen].bounds.size.width;
+    _screenWidth = [UIScreen mainScreen].bounds.size.height;
+    
     view.contentScaleFactor = [UIScreen mainScreen].scale;
     
 #if __LP64__
@@ -95,6 +97,9 @@
         
         // Choosing bigger preset for bigger screen.
         _sessionPreset = AVCaptureSessionPreset1280x720;
+        
+        // 1080p is actually possible on A7 devices, but doesn't look all that good.
+        // _sessionPreset = AVCaptureSessionPreset1920x1080;
     }
     else
     {
@@ -126,21 +131,6 @@
 #endif
 
 
-    /*
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-    {
-        
-        // Choosing bigger preset for bigger screen.
-        _sessionPreset = AVCaptureSessionPreset1280x720;
-    }
-    else
-    {
-        // use a 640x480 video stream for iPhones
-        
-        // _sessionPreset = AVCaptureSessionPreset640x480;
-        _sessionPreset = AVCaptureSessionPreset1280x720;
-    }
-     */
     
     [self setupGL];
     
@@ -150,7 +140,7 @@
 - (void)viewDidUnload
 {
     [self setStatusLabel:nil];
-    [super viewDidUnload];
+ //   [super viewDidUnload];
     
     [self tearDownAVCapture];
     [self tearDownGL];
@@ -171,10 +161,7 @@
     // Camera image orientation on screen is fixed
     // with respect to the physical camera orientation.
     
-    if (interfaceOrientation == UIInterfaceOrientationLandscapeRight)
-        return YES;
-    else
-        return NO;
+    return UIInterfaceOrientationIsLandscape(interfaceOrientation);
 }
 
 - (void)cleanUpTextures
@@ -417,6 +404,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
     
     glBindTexture(GL_TEXTURE_2D, 0);
+    
+    _xScale = 1.0;
+
+    _yScale = (_screenWidth/ _screenHeight) * ((GLfloat) _textureHeight / (GLfloat) _textureWidth);
+    NSLog(@"screen: %fx%f text: %ix%i scale: %f",_screenWidth,_screenHeight,_textureWidth,_textureHeight,_yScale);
 }
 
 - (void)setupGL
@@ -425,7 +417,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     
     [self loadShader:&_YUVtoRGB withVertex:@"quadInvertY" withFragment:@"yuv2rgb"];
-    [self loadShader:&_blurShader withVertex:@"quadKernel" withFragment:@"blurSinglePass"];
+    [self loadShader:&_blur withVertex:@"quadKernel" withFragment:@"blurSinglePass"];
     [self loadShader:&_effect[SOBEL] withVertex:@"quadKernel" withFragment:@"Sobel"];
     [self loadShader:&_effect[SOBEL_BW] withVertex:@"quadKernel" withFragment:@"SobelBW"];
     [self loadShader:&_effect[SOBEL_COMPOSITE] withVertex:@"quadKernel" withFragment:@"SobelBWComposite"];
@@ -450,9 +442,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         _YUVtoRGB.handle = 0;
     }
     
-    if (_blurShader.handle) {
-        glDeleteProgram(_blurShader.handle);
-        _blurShader.handle = 0;
+    if (_blur.handle) {
+        glDeleteProgram(_blur.handle);
+        _blur.handle = 0;
     }
     
     if (_passthrough.handle) {
@@ -465,7 +457,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         _cannySobel.handle = 0;
     }
     
-    for (int i = 0; i < NUM_EFFECTS; i++)
+    for (int i = 0; i < NUM_FILTERS; i++)
     {
         if (_effect[i].handle) {
             glDeleteProgram(_effect[i].handle);
@@ -501,25 +493,25 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 - (void)processFrame:(GLuint) source intoFBO:(GLuint) dest
 {
     GLuint currentSource = source;
-    GLuint currentDest = _mode ? FBO_PING : dest;
+    GLuint currentDest = _filterMode ? FBO_PING : dest;
     
     // bind the Y'UV to RGB/Y shader
-    if (_blur)
+    if (_blurMode)
     {
-        [self drawIntoFBO:currentDest WithShader:_blurShader sourceTexture:currentSource];
+        [self drawIntoFBO:currentDest WithShader:_blur sourceTexture:currentSource];
         currentSource = currentDest;
         currentDest = (currentDest == FBO_PING) ? FBO_PONG : FBO_PING;
    }
     
-    if (_mode == CANNY || _mode == CANNY_COMPOSITE)
+    if (_filterMode == CANNY || _filterMode == CANNY_COMPOSITE)
     {
         [self drawIntoFBO:currentDest WithShader:_cannySobel sourceTexture:currentSource];
-        [self drawIntoFBO:dest WithShader:_effect[_mode] sourceTexture:currentDest];
+        [self drawIntoFBO:dest WithShader:_effect[_filterMode] sourceTexture:currentDest];
         
-    } else if (_mode)
+    } else if (_filterMode)
     {
         // process the last generated texture with selected effect
-        [self drawIntoFBO:dest WithShader:_effect[_mode] sourceTexture:currentSource];
+        [self drawIntoFBO:dest WithShader:_effect[_filterMode] sourceTexture:currentSource];
     }
 
     
@@ -531,7 +523,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     glActiveTexture(GL_TEXTURE0);
     
     int fboNum;
-    if (_mode || _blur)
+    if (_filterMode || _blurMode)
     {
         if (_newFrame)
         {
@@ -545,7 +537,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // draw the texture to the screen
     [self setProgram:_passthrough];
     [view bindDrawable];
+    
     glViewport(0, 0, (GLsizei) view.drawableWidth, (GLsizei) view.drawableHeight);
+
     glBindTexture(GL_TEXTURE_2D, _fboTextures[fboNum]);
     glClear(GL_COLOR_BUFFER_BIT);
     
@@ -562,18 +556,20 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     if (sender.numberOfTouches == 1)
     {
         // if one finger tap, change effect
-        _mode++;
-        if (_mode == NUM_EFFECTS)
-            _mode = 0;
+        _filterMode++;
+        if (_filterMode == NUM_FILTERS)
+            _filterMode = 0;
     } else if (sender.numberOfTouches == 2) {
         // if two finger tap turn blur on/off
-        _blur = !_blur;
+        _blurMode++;
+        if (_blurMode == NUM_BLURS)
+            _blurMode = 0;
     }
     
     // update the overlay
     NSString *filter = @"Filter: ";
-    switch (_mode) {
-        case NONE:
+    switch (_filterMode) {
+        case FILTER_NONE:
             filter = [filter stringByAppendingString:@"None"];
             break;
         case SOBEL:
@@ -599,10 +595,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             break;
     }
     NSString *blur = @"Blur: ";
-    if (_blur)
-        blur = [blur stringByAppendingString:@"On "];
-    else
-        blur = [blur stringByAppendingString:@"Off "];
+    switch (_blurMode) {
+        case BLUR_NONE:
+            blur = [blur stringByAppendingString:@"Off "];
+            break;
+        case BLUR_SINGLEPASS:
+            blur = [blur stringByAppendingString:@"On "];
+            break;
+    }
     
     self.statusLabel.text = [blur stringByAppendingString:filter];
 }
@@ -673,6 +673,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     program->uniforms[UNIFORM_TEXELSIZE] = glGetUniformLocation(program->handle, "texelSize");
     program->uniforms[UNIFORM_RGBCONVOLUTION] = glGetUniformLocation(program->handle, "rgbConvolution");
     program->uniforms[UNIFORM_COLORCONVOLUTION] = glGetUniformLocation(program->handle, "colorConvolution");
+    program->uniforms[UNIFORM_SCALE] = glGetUniformLocation(program->handle, "posScale");
 
     // Release vertex and fragment shaders.
     if (vertShader) {
@@ -763,6 +764,15 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         glUniformMatrix3fv(program.uniforms[UNIFORM_RGBCONVOLUTION], 1, GL_FALSE, _rgbConvolution.m);
     if (program.uniforms[UNIFORM_COLORCONVOLUTION] > -1)
         glUniformMatrix3fv(program.uniforms[UNIFORM_COLORCONVOLUTION], 1, GL_FALSE, _colorConvolution.m);
+    
+    if (program.uniforms[UNIFORM_SCALE] > -1)
+    {
+        float yScale = (self.interfaceOrientation == UIDeviceOrientationLandscapeRight) ? -1.0 : 1.0;
+        yScale *= _yScale;
+        
+        glUniform2f(program.uniforms[UNIFORM_SCALE], _xScale, yScale);
+    }
+        
 }
 
 @end

@@ -12,6 +12,7 @@ enum
     UNIFORM_TEXELSIZE,
     UNIFORM_RGBCONVOLUTION,
     UNIFORM_COLORCONVOLUTION,
+    UNIFORM_SCALE,
     NUM_UNIFORMS
 };
 
@@ -34,7 +35,7 @@ typedef enum {
 
 enum
 {
-    NONE,
+    FILTER_NONE,
     SOBEL,
     SOBEL_BW,
     SOBEL_BLEND,
@@ -42,7 +43,14 @@ enum
     SOBEL_COMPOSITE_RGB,
     CANNY,
     CANNY_COMPOSITE,
-    NUM_EFFECTS
+    NUM_FILTERS
+};
+
+enum
+{
+    BLUR_NONE,
+    BLUR_SINGLEPASS,
+    NUM_BLURS
 };
 
 enum
@@ -64,8 +72,8 @@ typedef struct shaderType {
 @interface FilterViewController : GLKViewController <AVCaptureVideoDataOutputSampleBufferDelegate>  {
     
     shader_t _YUVtoRGB;
-    shader_t _blurShader;
-    shader_t _effect[NUM_EFFECTS];
+    shader_t _blur;
+    shader_t _effect[NUM_FILTERS];
     shader_t _passthrough;
     shader_t _cannySobel;
     
@@ -78,9 +86,9 @@ typedef struct shaderType {
     GLKMatrix3 _rgb2lms;
     GLKMatrix3 _error;
     
-    bool _blur;
+    unsigned int _blurMode;
+    unsigned int _filterMode;
     
-    int _mode;
     bool _newFrame;
     GLuint _positionVBO;
     GLuint _texcoordVBO;
@@ -93,6 +101,9 @@ typedef struct shaderType {
     CGFloat _screenHeight;
     GLsizei _textureWidth;
     GLsizei _textureHeight;
+    
+    GLfloat _xScale;
+    GLfloat _yScale;
     
     EAGLContext *_context;
     QuadModel *_quad;
