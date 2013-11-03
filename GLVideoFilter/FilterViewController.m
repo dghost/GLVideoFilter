@@ -90,46 +90,6 @@
     _screenWidth = [UIScreen mainScreen].bounds.size.height;
     
     view.contentScaleFactor = [UIScreen mainScreen].scale;
-    
-#if __LP64__
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-    {
-        
-        // Choosing bigger preset for bigger screen.
-        _sessionPreset = AVCaptureSessionPreset1280x720;
-        
-        // 1080p is actually possible on A7 devices, but doesn't look all that good.
-        // _sessionPreset = AVCaptureSessionPreset1920x1080;
-    }
-    else
-    {
-        // use a 640x480 video stream for iPhones
-        
-        // _sessionPreset = AVCaptureSessionPreset640x480;
-        _sessionPreset = AVCaptureSessionPreset1280x720;
-    }
-
-    NSLog(@"64bit executable");
-#else
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-    {
-        
-        // Choosing bigger preset for bigger screen.
-        if (view.contentScaleFactor == 2.0)
-            _sessionPreset = AVCaptureSessionPreset1280x720;
-        else
-            _sessionPreset = AVCaptureSessionPreset640x480;
-    }
-    else
-    {
-        // use a 640x480 video stream for iPhones
-        
-        // _sessionPreset = AVCaptureSessionPreset640x480;
-        _sessionPreset = AVCaptureSessionPreset640x480;
-    }
-    NSLog(@"32bit executable");
-#endif
-
 
     
     [self setupGL];
@@ -300,13 +260,56 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     _session = [[AVCaptureSession alloc] init];
     [_session beginConfiguration];
     
-    //-- Set preset session size.
-    [_session setSessionPreset:_sessionPreset];
-    
     //-- Creata a video device and input from that Device.  Add the input to the capture session.
     AVCaptureDevice * videoDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
     if(videoDevice == nil)
         assert(0);
+    
+    
+#if __LP64__
+    AVCaptureDeviceFormat *bestFormat = nil;
+    AVFrameRateRange *bestFrameRateRange = nil;
+    for ( AVCaptureDeviceFormat *format in [videoDevice formats] ) {
+        for ( AVFrameRateRange *range in format.videoSupportedFrameRateRanges ) {
+            if ( range.maxFrameRate > bestFrameRateRange.maxFrameRate ) {
+                bestFormat = format;
+                bestFrameRateRange = range;
+            }
+        }
+    }
+    
+    if ( bestFormat ) {
+        if ( [videoDevice lockForConfiguration:NULL] == YES ) {
+            videoDevice.activeFormat = bestFormat;
+            videoDevice.activeVideoMinFrameDuration = bestFrameRateRange.minFrameDuration;
+            videoDevice.activeVideoMaxFrameDuration = bestFrameRateRange.minFrameDuration;
+            [videoDevice unlockForConfiguration];
+        }
+    }
+    
+    _sessionPreset = AVCaptureSessionPresetInputPriority;
+    
+    NSLog(@"64bit executable");
+#else
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+    {
+        
+        // Choosing bigger preset for bigger screen.
+        if (view.contentScaleFactor == 2.0)
+            _sessionPreset = AVCaptureSessionPreset1280x720;
+        else
+            _sessionPreset = AVCaptureSessionPreset640x480;
+    }
+    else
+    {
+        // use a 640x480 video stream for iPhones
+        
+        // _sessionPreset = AVCaptureSessionPreset640x480;
+        _sessionPreset = AVCaptureSessionPreset640x480;
+    }
+    NSLog(@"32bit executable");
+#endif
+
     
     //-- Add the device to the session.
     NSError *error;
@@ -314,7 +317,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     if(error)
         assert(0);
     
-    [_session addInput:input];
     
     //-- Create the output for the capture session.
     AVCaptureVideoDataOutput * dataOutput = [[AVCaptureVideoDataOutput alloc] init];
@@ -325,6 +327,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     // Set dispatch to be on the main thread so OpenGL can do things with the data
     [dataOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
+    
+    //-- Set preset session size.
+    [_session setSessionPreset:_sessionPreset];
+    
+    [_session addInput:input];
     
     [_session addOutput:dataOutput];
     [_session commitConfiguration];
