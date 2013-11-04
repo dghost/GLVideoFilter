@@ -93,6 +93,8 @@ static const bool _is64bit = false;
     _blurMode = 0;
     _modeLock = NO;
     
+    _threshold = 0.2;
+    
     _screenHeight = [UIScreen mainScreen].bounds.size.width;
     _screenWidth = [UIScreen mainScreen].bounds.size.height;
     
@@ -776,7 +778,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     program->uniforms[UNIFORM_RGBCONVOLUTION] = glGetUniformLocation(program->handle, "rgbConvolution");
     program->uniforms[UNIFORM_COLORCONVOLUTION] = glGetUniformLocation(program->handle, "colorConvolution");
     program->uniforms[UNIFORM_SCALE] = glGetUniformLocation(program->handle, "posScale");
-
+    program->uniforms[UNIFORM_THRESHOLD] = glGetUniformLocation(program->handle, "threshold");
     // Release vertex and fragment shaders.
     if (vertShader) {
         glDetachShader(program->handle, vertShader);
@@ -872,6 +874,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         float orient = (self.interfaceOrientation == UIDeviceOrientationLandscapeRight) ? -1.0 : 1.0;
         glUniform2f(program.uniforms[UNIFORM_SCALE], _xScale * orient, _yScale * orient);
     }
+    if (program.uniforms[UNIFORM_THRESHOLD] > -1)
+        glUniform1f(program.uniforms[UNIFORM_THRESHOLD], _threshold);
         
 }
 

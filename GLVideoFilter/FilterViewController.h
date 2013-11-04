@@ -13,6 +13,7 @@ enum
     UNIFORM_RGBCONVOLUTION,
     UNIFORM_COLORCONVOLUTION,
     UNIFORM_SCALE,
+    UNIFORM_THRESHOLD,
     NUM_UNIFORMS
 };
 
@@ -108,6 +109,7 @@ typedef struct shaderType {
     
     GLfloat _xScale;
     GLfloat _yScale;
+    GLfloat _threshold;
     
     EAGLContext *_context;
     QuadModel *_quad;

@@ -2,6 +2,8 @@
 
 uniform sampler2D SamplerRGB;
 
+uniform mediump float threshold;
+
 varying mediump vec2 tc11;
 varying mediump vec2 tc12;
 varying mediump vec2 tc13;
@@ -63,7 +65,7 @@ void main()
     // canny edge detection
     
     // set low threshold
-    result = mix(0.0,1.0,float(test && (m22>0.15)));
+    result = mix(0.0,1.0,float(test && (m22>threshold)));
     
     //    result = (result > 0.15) ? 1.0 : 0.0;
 

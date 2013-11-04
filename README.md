@@ -14,7 +14,7 @@ The following filters have been implemented:
 - A blended Sobel operator that adds 50% of the grayscale result to the RGB result
 - A composite that overlays the result of the Sobel operator on the grayscale video stream.
 - A composite that overlays the result of the Sobel operator on the RGB video stream.
-- Canny edge detector using a low threshold of 0.15
+- Canny edge detector using a low threshold of 0.2
 - A composite that overlays the Canny edge detection results on the grayscale video stream.
 
 Additionally, an optional blur pre-pass can be enabled for any video filter.
