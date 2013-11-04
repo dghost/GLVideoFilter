@@ -91,6 +91,7 @@ typedef struct shaderType {
     
     unsigned int _blurMode;
     unsigned int _filterMode;
+    Boolean _modeLock;
     
     bool _newFrame;
     GLuint _positionVBO;
@@ -123,6 +124,7 @@ typedef struct shaderType {
 
 
 @property (weak, nonatomic) IBOutlet UILabel *statusLabel;
+- (IBAction)longPressRecognizer:(UILongPressGestureRecognizer *)sender;
 - (IBAction)tapGestureRecgonizer:(UITapGestureRecognizer *)sender;
 - (void)cleanUpTextures;
 - (void)setupAVCapture;

@@ -1,10 +1,9 @@
 ###GLVideoFilter
-This project was based on the [GLCameraRipple demo](http://developer.apple.com/library/ios/#samplecode/GLCameraRipple/Introduction/Intro.html), but has been updated to support iOS 6.0 and 7.0 features.
+Real-time image processing on a live video stream on iOS devices. This project was based on the [GLCameraRipple demo](http://developer.apple.com/library/ios/#samplecode/GLCameraRipple/Introduction/Intro.html), but has been updated to require iOS 6 and take advantage of iOS 7 features when available.
 
 Note: This only runs on actual devices, and will not run in the simulator.
 
 ####Description
-Real-time image processing on a live video stream on iOS devices.
 
 Incorporating accessibility research by [Isla S.](http://www.islaes.com), the purpose of this app was to evaluate the feasibility of edge detection techniques as an accessibility tool. While the screen size and form-factor of iOS devices is not conducive to real-world use, this was intended as a early prototype to test generating an accessible video stream from a non-stereoscopic video stream. As a result, the selection of filters is somewhat narrow in scope and is centered around providing meaningful ways of either enhancing a live video stream (by highlighting object edges) or transforming it entirely into a format that is easier for persons with reduced vision to see. 
 
@@ -34,8 +33,7 @@ The program works by performing the following steps:
 		- The texture is marked as having been processed
 	- The appropriate texture is then rendered to the screen
 
-Due to the number of render passes executed, the intermediate textures are all the same size as the source video stream. This defaults to 1280x720 on all devices, but can be changed easily.
-
 ####Usage
-A one-finger tap cycles between filters.
-A two-finger tap toggles blurring on/off.
+- One-finger taps cycles between filters.
+- Two-finger taps toggles blurring on or off.
+- One-finger long press locks or unlocks mode changing.

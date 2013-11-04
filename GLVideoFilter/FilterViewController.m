@@ -91,7 +91,8 @@ static const bool _is64bit = false;
     self.preferredFramesPerSecond = 60;
     _filterMode = 0;
     _blurMode = 0;
-
+    _modeLock = NO;
+    
     _screenHeight = [UIScreen mainScreen].bounds.size.width;
     _screenWidth = [UIScreen mainScreen].bounds.size.height;
     
@@ -375,7 +376,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             {
                 // use a 640x480 video stream for iPhones
                 
-                // _sessionPreset = AVCaptureSessionPreset640x480;
                 _sessionPreset = AVCaptureSessionPreset640x480;
             }
         }
@@ -638,66 +638,75 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 #pragma mark - Touch handling methods
 
+- (IBAction)longPressRecognizer:(UILongPressGestureRecognizer *)sender {
+    if (sender.state == UIGestureRecognizerStateBegan)
+    {
+        _modeLock = !_modeLock;
+        self.statusLabel.hidden = _modeLock;
+    }
+}
 
 - (IBAction)tapGestureRecgonizer:(UITapGestureRecognizer *)sender {
     
-    
-    if (sender.numberOfTouches == 1)
+    if (!_modeLock && sender.state == UIGestureRecognizerStateRecognized)
     {
-        // if one finger tap, change effect
-        _filterMode++;
-        if (_filterMode == NUM_FILTERS)
-            _filterMode = 0;
-    } else if (sender.numberOfTouches == 2) {
-        // if two finger tap turn blur on/off
-        _blurMode++;
-        if (_blurMode == NUM_BLURS)
-            _blurMode = 0;
+        if (sender.numberOfTouches == 1)
+        {
+            // if one finger tap, change effect
+            _filterMode++;
+            if (_filterMode == NUM_FILTERS)
+                _filterMode = 0;
+        } else if (sender.numberOfTouches == 2) {
+            // if two finger tap turn blur on/off
+            _blurMode++;
+            if (_blurMode == NUM_BLURS)
+                _blurMode = 0;
+        }
+        
+        // update the overlay
+        NSString *filter = @"Filter: ";
+        switch (_filterMode) {
+            case FILTER_NONE:
+                filter = [filter stringByAppendingString:@"None"];
+                break;
+            case SOBEL:
+                filter = [filter stringByAppendingString:@"Sobel RGB"];
+                break;
+            case SOBEL_BW:
+                filter = [filter stringByAppendingString:@"Sobel BW"];
+                break;
+            case SOBEL_COMPOSITE:
+                filter = [filter stringByAppendingString:@"Sobel BW Composite"];
+                break;
+            case SOBEL_COMPOSITE_RGB:
+                filter = [filter stringByAppendingString:@"Sobel RGB Composite"];
+                break;
+            case SOBEL_BLEND:
+                filter = [filter stringByAppendingString:@"Sobel Blended"];
+                break;
+            case CANNY_COMPOSITE:
+                filter = [filter stringByAppendingString:@"Canny Composite"];
+                break;
+            case CANNY:
+                filter = [filter stringByAppendingString:@"Canny BW"];
+                break;
+        }
+        NSString *blur = @"Blur: ";
+        switch (_blurMode) {
+            case BLUR_NONE:
+                blur = [blur stringByAppendingString:@"Off "];
+                break;
+            case BLUR_SINGLEPASS:
+                blur = [blur stringByAppendingString:@"Single Pass "];
+                break;
+            case BLUR_TWOPASS:
+                blur = [blur stringByAppendingString:@"Two Pass "];
+                break;
+                
+        }
+        
+        self.statusLabel.text = [blur stringByAppendingString:filter];
     }
-    
-    // update the overlay
-    NSString *filter = @"Filter: ";
-    switch (_filterMode) {
-        case FILTER_NONE:
-            filter = [filter stringByAppendingString:@"None"];
-            break;
-        case SOBEL:
-            filter = [filter stringByAppendingString:@"Sobel RGB"];
-            break;
-        case SOBEL_BW:
-            filter = [filter stringByAppendingString:@"Sobel BW"];
-            break;
-        case SOBEL_COMPOSITE:
-            filter = [filter stringByAppendingString:@"Sobel BW Composite"];
-            break;
-        case SOBEL_COMPOSITE_RGB:
-            filter = [filter stringByAppendingString:@"Sobel RGB Composite"];
-            break;
-        case SOBEL_BLEND:
-            filter = [filter stringByAppendingString:@"Sobel Blended"];
-            break;
-        case CANNY_COMPOSITE:
-            filter = [filter stringByAppendingString:@"Canny Composite"];
-            break;
-        case CANNY:
-            filter = [filter stringByAppendingString:@"Canny BW"];
-            break;
-    }
-    NSString *blur = @"Blur: ";
-    switch (_blurMode) {
-        case BLUR_NONE:
-            blur = [blur stringByAppendingString:@"Off "];
-            break;
-        case BLUR_SINGLEPASS:
-            blur = [blur stringByAppendingString:@"Single Pass "];
-            break;
-        case BLUR_TWOPASS:
-            blur = [blur stringByAppendingString:@"Two Pass "];
-            break;
-
-    }
-    
-    self.statusLabel.text = [blur stringByAppendingString:filter];
 }
 
 #pragma mark - OpenGL ES 2 shader compilation
