@@ -1,6 +1,12 @@
 #import <CoreVideo/CVOpenGLESTextureCache.h>
 #import "FilterViewController.h"
 
+#if __LP64__
+static const bool _is64bit = true;
+#else
+static const bool _is64bit = false;
+#endif
+
 
 @implementation FilterViewController
 
@@ -266,50 +272,115 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         assert(0);
     
     
-#if __LP64__
-    AVCaptureDeviceFormat *bestFormat = nil;
-    AVFrameRateRange *bestFrameRateRange = nil;
-    for ( AVCaptureDeviceFormat *format in [videoDevice formats] ) {
-        for ( AVFrameRateRange *range in format.videoSupportedFrameRateRanges ) {
-            if ( range.maxFrameRate > bestFrameRateRange.maxFrameRate ) {
-                bestFormat = format;
-                bestFrameRateRange = range;
+    if (_is64bit)
+    {
+        AVCaptureDeviceFormat *bestFormat = nil;
+        AVFrameRateRange *bestFrameRateRange = nil;
+        for ( AVCaptureDeviceFormat *format in [videoDevice formats] ) {
+            CMVideoDimensions temp = CMVideoFormatDescriptionGetDimensions(format.formatDescription);
+            // cap resolution to 720p
+            if (temp.height <= 720)
+            {
+            NSLog(@"Found camera resolution %ix%i",temp.width,temp.height);
+                for ( AVFrameRateRange *range in format.videoSupportedFrameRateRanges ) {
+                    NSLog(@"Found frame rate range %f - %f",range.minFrameRate,range.maxFrameRate);
+                    if ( range.maxFrameRate >= bestFrameRateRange.maxFrameRate ) {
+                        
+                        bestFormat = format;
+                        bestFrameRateRange = range;
+                    }
+                }
             }
         }
-    }
-    
-    if ( bestFormat ) {
-        if ( [videoDevice lockForConfiguration:NULL] == YES ) {
-            videoDevice.activeFormat = bestFormat;
-            videoDevice.activeVideoMinFrameDuration = bestFrameRateRange.minFrameDuration;
-            videoDevice.activeVideoMaxFrameDuration = bestFrameRateRange.minFrameDuration;
-            [videoDevice unlockForConfiguration];
+        
+        if ( bestFormat ) {
+            
+            CMVideoDimensions temp = CMVideoFormatDescriptionGetDimensions(bestFormat.formatDescription);
+            NSLog(@"Setting camera resolution %ix%i@%ffps",temp.width,temp.height,bestFrameRateRange.maxFrameRate);
+            
+            if ( [videoDevice lockForConfiguration:NULL] == YES ) {
+                videoDevice.activeFormat = bestFormat;
+                videoDevice.activeVideoMinFrameDuration = bestFrameRateRange.minFrameDuration;
+                videoDevice.activeVideoMaxFrameDuration = bestFrameRateRange.minFrameDuration;
+                [videoDevice unlockForConfiguration];
+            }
         }
-    }
-    
-    _sessionPreset = AVCaptureSessionPresetInputPriority;
-    
-    NSLog(@"64bit executable");
-#else
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-    {
         
-        // Choosing bigger preset for bigger screen.
-        if (view.contentScaleFactor == 2.0)
-            _sessionPreset = AVCaptureSessionPreset1280x720;
-        else
-            _sessionPreset = AVCaptureSessionPreset640x480;
-    }
-    else
-    {
-        // use a 640x480 video stream for iPhones
+        _sessionPreset = AVCaptureSessionPresetInputPriority;
         
-        // _sessionPreset = AVCaptureSessionPreset640x480;
-        _sessionPreset = AVCaptureSessionPreset640x480;
-    }
-    NSLog(@"32bit executable");
-#endif
+        NSLog(@"64bit executable");
+    } else {
+        
+        if ([videoDevice respondsToSelector:@selector(activeVideoMinFrameDuration)])
+        {
+            int maxHeight = 0;
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+            {
+                // Choosing bigger preset for bigger screen.
+                if (self.view.contentScaleFactor == 2.0)
+                    maxHeight = 720;
+                else
+                    maxHeight = 480;
+            }
+            else
+            {
+                if (_screenWidth > 480)
+                    maxHeight = 540;
+                // use a 640x480 video stream for iPhones
+                else
+                    maxHeight = 480;
+            }
+            AVCaptureDeviceFormat *bestFormat = nil;
+            AVFrameRateRange *bestFrameRateRange = nil;
+            for ( AVCaptureDeviceFormat *format in [videoDevice formats] ) {
+                CMVideoDimensions temp = CMVideoFormatDescriptionGetDimensions(format.formatDescription);
+                if (temp.height <= maxHeight)
+                {
+                    NSLog(@"Found camera resolution %ix%i",temp.width,temp.height);
 
+                    for ( AVFrameRateRange *range in format.videoSupportedFrameRateRanges ) {
+                        NSLog(@"Found frame rate range %f - %f",range.minFrameRate,range.maxFrameRate);
+                        if ( range.maxFrameRate >= bestFrameRateRange.maxFrameRate ) {
+                            
+                            bestFormat = format;
+                            bestFrameRateRange = range;
+                        }
+                    }
+                }
+            }
+            
+            if ( bestFormat ) {
+                
+                CMVideoDimensions temp = CMVideoFormatDescriptionGetDimensions(bestFormat.formatDescription);
+                NSLog(@"Setting camera resolution %ix%i@%ffps",temp.width,temp.height,bestFrameRateRange.maxFrameRate);
+                if ( [videoDevice lockForConfiguration:NULL] == YES ) {
+                    videoDevice.activeFormat = bestFormat;
+                    videoDevice.activeVideoMinFrameDuration = bestFrameRateRange.minFrameDuration;
+                    videoDevice.activeVideoMaxFrameDuration = bestFrameRateRange.minFrameDuration;
+                    [videoDevice unlockForConfiguration];
+                }
+            }
+            
+            _sessionPreset = AVCaptureSessionPresetInputPriority;
+        } else {
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+            {
+                // Choosing bigger preset for bigger screen.
+                if (self.view.contentScaleFactor == 2.0)
+                    _sessionPreset = AVCaptureSessionPreset1280x720;
+                else
+                    _sessionPreset = AVCaptureSessionPreset640x480;
+            }
+            else
+            {
+                // use a 640x480 video stream for iPhones
+                
+                // _sessionPreset = AVCaptureSessionPreset640x480;
+                _sessionPreset = AVCaptureSessionPreset640x480;
+            }
+        }
+        NSLog(@"32bit executable");
+    }
     
     //-- Add the device to the session.
     NSError *error;
