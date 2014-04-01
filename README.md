@@ -17,7 +17,7 @@ The following filters have been implemented:
 - Canny edge detector using a low threshold of 0.2
 - A composite that overlays the Canny edge detection results on the grayscale video stream.
 - A chained Sobel operator -> Canny edge detector with inverted colors
-- 
+
 Additionally, an optional blur pre-pass can be enabled for any video filter.
 
 The program works by performing the following steps:
