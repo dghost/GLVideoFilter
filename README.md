@@ -1,4 +1,4 @@
-###GLVideoFilter v1.0
+###GLVideoFilter v1.1
 Real-time image processing on a live video stream on iOS devices. This project was based on the [GLCameraRipple demo](http://developer.apple.com/library/ios/#samplecode/GLCameraRipple/Introduction/Intro.html), but has been updated to require iOS 6 and take advantage of iOS 7 features when available.
 
 Note: This only runs on actual devices, and will not run in the simulator.
@@ -16,7 +16,8 @@ The following filters have been implemented:
 - A composite that overlays the result of the Sobel operator on the RGB video stream.
 - Canny edge detector using a low threshold of 0.2
 - A composite that overlays the Canny edge detection results on the grayscale video stream.
-
+- A chained Sobel operator -> Canny edge detector with inverted colors
+- 
 Additionally, an optional blur pre-pass can be enabled for any video filter.
 
 The program works by performing the following steps:
@@ -34,6 +35,6 @@ The program works by performing the following steps:
 	- The appropriate texture is then rendered to the screen
 
 ####Usage
-- One-finger taps cycles between filters.
-- Two-finger taps toggles blurring on or off.
-- One-finger long press locks or unlocks mode changing.
+- One-finger left/right swipes cycle between filters.
+- One-finger up/down swipes cycle between blur modes.
+- One-finger tap locks or unlocks mode changing.
