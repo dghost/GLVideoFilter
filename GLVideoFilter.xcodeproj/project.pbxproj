@@ -43,6 +43,7 @@
 		DF9CAE8A1824C18800CE3945 /* blurXPass.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF9CAE881824C16800CE3945 /* blurXPass.fsh */; };
 		DF9CAE8B1824C18800CE3945 /* blurYPass.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF9CAE891824C16800CE3945 /* blurYPass.fsh */; };
 		DFC750F516E5C4340036CDD8 /* SobelBWComposite.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DFC750F416E5C3E80036CDD8 /* SobelBWComposite.fsh */; };
+		DFD3A59718EA9BF70032E6C4 /* CannyInverse.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DFD3A59618EA9BF70032E6C4 /* CannyInverse.fsh */; };
 		DFD5679C16E4A4EE003D5C96 /* Icon-72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFD5679B16E4A4EE003D5C96 /* Icon-72@2x.png */; };
 		DFD5679E16E4A550003D5C96 /* Icon-Small-50@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFD5679D16E4A550003D5C96 /* Icon-Small-50@2x.png */; };
 /* End PBXBuildFile section */
@@ -90,6 +91,7 @@
 		DF9CAE881824C16800CE3945 /* blurXPass.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = blurXPass.fsh; path = Shaders/blurXPass.fsh; sourceTree = "<group>"; };
 		DF9CAE891824C16800CE3945 /* blurYPass.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = blurYPass.fsh; path = Shaders/blurYPass.fsh; sourceTree = "<group>"; };
 		DFC750F416E5C3E80036CDD8 /* SobelBWComposite.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SobelBWComposite.fsh; path = Shaders/SobelBWComposite.fsh; sourceTree = "<group>"; };
+		DFD3A59618EA9BF70032E6C4 /* CannyInverse.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = CannyInverse.fsh; path = Shaders/CannyInverse.fsh; sourceTree = "<group>"; };
 		DFD5679B16E4A4EE003D5C96 /* Icon-72@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72@2x.png"; sourceTree = "<group>"; };
 		DFD5679D16E4A550003D5C96 /* Icon-Small-50@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small-50@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -215,6 +217,7 @@
 			isa = PBXGroup;
 			children = (
 				DF05AA2316E6614700911782 /* Canny.fsh */,
+				DFD3A59618EA9BF70032E6C4 /* CannyInverse.fsh */,
 				DF4740B616E6F2B70073DDB8 /* CannyComposite.fsh */,
 				B66E3E4613E9E79C00D2ACF0 /* Sobel.fsh */,
 				DF4740B416E6EEEC0073DDB8 /* SobelBlend.fsh */,
@@ -252,7 +255,7 @@
 		B66E3E2513E9E79C00D2ACF0 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0510;
 				TargetAttributes = {
 					B66E3E2D13E9E79C00D2ACF0 = {
 						DevelopmentTeam = G8X4XMPVS9;
@@ -305,6 +308,7 @@
 				DFD5679E16E4A550003D5C96 /* Icon-Small-50@2x.png in Resources */,
 				B6388B30141AB58300DA02FB /* Icon.png in Resources */,
 				B6388B31141AB58300DA02FB /* Icon@2x.png in Resources */,
+				DFD3A59718EA9BF70032E6C4 /* CannyInverse.fsh in Resources */,
 				B6198C4916C05C04000B9C73 /* Default-568h@2x.png in Resources */,
 				DF2BE98716E69BE000FF0C90 /* StoryBoard_iPhone.storyboard in Resources */,
 				DF2BE98916E69BFC00FF0C90 /* StoryBoard_iPad.storyboard in Resources */,
@@ -332,7 +336,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
@@ -366,7 +369,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;

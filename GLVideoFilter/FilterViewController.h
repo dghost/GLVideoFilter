@@ -44,6 +44,7 @@ enum
     SOBEL_COMPOSITE_RGB,
     CANNY,
     CANNY_COMPOSITE,
+    SOBEL_CANNY,
     NUM_FILTERS
 };
 
@@ -122,12 +123,14 @@ typedef struct shaderType {
     AVCaptureSession *_session;
     CVOpenGLESTextureCacheRef _videoTextureCache;
     GLKVector2 _texelSize;
+
 }
 
 
 @property (weak, nonatomic) IBOutlet UILabel *statusLabel;
-- (IBAction)longPressRecognizer:(UILongPressGestureRecognizer *)sender;
+
 - (IBAction)tapGestureRecgonizer:(UITapGestureRecognizer *)sender;
+- (IBAction)swipeGestureRecognizer:(UISwipeGestureRecognizer *)sender;
 - (void)cleanUpTextures;
 - (void)setupAVCapture;
 - (void)tearDownAVCapture;

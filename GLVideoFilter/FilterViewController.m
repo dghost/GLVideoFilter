@@ -507,6 +507,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [self loadShader:&_effect[SOBEL_BLEND] withVertex:@"quadKernel" withFragment:@"SobelBlend"];
     [self loadShader:&_effect[CANNY] withVertex:@"quadKernel" withFragment:@"Canny"];
     [self loadShader:&_effect[CANNY_COMPOSITE] withVertex:@"quadKernel" withFragment:@"CannyComposite"];
+    [self loadShader:&_effect[SOBEL_CANNY] withVertex:@"quadKernel" withFragment:@"CannyInverse"];
+    
     [self loadShader:&_cannySobel withVertex:@"quadKernel" withFragment:@"SobelCanny"];
     [self loadShader:&_passthrough withVertex:@"quadPassthrough" withFragment:@"passthrough"];
 }
@@ -594,7 +596,16 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             break;
     }
     
-    if (_filterMode == CANNY || _filterMode == CANNY_COMPOSITE)
+    if (_filterMode == SOBEL_CANNY)
+    {
+        [self drawIntoFBO:currentDest WithShader:_effect[SOBEL_BW] sourceTexture:currentSource];
+        currentSource = currentDest;
+        currentDest = (currentDest == FBO_PING) ? FBO_PONG : FBO_PING;
+        
+        [self drawIntoFBO:currentDest WithShader:_cannySobel sourceTexture:currentSource];
+        [self drawIntoFBO:dest WithShader:_effect[_filterMode] sourceTexture:currentDest];
+        
+    } else if (_filterMode == CANNY || _filterMode == CANNY_COMPOSITE)
     {
         [self drawIntoFBO:currentDest WithShader:_cannySobel sourceTexture:currentSource];
         [self drawIntoFBO:dest WithShader:_effect[_filterMode] sourceTexture:currentDest];
@@ -637,80 +648,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     glDrawElements(GL_TRIANGLE_STRIP, [_quad getIndexCount], GL_UNSIGNED_SHORT, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
-
-#pragma mark - Touch handling methods
-
-- (IBAction)longPressRecognizer:(UILongPressGestureRecognizer *)sender {
-    if (sender.state == UIGestureRecognizerStateBegan)
-    {
-        _modeLock = !_modeLock;
-        self.statusLabel.hidden = _modeLock;
-    }
-}
-
-- (IBAction)tapGestureRecgonizer:(UITapGestureRecognizer *)sender {
-    
-    if (!_modeLock && sender.state == UIGestureRecognizerStateRecognized)
-    {
-        if (sender.numberOfTouches == 1)
-        {
-            // if one finger tap, change effect
-            _filterMode++;
-            if (_filterMode == NUM_FILTERS)
-                _filterMode = 0;
-        } else if (sender.numberOfTouches == 2) {
-            // if two finger tap turn blur on/off
-            _blurMode++;
-            if (_blurMode == NUM_BLURS)
-                _blurMode = 0;
-        }
-        
-        // update the overlay
-        NSString *filter = @"Filter: ";
-        switch (_filterMode) {
-            case FILTER_NONE:
-                filter = [filter stringByAppendingString:@"None"];
-                break;
-            case SOBEL:
-                filter = [filter stringByAppendingString:@"Sobel RGB"];
-                break;
-            case SOBEL_BW:
-                filter = [filter stringByAppendingString:@"Sobel BW"];
-                break;
-            case SOBEL_COMPOSITE:
-                filter = [filter stringByAppendingString:@"Sobel BW Composite"];
-                break;
-            case SOBEL_COMPOSITE_RGB:
-                filter = [filter stringByAppendingString:@"Sobel RGB Composite"];
-                break;
-            case SOBEL_BLEND:
-                filter = [filter stringByAppendingString:@"Sobel Blended"];
-                break;
-            case CANNY_COMPOSITE:
-                filter = [filter stringByAppendingString:@"Canny Composite"];
-                break;
-            case CANNY:
-                filter = [filter stringByAppendingString:@"Canny BW"];
-                break;
-        }
-        NSString *blur = @"Blur: ";
-        switch (_blurMode) {
-            case BLUR_NONE:
-                blur = [blur stringByAppendingString:@"Off "];
-                break;
-            case BLUR_SINGLEPASS:
-                blur = [blur stringByAppendingString:@"Single Pass "];
-                break;
-            case BLUR_TWOPASS:
-                blur = [blur stringByAppendingString:@"Two Pass "];
-                break;
-                
-        }
-        
-        self.statusLabel.text = [blur stringByAppendingString:filter];
-    }
-}
-
 #pragma mark - OpenGL ES 2 shader compilation
 
 - (BOOL)loadShader: (shader_t *) program withVertex: (NSString *) vertexName withFragment: (NSString *) fragmentName
@@ -878,5 +815,101 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         glUniform1f(program.uniforms[UNIFORM_THRESHOLD], _threshold);
         
 }
+
+-(void)updateOverlay {
+    // update the overlay
+    NSString *filter = @"Filter: ";
+    switch (_filterMode) {
+        case FILTER_NONE:
+            filter = [filter stringByAppendingString:@"None"];
+            break;
+        case SOBEL:
+            filter = [filter stringByAppendingString:@"Sobel RGB"];
+            break;
+        case SOBEL_BW:
+            filter = [filter stringByAppendingString:@"Sobel BW"];
+            break;
+        case SOBEL_COMPOSITE:
+            filter = [filter stringByAppendingString:@"Sobel BW Composite"];
+            break;
+        case SOBEL_COMPOSITE_RGB:
+            filter = [filter stringByAppendingString:@"Sobel RGB Composite"];
+            break;
+        case SOBEL_BLEND:
+            filter = [filter stringByAppendingString:@"Sobel Blended"];
+            break;
+        case CANNY_COMPOSITE:
+            filter = [filter stringByAppendingString:@"Canny Composite"];
+            break;
+        case CANNY:
+            filter = [filter stringByAppendingString:@"Canny BW"];
+            break;
+        case SOBEL_CANNY:
+            filter = [filter stringByAppendingString:@"Sobel->Canny"];
+            break;
+    }
+    NSString *blur = @"Blur: ";
+    switch (_blurMode) {
+        case BLUR_NONE:
+            blur = [blur stringByAppendingString:@"Off "];
+            break;
+        case BLUR_SINGLEPASS:
+            blur = [blur stringByAppendingString:@"Single Pass "];
+            break;
+        case BLUR_TWOPASS:
+            blur = [blur stringByAppendingString:@"Two Pass "];
+            break;
+            
+    }
+    
+    self.statusLabel.text = [blur stringByAppendingString:filter];
+    
+}
+
+#pragma mark - Touch handling methods
+
+- (IBAction)tapGestureRecgonizer:(UITapGestureRecognizer *)sender {
+    if (sender.state == UIGestureRecognizerStateRecognized)
+    {
+        _modeLock = !_modeLock;
+        self.statusLabel.hidden = _modeLock;
+    }
+}
+
+- (IBAction)swipeGestureRecognizer:(UISwipeGestureRecognizer *)sender {
+    if (!_modeLock && sender.state == UIGestureRecognizerStateRecognized)
+    {
+        if (sender.direction == UISwipeGestureRecognizerDirectionLeft)
+        {
+            _filterMode++;
+            if (_filterMode == NUM_FILTERS)
+                _filterMode = 0;
+            
+        } else if (sender.direction == UISwipeGestureRecognizerDirectionRight)
+        {
+            _filterMode--;
+
+            if (_filterMode == UINT_MAX)
+                _filterMode = NUM_FILTERS - 1;
+        }
+        if (sender.direction == UISwipeGestureRecognizerDirectionUp)
+        {
+            _blurMode--;
+            if (_blurMode == UINT_MAX)
+                _blurMode = NUM_BLURS - 1;
+            
+        } else if (sender.direction == UISwipeGestureRecognizerDirectionDown)
+        {
+            _blurMode++;
+            if (_blurMode == NUM_BLURS)
+                _blurMode = 0;
+        }
+        
+        [self updateOverlay];
+
+    }
+    
+}
+
 
 @end

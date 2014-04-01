@@ -40,7 +40,7 @@ void main()
     
     
     // output result as gray
-    mediump vec4 outColor = vec4(vec3(sobel),1.0);
+    mediump vec4 outColor = vec4(sobel);
 
     gl_FragColor = outColor;
     

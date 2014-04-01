@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="4511" systemVersion="13A603" targetRuntime="iOS.CocoaTouch.iPad" variant="6xAndEarlier" propertyAccessControl="none" useAutolayout="YES" initialViewController="aUe-1j-chy">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="5053" systemVersion="13D28" targetRuntime="iOS.CocoaTouch.iPad" variant="6xAndEarlier" propertyAccessControl="none" useAutolayout="YES" initialViewController="aUe-1j-chy">
     <dependencies>
         <deployment defaultVersion="1536" identifier="iOS"/>
         <development version="4600" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3745"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
     </dependencies>
     <scenes>
         <!--Filter View Controller-->
@@ -32,9 +32,11 @@
                         </constraints>
                         <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                         <connections>
-                            <outletCollection property="gestureRecognizers" destination="Y6x-dS-WFP" appends="YES" id="zgA-y5-HGi"/>
-                            <outletCollection property="gestureRecognizers" destination="7r4-ze-eCw" appends="YES" id="D85-Pt-7eT"/>
-                            <outletCollection property="gestureRecognizers" destination="rv8-hN-IGc" appends="YES" id="bbg-UM-qsk"/>
+                            <outletCollection property="gestureRecognizers" destination="cPV-Uq-OXz" appends="YES" id="GfO-Zo-VKH"/>
+                            <outletCollection property="gestureRecognizers" destination="TtM-8Q-tQ2" appends="YES" id="xB3-cK-exb"/>
+                            <outletCollection property="gestureRecognizers" destination="fLr-b6-FU6" appends="YES" id="zSz-9b-63Z"/>
+                            <outletCollection property="gestureRecognizers" destination="gzn-e4-JOF" appends="YES" id="fAL-IG-nnL"/>
+                            <outletCollection property="gestureRecognizers" destination="bQz-jy-ETS" appends="YES" id="64J-2P-psy"/>
                         </connections>
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
@@ -45,22 +47,36 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="21R-XX-hme" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <tapGestureRecognizer id="Y6x-dS-WFP">
+                <swipeGestureRecognizer direction="right" id="cPV-Uq-OXz" userLabel="Right Single Finger Swipe">
                     <connections>
-                        <action selector="tapGestureRecgonizer:" destination="aUe-1j-chy" id="7fj-8l-HEW"/>
+                        <action selector="swipeGestureRecognizer:" destination="aUe-1j-chy" id="Ars-TC-oPU"/>
+                        <outlet property="delegate" destination="xzp-cG-ZPQ" id="TzB-bv-KTv"/>
+                    </connections>
+                </swipeGestureRecognizer>
+                <swipeGestureRecognizer direction="left" id="TtM-8Q-tQ2" userLabel="Left Single Finger Swipe">
+                    <connections>
+                        <action selector="swipeGestureRecognizer:" destination="aUe-1j-chy" id="enM-mr-dmO"/>
+                        <outlet property="delegate" destination="xzp-cG-ZPQ" id="c0k-Xw-cAd"/>
+                    </connections>
+                </swipeGestureRecognizer>
+                <swipeGestureRecognizer direction="up" id="fLr-b6-FU6" userLabel="Up Single Finger Swipe">
+                    <connections>
+                        <action selector="swipeGestureRecognizer:" destination="aUe-1j-chy" id="Xez-1C-qji"/>
+                        <outlet property="delegate" destination="xzp-cG-ZPQ" id="XH9-5g-YQA"/>
+                    </connections>
+                </swipeGestureRecognizer>
+                <swipeGestureRecognizer direction="down" id="gzn-e4-JOF" userLabel="Down Single Finger Swipe">
+                    <connections>
+                        <action selector="swipeGestureRecognizer:" destination="aUe-1j-chy" id="KMA-H4-Cw3"/>
+                        <outlet property="delegate" destination="xzp-cG-ZPQ" id="Lik-RV-QBz"/>
+                    </connections>
+                </swipeGestureRecognizer>
+                <tapGestureRecognizer id="bQz-jy-ETS">
+                    <connections>
+                        <action selector="tapGestureRecgonizer:" destination="aUe-1j-chy" id="6Lq-aq-p0c"/>
+                        <outlet property="delegate" destination="xzp-cG-ZPQ" id="11O-mn-7x6"/>
                     </connections>
                 </tapGestureRecognizer>
-                <tapGestureRecognizer numberOfTouchesRequired="2" id="7r4-ze-eCw">
-                    <connections>
-                        <action selector="tapGestureRecgonizer:" destination="aUe-1j-chy" id="4hr-LS-nD2"/>
-                    </connections>
-                </tapGestureRecognizer>
-                <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="0.5" id="rv8-hN-IGc">
-                    <connections>
-                        <action selector="longPressRecognizer:" destination="aUe-1j-chy" id="bdc-E5-qy9"/>
-                        <outlet property="delegate" destination="xzp-cG-ZPQ" id="ZSN-Gw-LZG"/>
-                    </connections>
-                </pongPressGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="-325" y="-364"/>
         </scene>
