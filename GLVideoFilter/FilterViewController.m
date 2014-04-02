@@ -95,11 +95,10 @@ static const bool _is64bit = false;
     
     _threshold = 0.2;
     
-    _screenHeight = [UIScreen mainScreen].bounds.size.width;
-    _screenWidth = [UIScreen mainScreen].bounds.size.height;
-    
     view.contentScaleFactor = [UIScreen mainScreen].scale;
-
+    
+    _screenHeight = [UIScreen mainScreen].bounds.size.width * [UIScreen mainScreen].scale;
+    _screenWidth = [UIScreen mainScreen].bounds.size.height * [UIScreen mainScreen].scale;
     
     [self setupGL];
     
@@ -166,12 +165,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         return;
     }
     
-    if (_quad == nil ||
-        width != _textureWidth ||
-        height != _textureHeight)
+    if (_quad == nil)
     {
-        _textureWidth = width;
-        _textureHeight = height;
+        float textureAspect = height / width;
+        _textureWidth = (width > _screenWidth ? _screenWidth : width);
+        _textureHeight = (height > _screenHeight ? _screenHeight : height);
         
         _quad = [[QuadModel alloc] init];
         _texelSize = GLKVector2Divide(GLKVector2Make(1.0, 1.0), GLKVector2Make(_textureWidth, _textureHeight));
@@ -196,8 +194,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                                                        NULL,
                                                        GL_TEXTURE_2D,
                                                        GL_RED_EXT,
-                                                       _textureWidth,
-                                                       _textureHeight,
+                                                       width,
+                                                       height,
                                                        GL_RED_EXT,
                                                        GL_UNSIGNED_BYTE,
                                                        0,
@@ -219,8 +217,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                                                        NULL,
                                                        GL_TEXTURE_2D,
                                                        GL_RG_EXT,
-                                                       _textureWidth/2,
-                                                       _textureHeight/2,
+                                                       width/2,
+                                                       height/2,
                                                        GL_RG_EXT,
                                                        GL_UNSIGNED_BYTE,
                                                        1,
@@ -443,7 +441,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // genereate textures and FBO's
     glGenTextures(NUM_FBOS, &_fboTextures[0]);
     glGenFramebuffers(NUM_FBOS, &_fbo[0]);
-    
+ 
     for (int i = 0; i < NUM_FBOS; i++)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, _fbo[i]);
