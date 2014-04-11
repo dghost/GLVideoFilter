@@ -502,7 +502,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     
     [self loadShader:&_YUVtoRGB withVertex:@"quadInvertY" withFragment:@"yuv2rgb"];
-    [self loadShader:&_blurSinglePass withVertex:@"quadKernel" withFragment:@"blurSinglePass"];
     [self loadShader:&_blurTwoPass[0] withVertex:@"quadKernel" withFragment:@"blurXPass"];
     [self loadShader:&_blurTwoPass[1] withVertex:@"quadKernel" withFragment:@"blurYPass"];
     [self loadShader:&_effect[SOBEL] withVertex:@"quadKernel" withFragment:@"Sobel"];
@@ -529,11 +528,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     if (_YUVtoRGB.handle) {
         glDeleteProgram(_YUVtoRGB.handle);
         _YUVtoRGB.handle = 0;
-    }
-    
-    if (_blurSinglePass.handle) {
-        glDeleteProgram(_blurSinglePass.handle);
-        _blurSinglePass.handle = 0;
     }
     
     if (_passthrough.handle) {
@@ -586,19 +580,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     // bind the Y'UV to RGB/Y shader
     
-    switch (_blurMode)
+    if (_blurMode)
     {
-        case BLUR_SINGLEPASS:
-            [self drawIntoFBO:currentDest WithShader:_blurSinglePass sourceTexture:currentSource];
-            currentSource = currentDest;
-            currentDest = (currentDest == FBO_PING) ? FBO_PONG : FBO_PING;
-            break;
-        case BLUR_TWOPASS:
-            [self drawIntoFBO:FBO_PONG WithShader:_blurTwoPass[0] sourceTexture:currentSource];
-            [self drawIntoFBO:currentDest WithShader:_blurTwoPass[1] sourceTexture:FBO_PONG];
-            currentSource = currentDest;
-            currentDest = (currentDest == FBO_PING) ? FBO_PONG : FBO_PING;
-            break;
+        [self drawIntoFBO:FBO_PONG WithShader:_blurTwoPass[0] sourceTexture:currentSource];
+        [self drawIntoFBO:currentDest WithShader:_blurTwoPass[1] sourceTexture:FBO_PONG];
+        currentSource = currentDest;
+        currentDest = (currentDest == FBO_PING) ? FBO_PONG : FBO_PING;
     }
     
     if (_filterMode == SOBEL_CANNY)
@@ -862,15 +849,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
      NSString *blur;
     switch (_blurMode) {
         case BLUR_NONE:
-            blur = @"No Blur";
-            break;
-        case BLUR_SINGLEPASS:
-            blur = @"Single Pass Blur";
+            blur = @"Blur Disabled";
             break;
         case BLUR_TWOPASS:
-            blur = @"Two Pass Blur";
-            break;
-            
+            blur = @"Blur Enabled";
+            break;     
     }
     [self updateOverlayWithText:blur];
 }

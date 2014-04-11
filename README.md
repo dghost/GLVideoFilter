@@ -1,4 +1,4 @@
-###GLVideoFilter v1.2 [![Build Status](https://travis-ci.org/dghost/GLVideoFilter.svg)](https://travis-ci.org/dghost/GLVideoFilter)
+###GLVideoFilter v1.2.1 [![Build Status](https://travis-ci.org/dghost/GLVideoFilter.svg)](https://travis-ci.org/dghost/GLVideoFilter)
 Real-time image processing on a live video stream on iOS devices. This project was based on the [GLCameraRipple demo](http://developer.apple.com/library/ios/#samplecode/GLCameraRipple/Introduction/Intro.html), but has been updated to require iOS 6 and take advantage of iOS 7 features when available.
 
 Note: This only runs on actual devices, and will not run in the simulator.

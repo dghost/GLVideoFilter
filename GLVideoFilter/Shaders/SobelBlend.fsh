@@ -38,7 +38,7 @@ void main()
     mediump vec4 sobel = sqrt(H*H+V*V);
     
     // add 50% of the grayscale sobel to the RGB sobel.
-    mediump vec3 rgb = sobel.rgb + vec3(sobel.a * 0.5 );
+    mediump vec3 rgb = sobel.rgb * 0.5 + vec3(sobel.a * 0.5 );
     mediump vec4 outColor = vec4(rgb,1.0);
 
     gl_FragColor = outColor;

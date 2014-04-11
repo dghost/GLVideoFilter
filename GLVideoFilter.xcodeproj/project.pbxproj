@@ -26,7 +26,6 @@
 		DF0D63E118F7947800D51089 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DF0D63E018F7947800D51089 /* Images.xcassets */; };
 		DF143B7416EB317E006D35F9 /* SobelRGBComposite.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF143B7116EB316B006D35F9 /* SobelRGBComposite.fsh */; };
 		DF143B7516EB317E006D35F9 /* yuv2rgb.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF143B7216EB316B006D35F9 /* yuv2rgb.fsh */; };
-		DF143B7616EB317E006D35F9 /* blurSinglePass.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF143B7316EB316B006D35F9 /* blurSinglePass.fsh */; };
 		DF2BE98516E6939600FF0C90 /* SobelCanny.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF2BE98416E6796E00FF0C90 /* SobelCanny.fsh */; };
 		DF2BE98716E69BE000FF0C90 /* StoryBoard_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DF2BE98616E69BE000FF0C90 /* StoryBoard_iPhone.storyboard */; };
 		DF2BE98916E69BFC00FF0C90 /* StoryBoard_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DF2BE98816E69BFC00FF0C90 /* StoryBoard_iPad.storyboard */; };
@@ -69,7 +68,6 @@
 		DF0D63E018F7947800D51089 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		DF143B7116EB316B006D35F9 /* SobelRGBComposite.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SobelRGBComposite.fsh; path = Shaders/SobelRGBComposite.fsh; sourceTree = "<group>"; };
 		DF143B7216EB316B006D35F9 /* yuv2rgb.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = yuv2rgb.fsh; path = Shaders/yuv2rgb.fsh; sourceTree = "<group>"; };
-		DF143B7316EB316B006D35F9 /* blurSinglePass.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = blurSinglePass.fsh; path = Shaders/blurSinglePass.fsh; sourceTree = "<group>"; };
 		DF2BE98416E6796E00FF0C90 /* SobelCanny.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SobelCanny.fsh; path = Shaders/SobelCanny.fsh; sourceTree = "<group>"; };
 		DF2BE98616E69BE000FF0C90 /* StoryBoard_iPhone.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = StoryBoard_iPhone.storyboard; sourceTree = "<group>"; };
 		DF2BE98816E69BFC00FF0C90 /* StoryBoard_iPad.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = StoryBoard_iPad.storyboard; sourceTree = "<group>"; };
@@ -185,7 +183,6 @@
 			children = (
 				DF9CAE881824C16800CE3945 /* blurXPass.fsh */,
 				DF9CAE891824C16800CE3945 /* blurYPass.fsh */,
-				DF143B7316EB316B006D35F9 /* blurSinglePass.fsh */,
 			);
 			name = Blurs;
 			sourceTree = "<group>";
@@ -266,7 +263,6 @@
 				DF3F45581821C7A80069D69F /* quadKernel.vsh in Resources */,
 				DF143B7416EB317E006D35F9 /* SobelRGBComposite.fsh in Resources */,
 				DF143B7516EB317E006D35F9 /* yuv2rgb.fsh in Resources */,
-				DF143B7616EB317E006D35F9 /* blurSinglePass.fsh in Resources */,
 				DF4740B716E6F2D10073DDB8 /* CannyComposite.fsh in Resources */,
 				DF4740B516E6EEFA0073DDB8 /* SobelBlend.fsh in Resources */,
 				DF2BE98516E6939600FF0C90 /* SobelCanny.fsh in Resources */,
