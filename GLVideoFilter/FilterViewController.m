@@ -14,8 +14,7 @@ static const bool _is64bit = false;
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // local initialization here
-        
+        // do nothing
     }
     return self;
 }
@@ -77,15 +76,12 @@ static const bool _is64bit = false;
     _cvdConvolutions[TRITANOPE] = GLKMatrix3MakeAndTranspose(1.0,       0.0,      0.0,
                                                              0.0,       1.0,      0.0,
                                                              -0.395913, 0.801109, 0.0);
-    
     _error = GLKMatrix3MakeAndTranspose(0.0, 0.0, 0.0,
                                         0.7, 1.0, 0.0,
                                         0.7, 0.0, 1.0);
     
-    
     _colorConvolution = _cvdConvolutions[REGULAR];
     _newFrame = false;
-    self.statusLabel.text = @"Blur: Off Filter: None";
     GLKView *view = (GLKView *)self.view;
     view.context = _context;
     self.preferredFramesPerSecond = 60;
@@ -100,16 +96,19 @@ static const bool _is64bit = false;
     _screenHeight = [UIScreen mainScreen].bounds.size.width * [UIScreen mainScreen].scale;
     _screenWidth = [UIScreen mainScreen].bounds.size.height * [UIScreen mainScreen].scale;
     
+    lockedIcon = [UIImage imageNamed:@"Locked"];
+    unlockedIcon = [UIImage imageNamed:@"Unlocked"];
+    
     [self setupGL];
     
     [self setupAVCapture];
+    [self updateOverlayFilter];
 }
 
 - (void)viewDidUnload
 {
-    [self setStatusLabel:nil];
  //   [super viewDidUnload];
-    
+    [HUD hide:YES];
     [self tearDownAVCapture];
     [self tearDownGL];
     
@@ -167,9 +166,18 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     if (_quad == nil)
     {
-        float textureAspect = height / width;
-        _textureWidth = (width > _screenWidth ? _screenWidth : width);
-        _textureHeight = (height > _screenHeight ? _screenHeight : height);
+//        float textureAspect = height / width;
+        
+        float scale = _screenHeight / height;
+        
+        if (scale < 1.0)
+        {
+            _textureWidth = width * scale;
+            _textureHeight = _screenHeight;
+        } else {
+            _textureWidth = width;
+            _textureHeight = height;
+        }
         
         _quad = [[QuadModel alloc] init];
         _texelSize = GLKVector2Divide(GLKVector2Make(1.0, 1.0), GLKVector2Make(_textureWidth, _textureHeight));
@@ -232,8 +240,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     
-    
- 
+
 
     // bind the Y'UV to RGB/Y shader
     [self setProgram:_YUVtoRGB];
@@ -814,54 +821,93 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         
 }
 
--(void)updateOverlay {
+#pragma mark - Overlay updating methods
+
+-(void)updateOverlayWithText:(NSString*)text
+{
+    [MBProgressHUD hideAllHUDsForView:self.view animated:NO];
+    HUD = [[MBProgressHUD alloc] initWithView:self.view];
+	[self.view addSubview:HUD];
+	
+	// Configure for text only and offset down
+	HUD.mode = MBProgressHUDModeText;
+	HUD.labelText = text;
+	HUD.margin = 10.f;
+
+	HUD.removeFromSuperViewOnHide = YES;
+	[HUD show:YES];
+	[HUD hide:YES afterDelay:2];
+}
+
+-(void)updateOverlayLock {
+    [MBProgressHUD hideAllHUDsForView:self.view animated:NO];
+    HUD = [[MBProgressHUD alloc] initWithView:self.view];
+	[self.view addSubview:HUD];
+	
+    NSString *label = (_modeLock ? @"Locked" : @"Unlocked");
+    UIImage *image = (_modeLock ? lockedIcon : unlockedIcon);
+    HUD.customView = [[UIImageView alloc] initWithImage:image];
+	HUD.mode = MBProgressHUDModeCustomView;
+	HUD.margin = 10.f;
+	HUD.delegate = self;
+	HUD.labelText = label;
+	HUD.removeFromSuperViewOnHide = YES;
+	
+	[HUD show:YES];
+	[HUD hide:YES afterDelay:2];
+}
+
+-(void)updateOverlayBlur {
     // update the overlay
-    NSString *filter = @"Filter: ";
-    switch (_filterMode) {
-        case FILTER_NONE:
-            filter = [filter stringByAppendingString:@"None"];
-            break;
-        case SOBEL:
-            filter = [filter stringByAppendingString:@"Sobel RGB"];
-            break;
-        case SOBEL_BW:
-            filter = [filter stringByAppendingString:@"Sobel BW"];
-            break;
-        case SOBEL_COMPOSITE:
-            filter = [filter stringByAppendingString:@"Sobel BW Composite"];
-            break;
-        case SOBEL_COMPOSITE_RGB:
-            filter = [filter stringByAppendingString:@"Sobel RGB Composite"];
-            break;
-        case SOBEL_BLEND:
-            filter = [filter stringByAppendingString:@"Sobel Blended"];
-            break;
-        case CANNY_COMPOSITE:
-            filter = [filter stringByAppendingString:@"Canny Composite"];
-            break;
-        case CANNY:
-            filter = [filter stringByAppendingString:@"Canny BW"];
-            break;
-        case SOBEL_CANNY:
-            filter = [filter stringByAppendingString:@"Sobel->Canny"];
-            break;
-    }
-    NSString *blur = @"Blur: ";
+     NSString *blur;
     switch (_blurMode) {
         case BLUR_NONE:
-            blur = [blur stringByAppendingString:@"Off "];
+            blur = @"No Blur";
             break;
         case BLUR_SINGLEPASS:
-            blur = [blur stringByAppendingString:@"Single Pass "];
+            blur = @"Single Pass Blur";
             break;
         case BLUR_TWOPASS:
-            blur = [blur stringByAppendingString:@"Two Pass "];
+            blur = @"Two Pass Blur";
             break;
             
     }
-    
-    self.statusLabel.text = [blur stringByAppendingString:filter];
-    
+    [self updateOverlayWithText:blur];
+}
+
+-(void)updateOverlayFilter {
+    // update the overlay
+    NSString *filter;
+    switch (_filterMode) {
+        case FILTER_NONE:
+            filter = @"No Filter";
+            break;
+        case SOBEL:
+            filter = @"Color Sobel Filter";
+            break;
+        case SOBEL_BW:
+            filter = @"Grey Sobel Filter";
+            break;
+        case SOBEL_COMPOSITE:
+            filter = @"White Sobel Composite";
+            break;
+        case SOBEL_COMPOSITE_RGB:
+            filter = @"Color Sobel Composite";
+            break;
+        case SOBEL_BLEND:
+            filter = @"Blended Sobel Filter";
+            break;
+        case CANNY_COMPOSITE:
+            filter = @"Canny Composite";
+            break;
+        case CANNY:
+            filter = @"Canny Filter";
+            break;
+        case SOBEL_CANNY:
+            filter = @"Sobel->Canny Filter";
+            break;
+    }
+    [self updateOverlayWithText:filter];
 }
 
 #pragma mark - Touch handling methods
@@ -870,7 +916,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     if (sender.state == UIGestureRecognizerStateRecognized)
     {
         _modeLock = !_modeLock;
-        self.statusLabel.hidden = _modeLock;
+        [self updateOverlayLock];
     }
 }
 
@@ -882,31 +928,30 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             _filterMode++;
             if (_filterMode == NUM_FILTERS)
                 _filterMode = 0;
-            
+            [self updateOverlayFilter];
         } else if (sender.direction == UISwipeGestureRecognizerDirectionRight)
         {
             _filterMode--;
 
             if (_filterMode == UINT_MAX)
                 _filterMode = NUM_FILTERS - 1;
+            [self updateOverlayFilter];
         }
+        
         if (sender.direction == UISwipeGestureRecognizerDirectionUp)
         {
             _blurMode--;
             if (_blurMode == UINT_MAX)
                 _blurMode = NUM_BLURS - 1;
-            
+            [self updateOverlayBlur];
         } else if (sender.direction == UISwipeGestureRecognizerDirectionDown)
         {
             _blurMode++;
             if (_blurMode == NUM_BLURS)
                 _blurMode = 0;
+            [self updateOverlayBlur];
         }
-        
-        [self updateOverlay];
-
     }
-    
 }
 
 

@@ -7,13 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B6198C4916C05C04000B9C73 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6198C4816C05C04000B9C73 /* Default-568h@2x.png */; };
-		B6388B2C141AB58300DA02FB /* Icon-72.png in Resources */ = {isa = PBXBuildFile; fileRef = B6388B26141AB58300DA02FB /* Icon-72.png */; };
-		B6388B2D141AB58300DA02FB /* Icon-Small-50.png in Resources */ = {isa = PBXBuildFile; fileRef = B6388B27141AB58300DA02FB /* Icon-Small-50.png */; };
-		B6388B2E141AB58300DA02FB /* Icon-Small.png in Resources */ = {isa = PBXBuildFile; fileRef = B6388B28141AB58300DA02FB /* Icon-Small.png */; };
-		B6388B2F141AB58300DA02FB /* Icon-Small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6388B29141AB58300DA02FB /* Icon-Small@2x.png */; };
-		B6388B30141AB58300DA02FB /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B6388B2A141AB58300DA02FB /* Icon.png */; };
-		B6388B31141AB58300DA02FB /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6388B2B141AB58300DA02FB /* Icon@2x.png */; };
 		B6670DB413E9FD9F00AEF9EC /* QuadModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B6670DB313E9FD9F00AEF9EC /* QuadModel.m */; };
 		B66E3E3313E9E79C00D2ACF0 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66E3E3213E9E79C00D2ACF0 /* UIKit.framework */; };
 		B66E3E3513E9E79C00D2ACF0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66E3E3413E9E79C00D2ACF0 /* Foundation.framework */; };
@@ -28,6 +21,9 @@
 		B69AAFE313FC965400B7125C /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69AAFE213FC965400B7125C /* CoreVideo.framework */; };
 		B69AAFE513FC972A00B7125C /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69AAFE413FC972A00B7125C /* CoreMedia.framework */; };
 		DF05AA2416E6614E00911782 /* Canny.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF05AA2316E6614700911782 /* Canny.fsh */; };
+		DF0D63C318F78A3500D51089 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF0D63C218F78A3500D51089 /* CoreGraphics.framework */; };
+		DF0D63D718F78DB000D51089 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = DF0D63D618F78DB000D51089 /* MBProgressHUD.m */; };
+		DF0D63E118F7947800D51089 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DF0D63E018F7947800D51089 /* Images.xcassets */; };
 		DF143B7416EB317E006D35F9 /* SobelRGBComposite.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF143B7116EB316B006D35F9 /* SobelRGBComposite.fsh */; };
 		DF143B7516EB317E006D35F9 /* yuv2rgb.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF143B7216EB316B006D35F9 /* yuv2rgb.fsh */; };
 		DF143B7616EB317E006D35F9 /* blurSinglePass.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF143B7316EB316B006D35F9 /* blurSinglePass.fsh */; };
@@ -44,18 +40,9 @@
 		DF9CAE8B1824C18800CE3945 /* blurYPass.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF9CAE891824C16800CE3945 /* blurYPass.fsh */; };
 		DFC750F516E5C4340036CDD8 /* SobelBWComposite.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DFC750F416E5C3E80036CDD8 /* SobelBWComposite.fsh */; };
 		DFD3A59718EA9BF70032E6C4 /* CannyInverse.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DFD3A59618EA9BF70032E6C4 /* CannyInverse.fsh */; };
-		DFD5679C16E4A4EE003D5C96 /* Icon-72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFD5679B16E4A4EE003D5C96 /* Icon-72@2x.png */; };
-		DFD5679E16E4A550003D5C96 /* Icon-Small-50@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFD5679D16E4A550003D5C96 /* Icon-Small-50@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		B6198C4816C05C04000B9C73 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
-		B6388B26141AB58300DA02FB /* Icon-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72.png"; sourceTree = "<group>"; };
-		B6388B27141AB58300DA02FB /* Icon-Small-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small-50.png"; sourceTree = "<group>"; };
-		B6388B28141AB58300DA02FB /* Icon-Small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small.png"; sourceTree = "<group>"; };
-		B6388B29141AB58300DA02FB /* Icon-Small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small@2x.png"; sourceTree = "<group>"; };
-		B6388B2A141AB58300DA02FB /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
-		B6388B2B141AB58300DA02FB /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
 		B6670DB213E9FD9F00AEF9EC /* QuadModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QuadModel.h; sourceTree = "<group>"; };
 		B6670DB313E9FD9F00AEF9EC /* QuadModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QuadModel.m; sourceTree = "<group>"; };
 		B66E3E2E13E9E79C00D2ACF0 /* GLVideoFilter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GLVideoFilter.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -76,6 +63,10 @@
 		B69AAFE213FC965400B7125C /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		B69AAFE413FC972A00B7125C /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		DF05AA2316E6614700911782 /* Canny.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = Canny.fsh; path = Shaders/Canny.fsh; sourceTree = "<group>"; };
+		DF0D63C218F78A3500D51089 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		DF0D63D518F78DB000D51089 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBProgressHUD.h; path = MBProgressHUD/MBProgressHUD.h; sourceTree = SOURCE_ROOT; };
+		DF0D63D618F78DB000D51089 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MBProgressHUD.m; path = MBProgressHUD/MBProgressHUD.m; sourceTree = SOURCE_ROOT; };
+		DF0D63E018F7947800D51089 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		DF143B7116EB316B006D35F9 /* SobelRGBComposite.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SobelRGBComposite.fsh; path = Shaders/SobelRGBComposite.fsh; sourceTree = "<group>"; };
 		DF143B7216EB316B006D35F9 /* yuv2rgb.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = yuv2rgb.fsh; path = Shaders/yuv2rgb.fsh; sourceTree = "<group>"; };
 		DF143B7316EB316B006D35F9 /* blurSinglePass.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = blurSinglePass.fsh; path = Shaders/blurSinglePass.fsh; sourceTree = "<group>"; };
@@ -92,8 +83,6 @@
 		DF9CAE891824C16800CE3945 /* blurYPass.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = blurYPass.fsh; path = Shaders/blurYPass.fsh; sourceTree = "<group>"; };
 		DFC750F416E5C3E80036CDD8 /* SobelBWComposite.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SobelBWComposite.fsh; path = Shaders/SobelBWComposite.fsh; sourceTree = "<group>"; };
 		DFD3A59618EA9BF70032E6C4 /* CannyInverse.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = CannyInverse.fsh; path = Shaders/CannyInverse.fsh; sourceTree = "<group>"; };
-		DFD5679B16E4A4EE003D5C96 /* Icon-72@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72@2x.png"; sourceTree = "<group>"; };
-		DFD5679D16E4A550003D5C96 /* Icon-Small-50@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small-50@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +90,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF0D63C318F78A3500D51089 /* CoreGraphics.framework in Frameworks */,
 				B66E3E3313E9E79C00D2ACF0 /* UIKit.framework in Frameworks */,
 				B66E3E3513E9E79C00D2ACF0 /* Foundation.framework in Frameworks */,
 				B66E3E3713E9E79C00D2ACF0 /* GLKit.framework in Frameworks */,
@@ -114,22 +104,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		B6388B25141AB58300DA02FB /* Images */ = {
-			isa = PBXGroup;
-			children = (
-				B6198C4816C05C04000B9C73 /* Default-568h@2x.png */,
-				B6388B26141AB58300DA02FB /* Icon-72.png */,
-				DFD5679B16E4A4EE003D5C96 /* Icon-72@2x.png */,
-				B6388B27141AB58300DA02FB /* Icon-Small-50.png */,
-				DFD5679D16E4A550003D5C96 /* Icon-Small-50@2x.png */,
-				B6388B28141AB58300DA02FB /* Icon-Small.png */,
-				B6388B29141AB58300DA02FB /* Icon-Small@2x.png */,
-				B6388B2A141AB58300DA02FB /* Icon.png */,
-				B6388B2B141AB58300DA02FB /* Icon@2x.png */,
-			);
-			path = Images;
-			sourceTree = "<group>";
-		};
 		B66E3E2313E9E79C00D2ACF0 = {
 			isa = PBXGroup;
 			children = (
@@ -150,6 +124,7 @@
 		B66E3E3113E9E79C00D2ACF0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DF0D63C218F78A3500D51089 /* CoreGraphics.framework */,
 				B69AAFE413FC972A00B7125C /* CoreMedia.framework */,
 				B69AAFE213FC965400B7125C /* CoreVideo.framework */,
 				B69AAFDF13FC961F00B7125C /* AVFoundation.framework */,
@@ -171,6 +146,9 @@
 				B6670DB313E9FD9F00AEF9EC /* QuadModel.m */,
 				B66E3E4A13E9E79C00D2ACF0 /* FilterViewController.h */,
 				B66E3E4B13E9E79C00D2ACF0 /* FilterViewController.m */,
+				DF0D63D518F78DB000D51089 /* MBProgressHUD.h */,
+				DF0D63D618F78DB000D51089 /* MBProgressHUD.m */,
+				DF0D63E018F7947800D51089 /* Images.xcassets */,
 				B66E3E3B13E9E79C00D2ACF0 /* Supporting Files */,
 			);
 			path = GLVideoFilter;
@@ -181,7 +159,6 @@
 			children = (
 				DF2BE98616E69BE000FF0C90 /* StoryBoard_iPhone.storyboard */,
 				DF2BE98816E69BFC00FF0C90 /* StoryBoard_iPad.storyboard */,
-				B6388B25141AB58300DA02FB /* Images */,
 				B66E3E3C13E9E79C00D2ACF0 /* GLVideoFilter-Info.plist */,
 				B66E3E4213E9E79C00D2ACF0 /* GLVideoFilter-Prefix.pch */,
 				B66E3E4013E9E79C00D2ACF0 /* main.m */,
@@ -296,20 +273,12 @@
 				DF05AA2416E6614E00911782 /* Canny.fsh in Resources */,
 				DFC750F516E5C4340036CDD8 /* SobelBWComposite.fsh in Resources */,
 				DF59484016E5BB0900C16079 /* passthrough.fsh in Resources */,
+				DF0D63E118F7947800D51089 /* Images.xcassets in Resources */,
 				DF59483E16E5B91E00C16079 /* quadPassthrough.vsh in Resources */,
 				DF93BCCA16E4983C00C062FC /* SobelBW.fsh in Resources */,
 				B66E3E4713E9E79C00D2ACF0 /* Sobel.fsh in Resources */,
 				B66E3E4913E9E79C00D2ACF0 /* quadInvertY.vsh in Resources */,
-				B6388B2C141AB58300DA02FB /* Icon-72.png in Resources */,
-				DFD5679C16E4A4EE003D5C96 /* Icon-72@2x.png in Resources */,
-				B6388B2E141AB58300DA02FB /* Icon-Small.png in Resources */,
-				B6388B2F141AB58300DA02FB /* Icon-Small@2x.png in Resources */,
-				B6388B2D141AB58300DA02FB /* Icon-Small-50.png in Resources */,
-				DFD5679E16E4A550003D5C96 /* Icon-Small-50@2x.png in Resources */,
-				B6388B30141AB58300DA02FB /* Icon.png in Resources */,
-				B6388B31141AB58300DA02FB /* Icon@2x.png in Resources */,
 				DFD3A59718EA9BF70032E6C4 /* CannyInverse.fsh in Resources */,
-				B6198C4916C05C04000B9C73 /* Default-568h@2x.png in Resources */,
 				DF2BE98716E69BE000FF0C90 /* StoryBoard_iPhone.storyboard in Resources */,
 				DF2BE98916E69BFC00FF0C90 /* StoryBoard_iPad.storyboard in Resources */,
 			);
@@ -324,6 +293,7 @@
 			files = (
 				B66E3E4113E9E79C00D2ACF0 /* main.m in Sources */,
 				B66E3E4513E9E79C00D2ACF0 /* AppDelegate.m in Sources */,
+				DF0D63D718F78DB000D51089 /* MBProgressHUD.m in Sources */,
 				B66E3E4C13E9E79C00D2ACF0 /* FilterViewController.m in Sources */,
 				B6670DB413E9FD9F00AEF9EC /* QuadModel.m in Sources */,
 			);
@@ -395,6 +365,8 @@
 		B66E3E5613E9E79C00D2ACF0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -402,8 +374,10 @@
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = "$(SRCROOT)/GLVideoFilter/GLVideoFilter-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = GLVideoFilter;
 				PROVISIONING_PROFILE = "";
+				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -411,6 +385,8 @@
 		B66E3E5713E9E79C00D2ACF0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -418,8 +394,10 @@
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = "$(SRCROOT)/GLVideoFilter/GLVideoFilter-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = GLVideoFilter;
 				PROVISIONING_PROFILE = "";
+				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

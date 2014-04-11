@@ -2,6 +2,7 @@
 #import <GLKit/GLKit.h>
 #import <AVFoundation/AVFoundation.h>
 #import "QuadModel.h"
+#import "MBProgressHUD.h"
 
 // Uniform index.
 enum
@@ -72,8 +73,12 @@ typedef struct shaderType {
 } shader_t;
 
 
-@interface FilterViewController : GLKViewController <AVCaptureVideoDataOutputSampleBufferDelegate>  {
+@interface FilterViewController : GLKViewController <AVCaptureVideoDataOutputSampleBufferDelegate, MBProgressHUDDelegate>  {
     
+    MBProgressHUD *HUD;
+    UIImage *lockedIcon;
+    UIImage *unlockedIcon;
+       
     shader_t _YUVtoRGB;
     shader_t _blurSinglePass;
     shader_t _blurTwoPass[2];
@@ -123,11 +128,7 @@ typedef struct shaderType {
     AVCaptureSession *_session;
     CVOpenGLESTextureCacheRef _videoTextureCache;
     GLKVector2 _texelSize;
-
 }
-
-
-@property (weak, nonatomic) IBOutlet UILabel *statusLabel;
 
 - (IBAction)tapGestureRecgonizer:(UITapGestureRecognizer *)sender;
 - (IBAction)swipeGestureRecognizer:(UISwipeGestureRecognizer *)sender;
