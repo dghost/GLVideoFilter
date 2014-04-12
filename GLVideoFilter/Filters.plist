@@ -77,7 +77,7 @@
 	</dict>
 	<dict>
 		<key>Name</key>
-		<string>Canny-&gt;Sobel</string>
+		<string>Chained Sobel-&gt;Canny</string>
 		<key>Passes</key>
 		<array>
 			<string>sobel-bw</string>
