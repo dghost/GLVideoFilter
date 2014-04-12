@@ -1,5 +1,8 @@
 #import <CoreVideo/CVOpenGLESTextureCache.h>
 #import "FilterViewController.h"
+#import "QuadModel.h"
+#import "ShaderManager.h"
+#import "FilterManager.h"
 
 #if __LP64__
 static const bool _is64bit = true;
@@ -10,11 +13,83 @@ static const bool _is64bit = false;
 
 @implementation FilterViewController
 
+typedef enum {
+    FBO_PING,
+    FBO_PONG,
+    FBO_RGB,
+    NUM_FBOS
+} buff_t;
+
+enum
+{
+    BLUR_NONE,
+    BLUR_TWOPASS,
+    NUM_BLURS
+};
+
+enum
+{
+    REGULAR,
+    PROTANOPE,
+    DEUTERANOPE,
+    TRITANOPE,
+    NUM_CONVOLUTIONS
+};
+
+MBProgressHUD *_HUD;
+UIImage *_lockedIcon;
+UIImage *_unlockedIcon;
+
+GLKMatrix3 _rgbConvolution;
+GLKMatrix3 _colorConvolution;
+
+GLKMatrix3 _cvdConvolutions[NUM_CONVOLUTIONS];
+GLKMatrix3 _lms2rgb;
+GLKMatrix3 _rgb2lms;
+GLKMatrix3 _error;
+
+unsigned int _blurMode;
+Boolean _modeLock;
+
+bool _newFrame;
+GLuint _positionVBO;
+GLuint _texcoordVBO;
+GLuint _indexVBO;
+
+GLuint _fboTextures[NUM_FBOS];
+GLuint _fbo[NUM_FBOS];
+
+CGFloat _screenWidth;
+CGFloat _screenHeight;
+GLsizei _textureWidth;
+GLsizei _textureHeight;
+
+EAGLContext *_context;
+
+CVOpenGLESTextureRef _lumaTexture;
+CVOpenGLESTextureRef _chromaTexture;
+
+AVCaptureSession *_session;
+CVOpenGLESTextureCacheRef _videoTextureCache;
+
+QuadModel *_quad;
+FilterManager *_filters;
+ShaderManager *_shaders;
+
+// utility shaders
+shader_t _blurX, _blurY;
+shader_t _yuv2rgb;
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // do nothing
+        _filters = nil;
+        _shaders = nil;
+        _HUD = nil;
+        _quad = nil;
+        _lockedIcon = nil;
+        _unlockedIcon = nil;
     }
     return self;
 }
@@ -85,30 +160,26 @@ static const bool _is64bit = false;
     GLKView *view = (GLKView *)self.view;
     view.context = _context;
     self.preferredFramesPerSecond = 60;
-    _filterMode = 0;
     _blurMode = 0;
     _modeLock = NO;
-    
-    _threshold = 0.2;
     
     view.contentScaleFactor = [UIScreen mainScreen].scale;
     
     _screenHeight = [UIScreen mainScreen].bounds.size.width * [UIScreen mainScreen].scale;
     _screenWidth = [UIScreen mainScreen].bounds.size.height * [UIScreen mainScreen].scale;
     
-    lockedIcon = [UIImage imageNamed:@"Locked"];
-    unlockedIcon = [UIImage imageNamed:@"Unlocked"];
+    _lockedIcon = [UIImage imageNamed:@"Locked"];
+    _unlockedIcon = [UIImage imageNamed:@"Unlocked"];
     
     [self setupGL];
     
     [self setupAVCapture];
-    [self updateOverlayFilter];
 }
 
 - (void)viewDidUnload
 {
  //   [super viewDidUnload];
-    [HUD hide:YES];
+    [_HUD hide:YES];
     [self tearDownAVCapture];
     [self tearDownGL];
     
@@ -129,6 +200,14 @@ static const bool _is64bit = false;
     // with respect to the physical camera orientation.
     
     return UIInterfaceOrientationIsLandscape(interfaceOrientation);
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    GLfloat xScale = 1.0;
+    GLfloat yScale = (_screenWidth/ _screenHeight) * ((GLfloat) _textureHeight / (GLfloat) _textureWidth);
+    float orient = (self.interfaceOrientation == UIDeviceOrientationLandscapeRight) ? -1.0 : 1.0;
+    [_shaders setScale:GLKVector2Make(xScale * orient, yScale * orient)];
 }
 
 - (void)cleanUpTextures
@@ -167,22 +246,25 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     if (_quad == nil)
     {
 //        float textureAspect = height / width;
+        float screenHeight =
+            (_is64bit
+             ? [UIScreen mainScreen].bounds.size.height * [UIScreen mainScreen].scale
+             : [UIScreen mainScreen].bounds.size.height );
         
-        float scale = _screenHeight / height;
+        float scale = screenHeight / width;
         
         if (scale < 1.0)
         {
-            _textureWidth = width * scale;
-            _textureHeight = _screenHeight;
+            _textureWidth = screenHeight;
+            _textureHeight = height * scale;
         } else {
             _textureWidth = width;
             _textureHeight = height;
         }
         
         _quad = [[QuadModel alloc] init];
-        _texelSize = GLKVector2Divide(GLKVector2Make(1.0, 1.0), GLKVector2Make(_textureWidth, _textureHeight));
         
-        // set up buffers only *after* you have a source video stream
+            // set up buffers only *after* you have a source video stream
         // This allows the texture sizes to be set to the same as the source video stream
         [self setupBuffers];
     }
@@ -243,8 +325,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 
     // bind the Y'UV to RGB/Y shader
-    [self setProgram:_YUVtoRGB];
-    
+    [_shaders setShader:_yuv2rgb];
 
     glBindFramebuffer(GL_FRAMEBUFFER, _fbo[FBO_RGB]);
     glViewport(0, 0, _textureWidth,_textureHeight);
@@ -258,6 +339,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 - (void)setupAVCapture
 {
+    NSString *sessionPreset;
     //-- Create CVOpenGLESTextureCacheRef for optimal CVImageBufferRef to GLES texture conversion.
 #if COREVIDEO_USE_EAGLCONTEXT_CLASS_IN_API
     CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, _context, NULL, &_videoTextureCache);
@@ -314,7 +396,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             }
         }
         
-        _sessionPreset = AVCaptureSessionPresetInputPriority;
+        sessionPreset = AVCaptureSessionPresetInputPriority;
         
         NSLog(@"64bit executable");
     } else {
@@ -369,21 +451,21 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 }
             }
             
-            _sessionPreset = AVCaptureSessionPresetInputPriority;
+            sessionPreset = AVCaptureSessionPresetInputPriority;
         } else {
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
             {
                 // Choosing bigger preset for bigger screen.
                 if (self.view.contentScaleFactor == 2.0)
-                    _sessionPreset = AVCaptureSessionPreset1280x720;
+                    sessionPreset = AVCaptureSessionPreset1280x720;
                 else
-                    _sessionPreset = AVCaptureSessionPreset640x480;
+                    sessionPreset = AVCaptureSessionPreset640x480;
             }
             else
             {
                 // use a 640x480 video stream for iPhones
                 
-                _sessionPreset = AVCaptureSessionPreset640x480;
+                sessionPreset = AVCaptureSessionPreset640x480;
             }
         }
         NSLog(@"32bit executable");
@@ -407,7 +489,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [dataOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
     
     //-- Set preset session size.
-    [_session setSessionPreset:_sessionPreset];
+    [_session setSessionPreset:sessionPreset];
     
     [_session addInput:input];
     
@@ -423,6 +505,28 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     CFRelease(_videoTextureCache);
 }
+
+#pragma mark - OpenGL methods
+
+- (void)setupGL
+{
+    [EAGLContext setCurrentContext:_context];
+    
+    _shaders = [[ShaderManager alloc] init];
+    
+    [ShaderManager loadShaderNamed:@"blur-x" into:&_blurX];
+    [ShaderManager loadShaderNamed:@"blur-y" into:&_blurY];
+    [ShaderManager loadShaderNamed:@"yuv-rgb" into:&_yuv2rgb];    
+    
+    [_shaders setRgbConvolution:_rgbConvolution];
+    [_shaders setColorConvolution:_colorConvolution];
+    [_shaders setThreshold:0.2f];
+    
+    
+    _filters = [[FilterManager alloc] init];
+    [self updateOverlayWithText:[_filters getCurrentName]];
+}
+
 
 - (void)setupBuffers
 {
@@ -448,7 +552,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // genereate textures and FBO's
     glGenTextures(NUM_FBOS, &_fboTextures[0]);
     glGenFramebuffers(NUM_FBOS, &_fbo[0]);
- 
+    
     for (int i = 0; i < NUM_FBOS; i++)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, _fbo[i]);
@@ -490,31 +594,13 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     glBindTexture(GL_TEXTURE_2D, 0);
     
-    _xScale = 1.0;
-
-    _yScale = (_screenWidth/ _screenHeight) * ((GLfloat) _textureHeight / (GLfloat) _textureWidth);
-    NSLog(@"screen: %fx%f text: %ix%i scale: %f",_screenWidth,_screenHeight,_textureWidth,_textureHeight,_yScale);
-}
-
-- (void)setupGL
-{
-    [EAGLContext setCurrentContext:_context];
+    GLfloat xScale = 1.0;
+    GLfloat yScale = (_screenWidth/ _screenHeight) * ((GLfloat) _textureHeight / (GLfloat) _textureWidth);
+    float orient = (self.interfaceOrientation == UIDeviceOrientationLandscapeRight) ? -1.0 : 1.0;
+    [_shaders setScale:GLKVector2Make(xScale * orient, yScale * orient)];
+    [_shaders setTexelSize:GLKVector2Divide(GLKVector2Make(1.0, 1.0), GLKVector2Make(_textureWidth, _textureHeight))];
     
-    
-    [self loadShader:&_YUVtoRGB withVertex:@"quadInvertY" withFragment:@"yuv2rgb"];
-    [self loadShader:&_blurTwoPass[0] withVertex:@"quadKernel" withFragment:@"blurXPass"];
-    [self loadShader:&_blurTwoPass[1] withVertex:@"quadKernel" withFragment:@"blurYPass"];
-    [self loadShader:&_effect[SOBEL] withVertex:@"quadKernel" withFragment:@"Sobel"];
-    [self loadShader:&_effect[SOBEL_BW] withVertex:@"quadKernel" withFragment:@"SobelBW"];
-    [self loadShader:&_effect[SOBEL_COMPOSITE] withVertex:@"quadKernel" withFragment:@"SobelBWComposite"];
-    [self loadShader:&_effect[SOBEL_COMPOSITE_RGB] withVertex:@"quadKernel" withFragment:@"SobelRGBComposite"];
-    [self loadShader:&_effect[SOBEL_BLEND] withVertex:@"quadKernel" withFragment:@"SobelBlend"];
-    [self loadShader:&_effect[CANNY] withVertex:@"quadKernel" withFragment:@"Canny"];
-    [self loadShader:&_effect[CANNY_COMPOSITE] withVertex:@"quadKernel" withFragment:@"CannyComposite"];
-    [self loadShader:&_effect[SOBEL_CANNY] withVertex:@"quadKernel" withFragment:@"CannyInverse"];
-    
-    [self loadShader:&_cannySobel withVertex:@"quadKernel" withFragment:@"SobelCanny"];
-    [self loadShader:&_passthrough withVertex:@"quadPassthrough" withFragment:@"passthrough"];
+    NSLog(@"screen: %fx%f text: %ix%i scale: %f",_screenWidth,_screenHeight,_textureWidth,_textureHeight,yScale);
 }
 
 - (void)tearDownGL
@@ -525,43 +611,24 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     glDeleteBuffers(1, &_texcoordVBO);
     glDeleteBuffers(1, &_indexVBO);
     
-    if (_YUVtoRGB.handle) {
-        glDeleteProgram(_YUVtoRGB.handle);
-        _YUVtoRGB.handle = 0;
-    }
-    
-    if (_passthrough.handle) {
-        glDeleteProgram(_passthrough.handle);
-        _passthrough.handle = 0;
-    }
-    
-    if (_cannySobel.handle) {
-        glDeleteProgram(_cannySobel.handle);
-        _cannySobel.handle = 0;
-    }
-    
-    for (int i = 0; i < NUM_FILTERS; i++)
-    {
-        if (_effect[i].handle) {
-            glDeleteProgram(_effect[i].handle);
-            _effect[i].handle = 0;
-        }
-    }
+    _filters = nil;
+    _shaders = nil;
+    [FilterManager teardownFilters];
+    [ShaderManager teardownShaders];
+
     glDeleteTextures(NUM_FBOS, &_fboTextures[0]);
     glDeleteFramebuffers(NUM_FBOS, &_fbo[0]);
 }
 
-#pragma mark - GLKView and GLKViewController delegate methods
-
 
 // Render from one texture into another FBO
-- (BOOL)drawIntoFBO: (int) fboNum WithShader:(shader_t) shader sourceTexture:(int)texNum
+- (BOOL)drawIntoFBO: (int) fboNum WithShaderNamed:(NSString *) name sourceTexture:(int)texNum
 {
     if (fboNum >= 0 && fboNum < NUM_FBOS && texNum >= 0 && texNum < NUM_FBOS)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, _fbo[fboNum]);
         glViewport(0, 0, _textureWidth, _textureHeight);
-        [self setProgram:shader];
+        [_shaders setShaderNamed:name];
         
         glBindTexture(GL_TEXTURE_2D, _fboTextures[texNum]);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -573,239 +640,86 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     return NO;
 }
 
-- (void)processFrame:(GLuint) source intoFBO:(GLuint) dest
+// Render from one texture into another FBO
+- (BOOL)drawIntoFBO: (int) fboNum WithShader:(shader_t) shader sourceTexture:(int)texNum
+{
+    if (fboNum >= 0 && fboNum < NUM_FBOS && texNum >= 0 && texNum < NUM_FBOS)
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, _fbo[fboNum]);
+        glViewport(0, 0, _textureWidth, _textureHeight);
+        [_shaders setShader:shader];
+        
+        glBindTexture(GL_TEXTURE_2D, _fboTextures[texNum]);
+        glClear(GL_COLOR_BUFFER_BIT);
+        
+        glDrawElements(GL_TRIANGLE_STRIP, [_quad getIndexCount], GL_UNSIGNED_SHORT, 0);
+        
+        return YES;
+    }
+    return NO;
+}
+
+// Render from one texture into the view
+- (BOOL)drawIntoView:(GLKView *) view WithShaderNamed:(NSString*) name sourceTexture:(int)texNum
+{
+    if (view != nil)
+    {
+        [view bindDrawable];
+        glViewport(0, 0, _screenWidth, _screenHeight);
+        [_shaders setShaderNamed:name];
+        glBindTexture(GL_TEXTURE_2D, _fboTextures[texNum]);
+        glClear(GL_COLOR_BUFFER_BIT);
+        
+        glDrawElements(GL_TRIANGLE_STRIP, [_quad getIndexCount], GL_UNSIGNED_SHORT, 0);
+        
+        return YES;
+    }
+    return NO;
+}
+
+- (void)filterFrame:(GLuint) source intoView:(GLKView *) dest
 {
     GLuint currentSource = source;
-    GLuint currentDest = !_filterMode ? dest : FBO_PING;
-    
-    // bind the Y'UV to RGB/Y shader
+    NSArray *currentFilter = [_filters getCurrentFilter];
+    GLuint currentDest = FBO_PING;
+    NSInteger numFilters = [currentFilter count];
     
     if (_blurMode)
     {
-        [self drawIntoFBO:FBO_PONG WithShader:_blurTwoPass[0] sourceTexture:currentSource];
-        [self drawIntoFBO:currentDest WithShader:_blurTwoPass[1] sourceTexture:FBO_PONG];
+        [self drawIntoFBO:FBO_PONG WithShader:_blurX sourceTexture:currentSource];
+        [self drawIntoFBO:currentDest WithShader:_blurY sourceTexture:FBO_PONG];
         currentSource = currentDest;
         currentDest = (currentDest == FBO_PING) ? FBO_PONG : FBO_PING;
     }
     
-    if (_filterMode == SOBEL_CANNY)
+    for (NSInteger i = 0 ; i < (numFilters - 1); i++)
     {
-        [self drawIntoFBO:currentDest WithShader:_effect[SOBEL_BW] sourceTexture:currentSource];
+        NSString *shaderName = [currentFilter objectAtIndex:i] ;
+        [self drawIntoFBO:currentDest WithShaderNamed:shaderName sourceTexture:currentSource];
         currentSource = currentDest;
         currentDest = (currentDest == FBO_PING) ? FBO_PONG : FBO_PING;
-        
-        [self drawIntoFBO:currentDest WithShader:_cannySobel sourceTexture:currentSource];
-        [self drawIntoFBO:dest WithShader:_effect[_filterMode] sourceTexture:currentDest];
-        
-    } else if (_filterMode == CANNY || _filterMode == CANNY_COMPOSITE)
-    {
-        [self drawIntoFBO:currentDest WithShader:_cannySobel sourceTexture:currentSource];
-        [self drawIntoFBO:dest WithShader:_effect[_filterMode] sourceTexture:currentDest];
-        
-    } else if (_filterMode)
-    {
-        // process the last generated texture with selected effect
-        [self drawIntoFBO:dest WithShader:_effect[_filterMode] sourceTexture:currentSource];
     }
-
     
+    if (numFilters > 0)
+    {
+        NSString *shaderName = [currentFilter objectAtIndex:(numFilters - 1)];
+        [self drawIntoView:dest WithShaderNamed:shaderName sourceTexture:currentSource];
+    }
 }
+
+#pragma mark - GLKView and GLKViewController delegate methods
+
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, 0);
     glActiveTexture(GL_TEXTURE0);
-    
-    int fboNum;
-    if (_filterMode || _blurMode)
+
+    if (_newFrame)
     {
-        if (_newFrame)
-        {
-            [self processFrame:FBO_RGB intoFBO:FBO_FINAL];
-            _newFrame = false;
-        }
-        fboNum = FBO_FINAL;
-    } else
-        fboNum = FBO_RGB;
-    
-    // draw the texture to the screen
-    [self setProgram:_passthrough];
-    [view bindDrawable];
-    
-    glViewport(0, 0, (GLsizei) view.drawableWidth, (GLsizei) view.drawableHeight);
-
-    glBindTexture(GL_TEXTURE_2D, _fboTextures[fboNum]);
-    glClear(GL_COLOR_BUFFER_BIT);
-    
-    glDrawElements(GL_TRIANGLE_STRIP, [_quad getIndexCount], GL_UNSIGNED_SHORT, 0);
-    glBindTexture(GL_TEXTURE_2D, 0);
-}
-#pragma mark - OpenGL ES 2 shader compilation
-
-- (BOOL)loadShader: (shader_t *) program withVertex: (NSString *) vertexName withFragment: (NSString *) fragmentName
-{
-    GLuint vertShader, fragShader;
-    NSString *vertShaderPathname, *fragShaderPathname;
-    
-    // Create shader program.
-    program->handle = glCreateProgram();
-    
-    // Create and compile vertex shader.
-    vertShaderPathname = [[NSBundle mainBundle] pathForResource:vertexName ofType:@"vsh"];
-    if (![self compileShader:&vertShader type:GL_VERTEX_SHADER file:vertShaderPathname]) {
-        NSLog(@"Failed to compile vertex shader '%@'",vertexName);
-        return NO;
+        [self filterFrame:FBO_RGB intoView:view];
+        _newFrame = false;
     }
-    
-    // Create and compile fragment shader.
-    fragShaderPathname = [[NSBundle mainBundle] pathForResource:fragmentName ofType:@"fsh"];
-    if (![self compileShader:&fragShader type:GL_FRAGMENT_SHADER file:fragShaderPathname]) {
-        NSLog(@"Failed to compile fragment shader '%@'",fragmentName);
-        return NO;
-    }
-    
-    // Attach vertex shader to program.
-    glAttachShader(program->handle, vertShader);
-    
-    // Attach fragment shader to program.
-    glAttachShader(program->handle, fragShader);
-    
-    // Bind attribute locations.
-    // This needs to be done prior to linking.
-    glBindAttribLocation(program->handle, ATTRIB_VERTEX, "position");
-    glBindAttribLocation(program->handle, ATTRIB_TEXCOORD, "texCoord");
-#ifdef DEBUG
-    NSLog(@"Linking program with vertex shader '%@' and fragment shader '%@'...",vertexName,fragmentName);
-
-#endif
-    
-    // Link program.
-    if (![self linkProgram:program->handle]) {
-        NSLog(@"Failed to link program: %d", program->handle);
-        
-        if (vertShader) {
-            glDeleteShader(vertShader);
-            vertShader = 0;
-        }
-        if (fragShader) {
-            glDeleteShader(fragShader);
-            fragShader = 0;
-        }
-        if (_YUVtoRGB.handle) {
-            glDeleteProgram(program->handle);
-            program->handle = 0;
-        }
-        
-        return NO;
-    }
-    
-    // Get program locations.
-    program->uniforms[UNIFORM_Y] = glGetUniformLocation(program->handle, "SamplerY");
-    program->uniforms[UNIFORM_UV] = glGetUniformLocation(program->handle, "SamplerUV");
-    program->uniforms[UNIFORM_RGB] = glGetUniformLocation(program->handle, "SamplerRGB");
-    program->uniforms[UNIFORM_TEXELSIZE] = glGetUniformLocation(program->handle, "texelSize");
-    program->uniforms[UNIFORM_RGBCONVOLUTION] = glGetUniformLocation(program->handle, "rgbConvolution");
-    program->uniforms[UNIFORM_COLORCONVOLUTION] = glGetUniformLocation(program->handle, "colorConvolution");
-    program->uniforms[UNIFORM_SCALE] = glGetUniformLocation(program->handle, "posScale");
-    program->uniforms[UNIFORM_THRESHOLD] = glGetUniformLocation(program->handle, "threshold");
-    // Release vertex and fragment shaders.
-    if (vertShader) {
-        glDetachShader(program->handle, vertShader);
-        glDeleteShader(vertShader);
-    }
-    if (fragShader) {
-        glDetachShader(program->handle, fragShader);
-        glDeleteShader(fragShader);
-    }
-    
-    return YES;
-}
-
-- (BOOL)compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file
-{
-    GLint status;
-    const GLchar *source;
-    source = (GLchar *)[[NSString stringWithContentsOfFile:file encoding:NSUTF8StringEncoding error:nil] UTF8String];
-    if (!source) {
-        NSLog(@"Failed to load shader '%@'",[file lastPathComponent]);
-        return NO;
-    }
-    
-    *shader = glCreateShader(type);
-    glShaderSource(*shader, 1, &source, NULL);
-    glCompileShader(*shader);
-    
-#if defined(DEBUG)
-    GLint logLength;
-    glGetShaderiv(*shader, GL_INFO_LOG_LENGTH, &logLength);
-    if (logLength > 0) {
-        GLchar *log = (GLchar *)malloc(logLength);
-        glGetShaderInfoLog(*shader, logLength, &logLength, log);
-        NSLog(@"Shader '%@' compile log:\n%s", [file lastPathComponent], log);
-        free(log);
-    }
-#endif
-    
-    glGetShaderiv(*shader, GL_COMPILE_STATUS, &status);
-    if (status == 0) {
-        glDeleteShader(*shader);
-        return NO;
-    }
-    
-    return YES;
-}
-
-- (BOOL)linkProgram:(GLuint)prog
-{
-    GLint status;
-    glLinkProgram(prog);
-    
-#if defined(DEBUG)
-    GLint logLength;
-    glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &logLength);
-    if (logLength > 0) {
-        GLchar *log = (GLchar *)malloc(logLength);
-        glGetProgramInfoLog(prog, logLength, &logLength, log);
-        NSLog(@"Program link log:\n%s", log);
-        free(log);
-    }
-#endif
-    
-    glGetProgramiv(prog, GL_LINK_STATUS, &status);
-    if (status == 0) {
-        return NO;
-    }
-    
-    return YES;
-}
-
-- (void)setProgram:(shader_t)program
-{
-    glUseProgram(program.handle);
-    
-    // bind appropriate uniforms
-    if (program.uniforms[UNIFORM_Y] > -1)
-    {
-        glUniform1i(program.uniforms[UNIFORM_Y], 0);
-        glUniform1i(program.uniforms[UNIFORM_UV], 1);
-    } else {
-        glUniform1i(program.uniforms[UNIFORM_RGB], 0);
-    }
-    if (program.uniforms[UNIFORM_TEXELSIZE] > -1)
-        glUniform2fv(program.uniforms[UNIFORM_TEXELSIZE], 1, (GLfloat *) &_texelSize);
-    if (program.uniforms[UNIFORM_RGBCONVOLUTION] > -1)
-        glUniformMatrix3fv(program.uniforms[UNIFORM_RGBCONVOLUTION], 1, GL_FALSE, _rgbConvolution.m);
-    if (program.uniforms[UNIFORM_COLORCONVOLUTION] > -1)
-        glUniformMatrix3fv(program.uniforms[UNIFORM_COLORCONVOLUTION], 1, GL_FALSE, _colorConvolution.m);
-    
-    if (program.uniforms[UNIFORM_SCALE] > -1)
-    {
-        float orient = (self.interfaceOrientation == UIDeviceOrientationLandscapeRight) ? -1.0 : 1.0;
-        glUniform2f(program.uniforms[UNIFORM_SCALE], _xScale * orient, _yScale * orient);
-    }
-    if (program.uniforms[UNIFORM_THRESHOLD] > -1)
-        glUniform1f(program.uniforms[UNIFORM_THRESHOLD], _threshold);
-        
 }
 
 #pragma mark - Overlay updating methods
@@ -813,35 +727,35 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 -(void)updateOverlayWithText:(NSString*)text
 {
     [MBProgressHUD hideAllHUDsForView:self.view animated:NO];
-    HUD = [[MBProgressHUD alloc] initWithView:self.view];
-	[self.view addSubview:HUD];
+    _HUD = [[MBProgressHUD alloc] initWithView:self.view];
+	[self.view addSubview:_HUD];
 	
 	// Configure for text only and offset down
-	HUD.mode = MBProgressHUDModeText;
-	HUD.labelText = text;
-	HUD.margin = 10.f;
+	_HUD.mode = MBProgressHUDModeText;
+	_HUD.labelText = text;
+	_HUD.margin = 10.f;
 
-	HUD.removeFromSuperViewOnHide = YES;
-	[HUD show:YES];
-	[HUD hide:YES afterDelay:2];
+	_HUD.removeFromSuperViewOnHide = YES;
+	[_HUD show:YES];
+	[_HUD hide:YES afterDelay:2];
 }
 
 -(void)updateOverlayLock {
     [MBProgressHUD hideAllHUDsForView:self.view animated:NO];
-    HUD = [[MBProgressHUD alloc] initWithView:self.view];
-	[self.view addSubview:HUD];
+    _HUD = [[MBProgressHUD alloc] initWithView:self.view];
+	[self.view addSubview:_HUD];
 	
     NSString *label = (_modeLock ? @"Locked" : @"Unlocked");
-    UIImage *image = (_modeLock ? lockedIcon : unlockedIcon);
-    HUD.customView = [[UIImageView alloc] initWithImage:image];
-	HUD.mode = MBProgressHUDModeCustomView;
-	HUD.margin = 10.f;
-	HUD.delegate = self;
-	HUD.labelText = label;
-	HUD.removeFromSuperViewOnHide = YES;
+    UIImage *image = (_modeLock ? _lockedIcon : _unlockedIcon);
+    _HUD.customView = [[UIImageView alloc] initWithImage:image];
+	_HUD.mode = MBProgressHUDModeCustomView;
+	_HUD.margin = 10.f;
+	_HUD.delegate = self;
+	_HUD.labelText = label;
+	_HUD.removeFromSuperViewOnHide = YES;
 	
-	[HUD show:YES];
-	[HUD hide:YES afterDelay:2];
+	[_HUD show:YES];
+	[_HUD hide:YES afterDelay:2];
 }
 
 -(void)updateOverlayBlur {
@@ -856,41 +770,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             break;     
     }
     [self updateOverlayWithText:blur];
-}
-
--(void)updateOverlayFilter {
-    // update the overlay
-    NSString *filter;
-    switch (_filterMode) {
-        case FILTER_NONE:
-            filter = @"No Filter";
-            break;
-        case SOBEL:
-            filter = @"Color Sobel Filter";
-            break;
-        case SOBEL_BW:
-            filter = @"Grey Sobel Filter";
-            break;
-        case SOBEL_COMPOSITE:
-            filter = @"White Sobel Composite";
-            break;
-        case SOBEL_COMPOSITE_RGB:
-            filter = @"Color Sobel Composite";
-            break;
-        case SOBEL_BLEND:
-            filter = @"Blended Sobel Filter";
-            break;
-        case CANNY_COMPOSITE:
-            filter = @"Canny Composite";
-            break;
-        case CANNY:
-            filter = @"Canny Filter";
-            break;
-        case SOBEL_CANNY:
-            filter = @"Sobel->Canny Filter";
-            break;
-    }
-    [self updateOverlayWithText:filter];
 }
 
 #pragma mark - Touch handling methods
@@ -908,18 +787,13 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     {
         if (sender.direction == UISwipeGestureRecognizerDirectionLeft)
         {
-            _filterMode++;
-            if (_filterMode == NUM_FILTERS)
-                _filterMode = 0;
-            [self updateOverlayFilter];
+            [_filters nextFilter];
+            [self updateOverlayWithText:[_filters getCurrentName]];
         } else if (sender.direction == UISwipeGestureRecognizerDirectionRight)
         {
-            _filterMode--;
-
-            if (_filterMode == UINT_MAX)
-                _filterMode = NUM_FILTERS - 1;
-            [self updateOverlayFilter];
-        }
+            [_filters prevFilter];
+            [self updateOverlayWithText:[_filters getCurrentName]];
+       }
         
         if (sender.direction == UISwipeGestureRecognizerDirectionUp)
         {

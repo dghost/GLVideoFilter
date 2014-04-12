@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>Name</key>
+		<string>No Filter</string>
+		<key>Passes</key>
+		<array>
+			<string>screen</string>
+		</array>
+	</dict>
+	<dict>
+		<key>Name</key>
+		<string>Color Sobel Filter</string>
+		<key>Passes</key>
+		<array>
+			<string>sobel-rgb</string>
+			<string>screen</string>
+		</array>
+	</dict>
+	<dict>
+		<key>Name</key>
+		<string>Grey Sobel Filter</string>
+		<key>Passes</key>
+		<array>
+			<string>sobel-bw</string>
+			<string>screen</string>
+		</array>
+	</dict>
+	<dict>
+		<key>Name</key>
+		<string>Blended Sobel Filter</string>
+		<key>Passes</key>
+		<array>
+			<string>sobel-blend</string>
+			<string>screen</string>
+		</array>
+	</dict>
+	<dict>
+		<key>Name</key>
+		<string>White Sobel Composite</string>
+		<key>Passes</key>
+		<array>
+			<string>sobel-composite-bw</string>
+			<string>screen</string>
+		</array>
+	</dict>
+	<dict>
+		<key>Name</key>
+		<string>Color Sobel Composite</string>
+		<key>Passes</key>
+		<array>
+			<string>sobel-composite-rgb</string>
+			<string>screen</string>
+		</array>
+	</dict>
+	<dict>
+		<key>Name</key>
+		<string>Canny Filter</string>
+		<key>Passes</key>
+		<array>
+			<string>canny-pre</string>
+			<string>canny</string>
+			<string>screen</string>
+		</array>
+	</dict>
+	<dict>
+		<key>Name</key>
+		<string>Canny Composite</string>
+		<key>Passes</key>
+		<array>
+			<string>canny-pre</string>
+			<string>canny-composite</string>
+			<string>screen</string>
+		</array>
+	</dict>
+	<dict>
+		<key>Name</key>
+		<string>Canny-&gt;Sobel</string>
+		<key>Passes</key>
+		<array>
+			<string>sobel-bw</string>
+			<string>canny-pre</string>
+			<string>canny-inverse</string>
+			<string>screen</string>
+		</array>
+	</dict>
+</array>
+</plist>

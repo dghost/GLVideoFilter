@@ -34,6 +34,10 @@
 		DF4740B716E6F2D10073DDB8 /* CannyComposite.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF4740B616E6F2B70073DDB8 /* CannyComposite.fsh */; };
 		DF59483E16E5B91E00C16079 /* quadPassthrough.vsh in Resources */ = {isa = PBXBuildFile; fileRef = DF59483D16E5B90F00C16079 /* quadPassthrough.vsh */; };
 		DF59484016E5BB0900C16079 /* passthrough.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF59483F16E5BB0000C16079 /* passthrough.fsh */; };
+		DF7EE77318F8BF78000CD7AA /* FilterManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DF7EE77218F8BF78000CD7AA /* FilterManager.m */; };
+		DF7EE77518F8C16C000CD7AA /* Filters.plist in Resources */ = {isa = PBXBuildFile; fileRef = DF7EE77418F8C16C000CD7AA /* Filters.plist */; };
+		DF7EE77718F8C45A000CD7AA /* Shaders.plist in Resources */ = {isa = PBXBuildFile; fileRef = DF7EE77618F8C45A000CD7AA /* Shaders.plist */; };
+		DF7EE77A18F8C85B000CD7AA /* ShaderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DF7EE77918F8C85B000CD7AA /* ShaderManager.m */; };
 		DF93BCCA16E4983C00C062FC /* SobelBW.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF93BCC816E495B200C062FC /* SobelBW.fsh */; };
 		DF9CAE8A1824C18800CE3945 /* blurXPass.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF9CAE881824C16800CE3945 /* blurXPass.fsh */; };
 		DF9CAE8B1824C18800CE3945 /* blurYPass.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF9CAE891824C16800CE3945 /* blurYPass.fsh */; };
@@ -76,6 +80,12 @@
 		DF4740B616E6F2B70073DDB8 /* CannyComposite.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = CannyComposite.fsh; path = Shaders/CannyComposite.fsh; sourceTree = "<group>"; };
 		DF59483D16E5B90F00C16079 /* quadPassthrough.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = quadPassthrough.vsh; path = Shaders/quadPassthrough.vsh; sourceTree = "<group>"; };
 		DF59483F16E5BB0000C16079 /* passthrough.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = passthrough.fsh; path = Shaders/passthrough.fsh; sourceTree = "<group>"; };
+		DF7EE77118F8BF78000CD7AA /* FilterManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FilterManager.h; sourceTree = "<group>"; };
+		DF7EE77218F8BF78000CD7AA /* FilterManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FilterManager.m; sourceTree = "<group>"; };
+		DF7EE77418F8C16C000CD7AA /* Filters.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Filters.plist; sourceTree = "<group>"; };
+		DF7EE77618F8C45A000CD7AA /* Shaders.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Shaders.plist; sourceTree = "<group>"; };
+		DF7EE77818F8C85B000CD7AA /* ShaderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShaderManager.h; path = ../ShaderManager.h; sourceTree = "<group>"; };
+		DF7EE77918F8C85B000CD7AA /* ShaderManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ShaderManager.m; path = ../ShaderManager.m; sourceTree = "<group>"; };
 		DF93BCC816E495B200C062FC /* SobelBW.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = SobelBW.fsh; path = Shaders/SobelBW.fsh; sourceTree = "<group>"; };
 		DF9CAE881824C16800CE3945 /* blurXPass.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = blurXPass.fsh; path = Shaders/blurXPass.fsh; sourceTree = "<group>"; };
 		DF9CAE891824C16800CE3945 /* blurYPass.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = blurYPass.fsh; path = Shaders/blurYPass.fsh; sourceTree = "<group>"; };
@@ -137,16 +147,11 @@
 		B66E3E3A13E9E79C00D2ACF0 /* GLVideoFilter */ = {
 			isa = PBXGroup;
 			children = (
-				B6836C54141AE2AA005DB1A4 /* Shaders */,
 				B66E3E4313E9E79C00D2ACF0 /* AppDelegate.h */,
 				B66E3E4413E9E79C00D2ACF0 /* AppDelegate.m */,
-				B6670DB213E9FD9F00AEF9EC /* QuadModel.h */,
-				B6670DB313E9FD9F00AEF9EC /* QuadModel.m */,
 				B66E3E4A13E9E79C00D2ACF0 /* FilterViewController.h */,
 				B66E3E4B13E9E79C00D2ACF0 /* FilterViewController.m */,
-				DF0D63D518F78DB000D51089 /* MBProgressHUD.h */,
-				DF0D63D618F78DB000D51089 /* MBProgressHUD.m */,
-				DF0D63E018F7947800D51089 /* Images.xcassets */,
+				DF7EE77B18F8FD80000CD7AA /* Supporting Classes */,
 				B66E3E3B13E9E79C00D2ACF0 /* Supporting Files */,
 			);
 			path = GLVideoFilter;
@@ -155,11 +160,15 @@
 		B66E3E3B13E9E79C00D2ACF0 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				DF2BE98616E69BE000FF0C90 /* StoryBoard_iPhone.storyboard */,
-				DF2BE98816E69BFC00FF0C90 /* StoryBoard_iPad.storyboard */,
+				DF7EE77418F8C16C000CD7AA /* Filters.plist */,
 				B66E3E3C13E9E79C00D2ACF0 /* GLVideoFilter-Info.plist */,
 				B66E3E4213E9E79C00D2ACF0 /* GLVideoFilter-Prefix.pch */,
+				DF0D63E018F7947800D51089 /* Images.xcassets */,
 				B66E3E4013E9E79C00D2ACF0 /* main.m */,
+				B6836C54141AE2AA005DB1A4 /* Shaders */,
+				DF7EE77618F8C45A000CD7AA /* Shaders.plist */,
+				DF2BE98816E69BFC00FF0C90 /* StoryBoard_iPad.storyboard */,
+				DF2BE98616E69BE000FF0C90 /* StoryBoard_iPhone.storyboard */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -176,6 +185,21 @@
 				DF143B7216EB316B006D35F9 /* yuv2rgb.fsh */,
 			);
 			name = Shaders;
+			sourceTree = "<group>";
+		};
+		DF7EE77B18F8FD80000CD7AA /* Supporting Classes */ = {
+			isa = PBXGroup;
+			children = (
+				DF7EE77118F8BF78000CD7AA /* FilterManager.h */,
+				DF7EE77218F8BF78000CD7AA /* FilterManager.m */,
+				DF0D63D518F78DB000D51089 /* MBProgressHUD.h */,
+				DF0D63D618F78DB000D51089 /* MBProgressHUD.m */,
+				B6670DB213E9FD9F00AEF9EC /* QuadModel.h */,
+				B6670DB313E9FD9F00AEF9EC /* QuadModel.m */,
+				DF7EE77818F8C85B000CD7AA /* ShaderManager.h */,
+				DF7EE77918F8C85B000CD7AA /* ShaderManager.m */,
+			);
+			name = "Supporting Classes";
 			sourceTree = "<group>";
 		};
 		DF9CAE8C1824C19900CE3945 /* Blurs */ = {
@@ -264,6 +288,7 @@
 				DF143B7416EB317E006D35F9 /* SobelRGBComposite.fsh in Resources */,
 				DF143B7516EB317E006D35F9 /* yuv2rgb.fsh in Resources */,
 				DF4740B716E6F2D10073DDB8 /* CannyComposite.fsh in Resources */,
+				DF7EE77718F8C45A000CD7AA /* Shaders.plist in Resources */,
 				DF4740B516E6EEFA0073DDB8 /* SobelBlend.fsh in Resources */,
 				DF2BE98516E6939600FF0C90 /* SobelCanny.fsh in Resources */,
 				DF05AA2416E6614E00911782 /* Canny.fsh in Resources */,
@@ -274,6 +299,7 @@
 				DF93BCCA16E4983C00C062FC /* SobelBW.fsh in Resources */,
 				B66E3E4713E9E79C00D2ACF0 /* Sobel.fsh in Resources */,
 				B66E3E4913E9E79C00D2ACF0 /* quadInvertY.vsh in Resources */,
+				DF7EE77518F8C16C000CD7AA /* Filters.plist in Resources */,
 				DFD3A59718EA9BF70032E6C4 /* CannyInverse.fsh in Resources */,
 				DF2BE98716E69BE000FF0C90 /* StoryBoard_iPhone.storyboard in Resources */,
 				DF2BE98916E69BFC00FF0C90 /* StoryBoard_iPad.storyboard in Resources */,
@@ -288,6 +314,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				B66E3E4113E9E79C00D2ACF0 /* main.m in Sources */,
+				DF7EE77318F8BF78000CD7AA /* FilterManager.m in Sources */,
+				DF7EE77A18F8C85B000CD7AA /* ShaderManager.m in Sources */,
 				B66E3E4513E9E79C00D2ACF0 /* AppDelegate.m in Sources */,
 				DF0D63D718F78DB000D51089 /* MBProgressHUD.m in Sources */,
 				B66E3E4C13E9E79C00D2ACF0 /* FilterViewController.m in Sources */,
