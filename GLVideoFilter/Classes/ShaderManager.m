@@ -98,7 +98,7 @@ static NSDictionary *_shaderList = nil;
     // This needs to be done prior to linking.
     glBindAttribLocation(program->handle, ATTRIB_VERTEX, "position");
     glBindAttribLocation(program->handle, ATTRIB_TEXCOORD, "texCoord");
-#ifdef DEBUG
+#if defined(DEBUG)
     NSLog(@"Linking program with vertex shader '%@' and fragment shader '%@'...",vertexName,fragmentName);
 #endif
     
@@ -172,6 +172,8 @@ static NSDictionary *_shaderList = nil;
     if (!_initialized)
         return NO;
     NSData *temp = [_shaderList objectForKey:name];
+    if (temp == nil)
+        return NO;
     [temp getBytes:shader length:sizeof(shader_t)];
     return YES;
 }
@@ -218,8 +220,10 @@ static NSDictionary *_shaderList = nil;
     return self;
 }
 
--(void)setShader:(shader_t)program
+-(BOOL)setShader:(shader_t)program
 {
+    if (program.handle == 0)
+        return NO;
     glUseProgram(program.handle);
     
     // bind appropriate uniforms
@@ -243,12 +247,15 @@ static NSDictionary *_shaderList = nil;
     }
     if (program.uniforms[UNIFORM_THRESHOLD] > -1)
         glUniform1f(program.uniforms[UNIFORM_THRESHOLD], _threshold);
+    return YES;
 }
 
--(void)setShaderNamed:(NSString *)name
+-(BOOL)setShaderNamed:(NSString *)name
 {
     shader_t program;
-    [ShaderManager loadShaderNamed:name into:&program];
-    [self setShader:program];
+    if ([ShaderManager loadShaderNamed:name into:&program])
+        return [self setShader:program];
+    else
+        return NO;
 }
 @end

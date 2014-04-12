@@ -16,9 +16,11 @@ static NSArray *_filterList = nil;
         NSMutableArray *tempFilterList = [NSMutableArray array];
         for (NSDictionary *filter in filters)
         {
+#if defined(DEBUG)
             NSString *name = [filter objectForKey:@"Name"];
             NSArray *passes = [filter objectForKey:@"Passes"];
             NSLog(@"Found filter '%@' with %lu passes",name,[passes count]);
+#endif
             [tempFilterList addObject:filter];
         }
         _filterList = [NSArray arrayWithArray:tempFilterList];
@@ -64,12 +66,18 @@ NSUInteger currentFilter;
 
 -(NSArray*)getCurrentFilter
 {
-     return [[_filterList objectAtIndex:currentFilter] objectForKey:@"Passes"];
+    NSArray *filter = [[_filterList objectAtIndex:currentFilter] objectForKey:@"Passes"];
+    if (filter == nil)
+        return [NSArray array];
+    return filter;
 }
 
 -(NSString*)getCurrentName
 {
-    return [[_filterList objectAtIndex:currentFilter] objectForKey:@"Name"];
+    NSString *name = [[_filterList objectAtIndex:currentFilter] objectForKey:@"Name"];
+    if (name == nil)
+        return @"";
+    return name;
 }
 
 

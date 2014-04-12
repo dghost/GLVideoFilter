@@ -46,7 +46,7 @@ typedef struct shaderType {
 @property GLKMatrix3 rgbConvolution;
 @property GLKMatrix3 colorConvolution;
 
--(void)setShader:(shader_t)program;
--(void)setShaderNamed:(NSString *)name;
+-(BOOL)setShader:(shader_t)program;
+-(BOOL)setShaderNamed:(NSString *)name;
 
 @end

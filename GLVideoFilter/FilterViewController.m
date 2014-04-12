@@ -373,9 +373,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             // cap resolution to 720p
             if (temp.height <= 720)
             {
-            NSLog(@"Found camera resolution %ix%i",temp.width,temp.height);
+            //NSLog(@"Found camera resolution %ix%i",temp.width,temp.height);
                 for ( AVFrameRateRange *range in format.videoSupportedFrameRateRanges ) {
-                    NSLog(@"Found frame rate range %f - %f",range.minFrameRate,range.maxFrameRate);
+                    //NSLog(@"Found frame rate range %f - %f",range.minFrameRate,range.maxFrameRate);
                     if ( range.maxFrameRate >= bestFrameRateRange.maxFrameRate ) {
                         
                         bestFormat = format;
@@ -386,10 +386,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         }
         
         if ( bestFormat ) {
-            
+#if defined(DEBUG)
             CMVideoDimensions temp = CMVideoFormatDescriptionGetDimensions(bestFormat.formatDescription);
             NSLog(@"Setting camera resolution %ix%i@%ffps",temp.width,temp.height,bestFrameRateRange.maxFrameRate);
-            
+#endif
             if ( [videoDevice lockForConfiguration:NULL] == YES ) {
                 videoDevice.activeFormat = bestFormat;
                 videoDevice.activeVideoMinFrameDuration = bestFrameRateRange.minFrameDuration;
@@ -400,7 +400,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         
         sessionPreset = AVCaptureSessionPresetInputPriority;
         
-        NSLog(@"64bit executable");
+        //NSLog(@"64bit executable");
     } else {
         
         if ([videoDevice respondsToSelector:@selector(activeVideoMinFrameDuration)])
@@ -428,10 +428,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 CMVideoDimensions temp = CMVideoFormatDescriptionGetDimensions(format.formatDescription);
                 if (temp.height <= maxHeight)
                 {
-                    NSLog(@"Found camera resolution %ix%i",temp.width,temp.height);
+                    //NSLog(@"Found camera resolution %ix%i",temp.width,temp.height);
 
                     for ( AVFrameRateRange *range in format.videoSupportedFrameRateRanges ) {
-                        NSLog(@"Found frame rate range %f - %f",range.minFrameRate,range.maxFrameRate);
+                        //NSLog(@"Found frame rate range %f - %f",range.minFrameRate,range.maxFrameRate);
                         if ( range.maxFrameRate >= bestFrameRateRange.maxFrameRate ) {
                             
                             bestFormat = format;
@@ -442,9 +442,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             }
             
             if ( bestFormat ) {
-                
+#if defined(DEBUG)
                 CMVideoDimensions temp = CMVideoFormatDescriptionGetDimensions(bestFormat.formatDescription);
                 NSLog(@"Setting camera resolution %ix%i@%ffps",temp.width,temp.height,bestFrameRateRange.maxFrameRate);
+#endif
                 if ( [videoDevice lockForConfiguration:NULL] == YES ) {
                     videoDevice.activeFormat = bestFormat;
                     videoDevice.activeVideoMinFrameDuration = bestFrameRateRange.minFrameDuration;
@@ -470,7 +471,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 sessionPreset = AVCaptureSessionPreset640x480;
             }
         }
-        NSLog(@"32bit executable");
+        //NSLog(@"32bit executable");
     }
     
     //-- Add the device to the session.
@@ -580,7 +581,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
         switch(status) {
             case GL_FRAMEBUFFER_COMPLETE:
-                NSLog(@"fbo complete");
+                //NSLog(@"fbo complete");
                 break;
                 
             case GL_FRAMEBUFFER_UNSUPPORTED:
@@ -601,8 +602,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     float orient = (self.interfaceOrientation == UIDeviceOrientationLandscapeRight) ? -1.0 : 1.0;
     [_shaders setScale:GLKVector2Make(xScale * orient, yScale * orient)];
     [_shaders setTexelSize:GLKVector2Divide(GLKVector2Make(1.0, 1.0), GLKVector2Make(_textureWidth, _textureHeight))];
-    
+#if defined(DEBUG)
     NSLog(@"screen: %fx%f text: %ix%i scale: %f",_screenWidth,_screenHeight,_textureWidth,_textureHeight,yScale);
+#endif
 }
 
 - (void)tearDownGL
@@ -628,9 +630,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 {
     if (fboNum >= 0 && fboNum < NUM_FBOS && texNum >= 0 && texNum < NUM_FBOS)
     {
+        if (![_shaders setShaderNamed:name])
+            return NO;
         glBindFramebuffer(GL_FRAMEBUFFER, _fbo[fboNum]);
         glViewport(0, 0, _textureWidth, _textureHeight);
-        [_shaders setShaderNamed:name];
+
         
         glBindTexture(GL_TEXTURE_2D, _fboTextures[texNum]);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -647,9 +651,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 {
     if (fboNum >= 0 && fboNum < NUM_FBOS && texNum >= 0 && texNum < NUM_FBOS)
     {
+        if (![_shaders setShader:shader])
+            return NO;
         glBindFramebuffer(GL_FRAMEBUFFER, _fbo[fboNum]);
         glViewport(0, 0, _textureWidth, _textureHeight);
-        [_shaders setShader:shader];
         
         glBindTexture(GL_TEXTURE_2D, _fboTextures[texNum]);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -666,9 +671,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 {
     if (view != nil)
     {
+        if (![_shaders setShaderNamed:name])
+            return NO;
         [view bindDrawable];
         glViewport(0, 0, _screenWidth, _screenHeight);
-        [_shaders setShaderNamed:name];
         glBindTexture(GL_TEXTURE_2D, _fboTextures[texNum]);
         glClear(GL_COLOR_BUFFER_BIT);
         
@@ -688,18 +694,22 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     if (_blurMode)
     {
-        [self drawIntoFBO:FBO_PONG WithShader:_blurX sourceTexture:currentSource];
-        [self drawIntoFBO:currentDest WithShader:_blurY sourceTexture:FBO_PONG];
-        currentSource = currentDest;
-        currentDest = (currentDest == FBO_PING) ? FBO_PONG : FBO_PING;
+        if ([self drawIntoFBO:FBO_PONG WithShader:_blurX sourceTexture:currentSource] &&
+            [self drawIntoFBO:currentDest WithShader:_blurY sourceTexture:FBO_PONG])
+        {
+            currentSource = currentDest;
+            currentDest = (currentDest == FBO_PING) ? FBO_PONG : FBO_PING;
+        }
     }
     
     for (NSInteger i = 0 ; i < (numFilters - 1); i++)
     {
         NSString *shaderName = [currentFilter objectAtIndex:i] ;
-        [self drawIntoFBO:currentDest WithShaderNamed:shaderName sourceTexture:currentSource];
-        currentSource = currentDest;
-        currentDest = (currentDest == FBO_PING) ? FBO_PONG : FBO_PING;
+        if ([self drawIntoFBO:currentDest WithShaderNamed:shaderName sourceTexture:currentSource])
+        {
+            currentSource = currentDest;
+            currentDest = (currentDest == FBO_PING) ? FBO_PONG : FBO_PING;
+        }
     }
     
     if (numFilters > 0)
@@ -736,8 +746,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 	_HUD.mode = MBProgressHUDModeText;
 	_HUD.labelText = text;
 	_HUD.margin = 10.f;
-
+	_HUD.delegate = self;
 	_HUD.removeFromSuperViewOnHide = YES;
+    
 	[_HUD show:YES];
 	[_HUD hide:YES afterDelay:2];
 }
@@ -747,13 +758,15 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     _HUD = [[MBProgressHUD alloc] initWithView:self.view];
 	[self.view addSubview:_HUD];
 	
-    NSString *label = (_modeLock ? @"Locked" : @"Unlocked");
+    NSString *text = (_modeLock ? @"Locked" : @"Unlocked");
     UIImage *image = (_modeLock ? _lockedIcon : _unlockedIcon);
+    
+    // configure to use the custom view with image
     _HUD.customView = [[UIImageView alloc] initWithImage:image];
 	_HUD.mode = MBProgressHUDModeCustomView;
+	_HUD.labelText = text;
 	_HUD.margin = 10.f;
 	_HUD.delegate = self;
-	_HUD.labelText = label;
 	_HUD.removeFromSuperViewOnHide = YES;
 	
 	[_HUD show:YES];
