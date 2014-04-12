@@ -255,8 +255,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         
         if (scale < 1.0)
         {
-            _textureWidth = screenHeight;
-            _textureHeight = height * scale;
+            _textureWidth = ceil(width * scale);
+            _textureHeight = ceil(height * scale);
         } else {
             _textureWidth = width;
             _textureHeight = height;
