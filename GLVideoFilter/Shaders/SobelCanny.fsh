@@ -32,8 +32,6 @@ void main()
     mediump float m32 = sampleA(tc32);
     mediump float m33 = sampleA(tc33);
     
-  
-    
     mediump float H = -m11 - 2.0*m12 - m13 +m31 + 2.0*m32 + m33;
     mediump float V =     m11  - m13 + 2.0*m21 - 2.0*m23 +     m31  -     m33;
 

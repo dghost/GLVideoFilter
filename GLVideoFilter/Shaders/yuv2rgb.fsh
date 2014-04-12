@@ -27,7 +27,5 @@ void main()
 
     // pack the RGB and original Y (grayscale) output into the texture
     gl_FragColor = vec4(rgb,yuv.x);
-    
-    
 }
 
