@@ -9,7 +9,13 @@ Built to support accessibility research by [Isla Schanuel](http://www.islaes.com
 
 ####Features
 
-- Flexible filter pipeline that supports 
+- Flexible filter pipeline that supports arbitrary multi-pass filters
+- On-demand frame processing allows camera to update asychronously from the screen
+- Supports 60fps cameras under iOS7
+- Compatible with ARM64 devices
+- Support for iPhones, iPod Touches, and iPads
+
+#####Filters
 
 The following filters have been implemented:
 
@@ -23,19 +29,6 @@ The following filters have been implemented:
 - A chained Sobel operator -> Canny edge detector with inverted colors
 
 Additionally, an optional blur pre-pass can be enabled for any video filter.
-
-The program works by performing the following steps:
-
-- The `captureOutput:` delagate performs the following:
-	- Performs a colorspace conversion from Y'UV to RGB for each pixel
-	- Renders the RGB + Y data into a texture
-	- Sets a flag to indicate that the texture has been updated
-- During redraw, the 'glkView: drawInRect:' delegate performs the following:
-	- Checks if a new frame is available, and if so:
-		- It applies a two-pass gaussian blur if enabled
-		- The selected filter is applied and the result is cached
-		- The texture is marked as having been processed
-	- The appropriate texture is then rendered to the screen
 
 ####Usage
 - One-finger left/right swipes cycle between filters.
