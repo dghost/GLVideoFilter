@@ -210,6 +210,8 @@ shader_t _yuv2rgb;
     [_shaders setScale:GLKVector2Make(xScale * orient, yScale * orient)];
 }
 
+#pragma mark - AV Foundation methods
+
 - (void)cleanUpTextures
 {
     if (_lumaTexture)

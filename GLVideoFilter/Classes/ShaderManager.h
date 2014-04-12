@@ -31,9 +31,14 @@ typedef struct shaderType {
 
 
 @interface ShaderManager : NSObject
+
+#pragma mark - Class Interface
+
 +(void)loadShaders;
 +(BOOL) loadShaderNamed:(NSString *)name into:(shader_t *)shader;
 +(void)teardownShaders;
+
+#pragma mark - Instance Interface
 
 @property GLKVector2 scale;
 @property GLKVector2 texelSize;

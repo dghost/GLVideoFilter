@@ -1,9 +1,11 @@
 #import "FilterManager.h"
 
-@implementation FilterManager
-
 static bool _initialized = false;
 static NSArray *_filterList = nil;
+
+@implementation FilterManager
+
+#pragma mark - Class Methods
 
 +(void)loadFilters
 {
@@ -29,6 +31,8 @@ static NSArray *_filterList = nil;
     _filterList = nil;
     _initialized = false;
 }
+
+#pragma mark - Instance Methods and Variables
 
 NSUInteger currentFilter;
 

@@ -3,8 +3,13 @@
 
 @interface FilterManager : NSObject
 
+#pragma mark - Class Interface
+
 +(void)loadFilters;
 +(void)teardownFilters;
+
+#pragma mark - Instance Interface
+
 -(void)nextFilter;
 -(void)prevFilter;
 -(NSArray*)getCurrentFilter;

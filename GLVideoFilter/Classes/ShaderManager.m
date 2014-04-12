@@ -1,10 +1,12 @@
 #import "ShaderManager.h"
 #import <GLKit/GLKit.h>
 
-@implementation ShaderManager
-
 static bool _initialized = false;
 static NSDictionary *_shaderList = nil;
+
+@implementation ShaderManager
+
+#pragma mark - Class Methods and Variables
 
 +(BOOL)compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file
 {
@@ -192,6 +194,8 @@ static NSDictionary *_shaderList = nil;
         _initialized = false;
     }
 }
+
+#pragma mark - Instance Methods and Properties
 
 @synthesize scale=_scale;
 @synthesize texelSize=_texelSize;
