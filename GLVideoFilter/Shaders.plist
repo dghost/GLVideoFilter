@@ -33,7 +33,7 @@
 	<key>sobel-rgb</key>
 	<dict>
 		<key>Vertex</key>
-		<string>quadKernel</string>
+		<string>quadScreenKernel</string>
 		<key>Fragment</key>
 		<string>Sobel</string>
 	</dict>
@@ -47,21 +47,21 @@
 	<key>sobel-blend</key>
 	<dict>
 		<key>Vertex</key>
-		<string>quadKernel</string>
+		<string>quadScreenKernel</string>
 		<key>Fragment</key>
 		<string>SobelBlend</string>
 	</dict>
 	<key>sobel-composite-bw</key>
 	<dict>
 		<key>Vertex</key>
-		<string>quadKernel</string>
+		<string>quadScreenKernel</string>
 		<key>Fragment</key>
 		<string>SobelBWComposite</string>
 	</dict>
 	<key>sobel-composite-rgb</key>
 	<dict>
 		<key>Vertex</key>
-		<string>quadKernel</string>
+		<string>quadScreenKernel</string>
 		<key>Fragment</key>
 		<string>SobelRGBComposite</string>
 	</dict>
@@ -75,9 +75,9 @@
 	<key>canny-composite</key>
 	<dict>
 		<key>Vertex</key>
-		<string>quadKernel</string>
+		<string>quadScreenKernel</string>
 		<key>Fragment</key>
-		<string>CannyComposite</string>
+		<string>CannyThresholdComposite</string>
 	</dict>
 	<key>canny-pre</key>
 	<dict>
@@ -89,9 +89,23 @@
 	<key>canny-inverse</key>
 	<dict>
 		<key>Vertex</key>
+		<string>quadScreenKernel</string>
+		<key>Fragment</key>
+		<string>CannyThresholdInvert</string>
+	</dict>
+	<key>canny-mag</key>
+	<dict>
+		<key>Vertex</key>
 		<string>quadKernel</string>
 		<key>Fragment</key>
-		<string>CannyInverse</string>
+		<string>CannyMag</string>
+	</dict>
+	<key>canny-threshold</key>
+	<dict>
+		<key>Vertex</key>
+		<string>quadScreenKernel</string>
+		<key>Fragment</key>
+		<string>CannyThreshold</string>
 	</dict>
 </dict>
 </plist>

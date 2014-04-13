@@ -16,7 +16,6 @@
 		<key>Passes</key>
 		<array>
 			<string>sobel-rgb</string>
-			<string>screen</string>
 		</array>
 	</dict>
 	<dict>
@@ -34,7 +33,6 @@
 		<key>Passes</key>
 		<array>
 			<string>sobel-blend</string>
-			<string>screen</string>
 		</array>
 	</dict>
 	<dict>
@@ -43,7 +41,6 @@
 		<key>Passes</key>
 		<array>
 			<string>sobel-composite-bw</string>
-			<string>screen</string>
 		</array>
 	</dict>
 	<dict>
@@ -52,7 +49,6 @@
 		<key>Passes</key>
 		<array>
 			<string>sobel-composite-rgb</string>
-			<string>screen</string>
 		</array>
 	</dict>
 	<dict>
@@ -61,8 +57,8 @@
 		<key>Passes</key>
 		<array>
 			<string>canny-pre</string>
-			<string>canny</string>
-			<string>screen</string>
+			<string>canny-mag</string>
+			<string>canny-threshold</string>
 		</array>
 	</dict>
 	<dict>
@@ -71,8 +67,8 @@
 		<key>Passes</key>
 		<array>
 			<string>canny-pre</string>
+			<string>canny-mag</string>
 			<string>canny-composite</string>
-			<string>screen</string>
 		</array>
 	</dict>
 	<dict>
@@ -82,8 +78,19 @@
 		<array>
 			<string>sobel-bw</string>
 			<string>canny-pre</string>
+			<string>canny-mag</string>
+			<string>canny-threshold</string>
+		</array>
+	</dict>
+	<dict>
+		<key>Name</key>
+		<string>Chained Sobel-&gt;Canny Inverse</string>
+		<key>Passes</key>
+		<array>
+			<string>sobel-bw</string>
+			<string>canny-pre</string>
+			<string>canny-mag</string>
 			<string>canny-inverse</string>
-			<string>screen</string>
 		</array>
 	</dict>
 </array>

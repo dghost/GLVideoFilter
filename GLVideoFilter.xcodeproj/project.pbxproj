@@ -41,6 +41,11 @@
 		DF93BCCA16E4983C00C062FC /* SobelBW.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF93BCC816E495B200C062FC /* SobelBW.fsh */; };
 		DF9CAE8A1824C18800CE3945 /* blurXPass.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF9CAE881824C16800CE3945 /* blurXPass.fsh */; };
 		DF9CAE8B1824C18800CE3945 /* blurYPass.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF9CAE891824C16800CE3945 /* blurYPass.fsh */; };
+		DFA4C5EA18F9D1B90099F4DE /* CannyMag.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DFA4C5E818F9D1B90099F4DE /* CannyMag.fsh */; };
+		DFA4C5EB18F9D1B90099F4DE /* CannyThreshold.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DFA4C5E918F9D1B90099F4DE /* CannyThreshold.fsh */; };
+		DFA4C5ED18F9E7820099F4DE /* quadScreenKernel.vsh in Resources */ = {isa = PBXBuildFile; fileRef = DFA4C5EC18F9E7820099F4DE /* quadScreenKernel.vsh */; };
+		DFA4C5EF18F9EBD40099F4DE /* CannyThresholdComposite.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DFA4C5EE18F9EBD40099F4DE /* CannyThresholdComposite.fsh */; };
+		DFA4C5F118F9ED6D0099F4DE /* CannyThresholdInvert.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DFA4C5F018F9ED6D0099F4DE /* CannyThresholdInvert.fsh */; };
 		DFC750F516E5C4340036CDD8 /* SobelBWComposite.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DFC750F416E5C3E80036CDD8 /* SobelBWComposite.fsh */; };
 		DFD3A59718EA9BF70032E6C4 /* CannyInverse.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DFD3A59618EA9BF70032E6C4 /* CannyInverse.fsh */; };
 /* End PBXBuildFile section */
@@ -89,6 +94,11 @@
 		DF93BCC816E495B200C062FC /* SobelBW.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = SobelBW.fsh; path = Shaders/SobelBW.fsh; sourceTree = "<group>"; };
 		DF9CAE881824C16800CE3945 /* blurXPass.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = blurXPass.fsh; path = Shaders/blurXPass.fsh; sourceTree = "<group>"; };
 		DF9CAE891824C16800CE3945 /* blurYPass.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = blurYPass.fsh; path = Shaders/blurYPass.fsh; sourceTree = "<group>"; };
+		DFA4C5E818F9D1B90099F4DE /* CannyMag.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = CannyMag.fsh; path = Shaders/CannyMag.fsh; sourceTree = "<group>"; };
+		DFA4C5E918F9D1B90099F4DE /* CannyThreshold.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = CannyThreshold.fsh; path = Shaders/CannyThreshold.fsh; sourceTree = "<group>"; };
+		DFA4C5EC18F9E7820099F4DE /* quadScreenKernel.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = quadScreenKernel.vsh; path = Shaders/quadScreenKernel.vsh; sourceTree = "<group>"; };
+		DFA4C5EE18F9EBD40099F4DE /* CannyThresholdComposite.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = CannyThresholdComposite.fsh; path = Shaders/CannyThresholdComposite.fsh; sourceTree = "<group>"; };
+		DFA4C5F018F9ED6D0099F4DE /* CannyThresholdInvert.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = CannyThresholdInvert.fsh; path = Shaders/CannyThresholdInvert.fsh; sourceTree = "<group>"; };
 		DFC750F416E5C3E80036CDD8 /* SobelBWComposite.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SobelBWComposite.fsh; path = Shaders/SobelBWComposite.fsh; sourceTree = "<group>"; };
 		DFD3A59618EA9BF70032E6C4 /* CannyInverse.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = CannyInverse.fsh; path = Shaders/CannyInverse.fsh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -180,6 +190,7 @@
 				DF9CAE8D1824C1B600CE3945 /* Filters */,
 				B66E3E4813E9E79C00D2ACF0 /* quadInvertY.vsh */,
 				DF3F45561821C4E50069D69F /* quadKernel.vsh */,
+				DFA4C5EC18F9E7820099F4DE /* quadScreenKernel.vsh */,
 				DF59483D16E5B90F00C16079 /* quadPassthrough.vsh */,
 				DF59483F16E5BB0000C16079 /* passthrough.fsh */,
 				DF143B7216EB316B006D35F9 /* yuv2rgb.fsh */,
@@ -214,6 +225,10 @@
 		DF9CAE8D1824C1B600CE3945 /* Filters */ = {
 			isa = PBXGroup;
 			children = (
+				DFA4C5F018F9ED6D0099F4DE /* CannyThresholdInvert.fsh */,
+				DFA4C5EE18F9EBD40099F4DE /* CannyThresholdComposite.fsh */,
+				DFA4C5E818F9D1B90099F4DE /* CannyMag.fsh */,
+				DFA4C5E918F9D1B90099F4DE /* CannyThreshold.fsh */,
 				DF05AA2316E6614700911782 /* Canny.fsh */,
 				DFD3A59618EA9BF70032E6C4 /* CannyInverse.fsh */,
 				DF4740B616E6F2B70073DDB8 /* CannyComposite.fsh */,
@@ -289,12 +304,16 @@
 				DF143B7516EB317E006D35F9 /* yuv2rgb.fsh in Resources */,
 				DF4740B716E6F2D10073DDB8 /* CannyComposite.fsh in Resources */,
 				DF7EE77718F8C45A000CD7AA /* Shaders.plist in Resources */,
+				DFA4C5F118F9ED6D0099F4DE /* CannyThresholdInvert.fsh in Resources */,
+				DFA4C5ED18F9E7820099F4DE /* quadScreenKernel.vsh in Resources */,
 				DF4740B516E6EEFA0073DDB8 /* SobelBlend.fsh in Resources */,
 				DF2BE98516E6939600FF0C90 /* SobelCanny.fsh in Resources */,
 				DF05AA2416E6614E00911782 /* Canny.fsh in Resources */,
 				DFC750F516E5C4340036CDD8 /* SobelBWComposite.fsh in Resources */,
+				DFA4C5EA18F9D1B90099F4DE /* CannyMag.fsh in Resources */,
 				DF59484016E5BB0900C16079 /* passthrough.fsh in Resources */,
 				DF0D63E118F7947800D51089 /* Images.xcassets in Resources */,
+				DFA4C5EF18F9EBD40099F4DE /* CannyThresholdComposite.fsh in Resources */,
 				DF59483E16E5B91E00C16079 /* quadPassthrough.vsh in Resources */,
 				DF93BCCA16E4983C00C062FC /* SobelBW.fsh in Resources */,
 				B66E3E4713E9E79C00D2ACF0 /* Sobel.fsh in Resources */,
@@ -303,6 +322,7 @@
 				DFD3A59718EA9BF70032E6C4 /* CannyInverse.fsh in Resources */,
 				DF2BE98716E69BE000FF0C90 /* StoryBoard_iPhone.storyboard in Resources */,
 				DF2BE98916E69BFC00FF0C90 /* StoryBoard_iPad.storyboard in Resources */,
+				DFA4C5EB18F9D1B90099F4DE /* CannyThreshold.fsh in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

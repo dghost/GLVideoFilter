@@ -11,7 +11,8 @@ enum
     UNIFORM_RGBCONVOLUTION,
     UNIFORM_COLORCONVOLUTION,
     UNIFORM_SCALE,
-    UNIFORM_THRESHOLD,
+    UNIFORM_LOWTHRESHOLD,
+    UNIFORM_HIGHTHRESHOLD,
     NUM_UNIFORMS
 };
 
@@ -42,7 +43,8 @@ typedef struct shaderType {
 
 @property GLKVector2 scale;
 @property GLKVector2 texelSize;
-@property GLfloat threshold;
+@property GLfloat lowThreshold;
+@property GLfloat highThreshold;
 @property GLKMatrix3 rgbConvolution;
 @property GLKMatrix3 colorConvolution;
 

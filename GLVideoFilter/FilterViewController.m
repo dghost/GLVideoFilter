@@ -523,9 +523,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     [_shaders setRgbConvolution:_rgbConvolution];
     [_shaders setColorConvolution:_colorConvolution];
-    [_shaders setThreshold:0.2f];
-    
-    
+    [_shaders setLowThreshold:0.1f];
+    [_shaders setHighThreshold:0.3f];
+
     _filters = [[FilterManager alloc] init];
     [self updateOverlayWithText:[_filters getCurrentName]];
 }

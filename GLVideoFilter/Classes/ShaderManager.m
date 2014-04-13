@@ -130,7 +130,8 @@ static NSDictionary *_shaderList = nil;
     program->uniforms[UNIFORM_RGBCONVOLUTION] = glGetUniformLocation(program->handle, "rgbConvolution");
     program->uniforms[UNIFORM_COLORCONVOLUTION] = glGetUniformLocation(program->handle, "colorConvolution");
     program->uniforms[UNIFORM_SCALE] = glGetUniformLocation(program->handle, "posScale");
-    program->uniforms[UNIFORM_THRESHOLD] = glGetUniformLocation(program->handle, "threshold");
+    program->uniforms[UNIFORM_LOWTHRESHOLD] = glGetUniformLocation(program->handle, "lowThreshold");
+    program->uniforms[UNIFORM_HIGHTHRESHOLD] = glGetUniformLocation(program->handle, "highThreshold");
     // Release vertex and fragment shaders.
     if (vertShader) {
         glDetachShader(program->handle, vertShader);
@@ -203,7 +204,8 @@ static NSDictionary *_shaderList = nil;
 @synthesize texelSize=_texelSize;
 @synthesize rgbConvolution=_rgbConvolution;
 @synthesize colorConvolution=_colorConvolution;
-@synthesize threshold=_threshold;
+@synthesize lowThreshold=_lowThreshold;
+@synthesize highThreshold=_highThreshold;
 
 - (id)init {
     if (!_initialized)
@@ -213,7 +215,8 @@ static NSDictionary *_shaderList = nil;
     {
         self.scale = GLKVector2Make(1, 1);
         self.texelSize = GLKVector2Make(1, 1);
-        self.threshold = 0.0f;
+        self.lowThreshold = 0.0f;
+        self.highThreshold = 0.0f;
         self.rgbConvolution = GLKMatrix3Identity;
         self.colorConvolution = GLKMatrix3Identity;
     }
@@ -245,8 +248,10 @@ static NSDictionary *_shaderList = nil;
     {
         glUniform2fv(program.uniforms[UNIFORM_SCALE],1, (GLfloat *) &_scale);
     }
-    if (program.uniforms[UNIFORM_THRESHOLD] > -1)
-        glUniform1f(program.uniforms[UNIFORM_THRESHOLD], _threshold);
+    if (program.uniforms[UNIFORM_LOWTHRESHOLD] > -1)
+        glUniform1f(program.uniforms[UNIFORM_LOWTHRESHOLD], _lowThreshold);
+    if (program.uniforms[UNIFORM_HIGHTHRESHOLD] > -1)
+        glUniform1f(program.uniforms[UNIFORM_HIGHTHRESHOLD], _highThreshold);
     return YES;
 }
 
