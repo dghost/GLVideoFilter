@@ -1,4 +1,9 @@
+// yuv2rgb.fsh
+//
 // Convert Y'UV output of camera into packed RGB/Y output
+// Also perform additional color space transform if required
+// Can be used to mimic colorblindness
+//
 
 uniform sampler2D SamplerY;
 uniform sampler2D SamplerUV;
@@ -19,10 +24,11 @@ void main()
 
     yuv.x = texture2D(SamplerY, texCoordVarying).r;
     yuv.yz = texture2D(SamplerUV, texCoordVarying).rg - vec2(0.5, 0.5);
-    // Use BT.709 to calculate RGB from Y'UV
-    
+
+    // perform the color convolution
     mediump vec3 rgb = clamp(rgbConvolution * yuv,0.0,1.0);
 
+    // perform a color space transform for color blindness
     rgb = clamp(colorConvolution * rgb,0.0,1.0);
 
     // pack the RGB and original Y (grayscale) output into the texture

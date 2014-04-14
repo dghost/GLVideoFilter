@@ -19,7 +19,6 @@
 		B69AAFE013FC961F00B7125C /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69AAFDF13FC961F00B7125C /* AVFoundation.framework */; };
 		B69AAFE313FC965400B7125C /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69AAFE213FC965400B7125C /* CoreVideo.framework */; };
 		B69AAFE513FC972A00B7125C /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69AAFE413FC972A00B7125C /* CoreMedia.framework */; };
-		DF05AA2416E6614E00911782 /* Canny.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF05AA2316E6614700911782 /* Canny.fsh */; };
 		DF0D63C318F78A3500D51089 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF0D63C218F78A3500D51089 /* CoreGraphics.framework */; };
 		DF0D63D718F78DB000D51089 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = DF0D63D618F78DB000D51089 /* MBProgressHUD.m */; };
 		DF0D63E118F7947800D51089 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DF0D63E018F7947800D51089 /* Images.xcassets */; };
@@ -30,7 +29,6 @@
 		DF2BE98916E69BFC00FF0C90 /* StoryBoard_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DF2BE98816E69BFC00FF0C90 /* StoryBoard_iPad.storyboard */; };
 		DF3F45581821C7A80069D69F /* quadKernel.vsh in Resources */ = {isa = PBXBuildFile; fileRef = DF3F45561821C4E50069D69F /* quadKernel.vsh */; };
 		DF4740B516E6EEFA0073DDB8 /* SobelBlend.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF4740B416E6EEEC0073DDB8 /* SobelBlend.fsh */; };
-		DF4740B716E6F2D10073DDB8 /* CannyComposite.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF4740B616E6F2B70073DDB8 /* CannyComposite.fsh */; };
 		DF59483E16E5B91E00C16079 /* quadPassthrough.vsh in Resources */ = {isa = PBXBuildFile; fileRef = DF59483D16E5B90F00C16079 /* quadPassthrough.vsh */; };
 		DF59484016E5BB0900C16079 /* passthrough.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF59483F16E5BB0000C16079 /* passthrough.fsh */; };
 		DF7EE77518F8C16C000CD7AA /* Filters.plist in Resources */ = {isa = PBXBuildFile; fileRef = DF7EE77418F8C16C000CD7AA /* Filters.plist */; };
@@ -47,7 +45,6 @@
 		DFA4C5EF18F9EBD40099F4DE /* CannyThresholdComposite.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DFA4C5EE18F9EBD40099F4DE /* CannyThresholdComposite.fsh */; };
 		DFA4C5F118F9ED6D0099F4DE /* CannyThresholdInvert.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DFA4C5F018F9ED6D0099F4DE /* CannyThresholdInvert.fsh */; };
 		DFC750F516E5C4340036CDD8 /* SobelBWComposite.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DFC750F416E5C3E80036CDD8 /* SobelBWComposite.fsh */; };
-		DFD3A59718EA9BF70032E6C4 /* CannyInverse.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DFD3A59618EA9BF70032E6C4 /* CannyInverse.fsh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -68,7 +65,6 @@
 		B69AAFDF13FC961F00B7125C /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		B69AAFE213FC965400B7125C /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		B69AAFE413FC972A00B7125C /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
-		DF05AA2316E6614700911782 /* Canny.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = Canny.fsh; path = Shaders/Canny.fsh; sourceTree = "<group>"; };
 		DF0D63C218F78A3500D51089 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		DF0D63D518F78DB000D51089 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBProgressHUD.h; path = MBProgressHUD/MBProgressHUD.h; sourceTree = SOURCE_ROOT; };
 		DF0D63D618F78DB000D51089 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MBProgressHUD.m; path = MBProgressHUD/MBProgressHUD.m; sourceTree = SOURCE_ROOT; };
@@ -80,7 +76,6 @@
 		DF2BE98816E69BFC00FF0C90 /* StoryBoard_iPad.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = StoryBoard_iPad.storyboard; sourceTree = "<group>"; };
 		DF3F45561821C4E50069D69F /* quadKernel.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = quadKernel.vsh; path = Shaders/quadKernel.vsh; sourceTree = "<group>"; };
 		DF4740B416E6EEEC0073DDB8 /* SobelBlend.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SobelBlend.fsh; path = Shaders/SobelBlend.fsh; sourceTree = "<group>"; };
-		DF4740B616E6F2B70073DDB8 /* CannyComposite.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = CannyComposite.fsh; path = Shaders/CannyComposite.fsh; sourceTree = "<group>"; };
 		DF59483D16E5B90F00C16079 /* quadPassthrough.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = quadPassthrough.vsh; path = Shaders/quadPassthrough.vsh; sourceTree = "<group>"; };
 		DF59483F16E5BB0000C16079 /* passthrough.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = passthrough.fsh; path = Shaders/passthrough.fsh; sourceTree = "<group>"; };
 		DF7EE77418F8C16C000CD7AA /* Filters.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Filters.plist; sourceTree = "<group>"; };
@@ -100,7 +95,6 @@
 		DFA4C5EE18F9EBD40099F4DE /* CannyThresholdComposite.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = CannyThresholdComposite.fsh; path = Shaders/CannyThresholdComposite.fsh; sourceTree = "<group>"; };
 		DFA4C5F018F9ED6D0099F4DE /* CannyThresholdInvert.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = CannyThresholdInvert.fsh; path = Shaders/CannyThresholdInvert.fsh; sourceTree = "<group>"; };
 		DFC750F416E5C3E80036CDD8 /* SobelBWComposite.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SobelBWComposite.fsh; path = Shaders/SobelBWComposite.fsh; sourceTree = "<group>"; };
-		DFD3A59618EA9BF70032E6C4 /* CannyInverse.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = CannyInverse.fsh; path = Shaders/CannyInverse.fsh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -229,9 +223,6 @@
 				DFA4C5EE18F9EBD40099F4DE /* CannyThresholdComposite.fsh */,
 				DFA4C5E818F9D1B90099F4DE /* CannyMag.fsh */,
 				DFA4C5E918F9D1B90099F4DE /* CannyThreshold.fsh */,
-				DF05AA2316E6614700911782 /* Canny.fsh */,
-				DFD3A59618EA9BF70032E6C4 /* CannyInverse.fsh */,
-				DF4740B616E6F2B70073DDB8 /* CannyComposite.fsh */,
 				B66E3E4613E9E79C00D2ACF0 /* Sobel.fsh */,
 				DF4740B416E6EEEC0073DDB8 /* SobelBlend.fsh */,
 				DF93BCC816E495B200C062FC /* SobelBW.fsh */,
@@ -302,13 +293,11 @@
 				DF3F45581821C7A80069D69F /* quadKernel.vsh in Resources */,
 				DF143B7416EB317E006D35F9 /* SobelRGBComposite.fsh in Resources */,
 				DF143B7516EB317E006D35F9 /* yuv2rgb.fsh in Resources */,
-				DF4740B716E6F2D10073DDB8 /* CannyComposite.fsh in Resources */,
 				DF7EE77718F8C45A000CD7AA /* Shaders.plist in Resources */,
 				DFA4C5F118F9ED6D0099F4DE /* CannyThresholdInvert.fsh in Resources */,
 				DFA4C5ED18F9E7820099F4DE /* quadScreenKernel.vsh in Resources */,
 				DF4740B516E6EEFA0073DDB8 /* SobelBlend.fsh in Resources */,
 				DF2BE98516E6939600FF0C90 /* SobelCanny.fsh in Resources */,
-				DF05AA2416E6614E00911782 /* Canny.fsh in Resources */,
 				DFC750F516E5C4340036CDD8 /* SobelBWComposite.fsh in Resources */,
 				DFA4C5EA18F9D1B90099F4DE /* CannyMag.fsh in Resources */,
 				DF59484016E5BB0900C16079 /* passthrough.fsh in Resources */,
@@ -319,7 +308,6 @@
 				B66E3E4713E9E79C00D2ACF0 /* Sobel.fsh in Resources */,
 				B66E3E4913E9E79C00D2ACF0 /* quadInvertY.vsh in Resources */,
 				DF7EE77518F8C16C000CD7AA /* Filters.plist in Resources */,
-				DFD3A59718EA9BF70032E6C4 /* CannyInverse.fsh in Resources */,
 				DF2BE98716E69BE000FF0C90 /* StoryBoard_iPhone.storyboard in Resources */,
 				DF2BE98916E69BFC00FF0C90 /* StoryBoard_iPad.storyboard in Resources */,
 				DFA4C5EB18F9D1B90099F4DE /* CannyThreshold.fsh in Resources */,

@@ -1,5 +1,8 @@
+// SobelRGBComposite.fsh
+//
 // Composite Sobel pass
 // Shows the scene in grayscale with Sobel results overlaid in red
+//
 
 uniform sampler2D SamplerRGB;
 
@@ -12,9 +15,6 @@ varying mediump vec2 tc23;
 varying mediump vec2 tc31;
 varying mediump vec2 tc32;
 varying mediump vec2 tc33;
-
-//const mediump float pi2 = 1.0 /  3.1415926535;
-const mediump float pi = 3.1415926535;
 
 #define sampleRGBA(tc) (texture2D(SamplerRGB, tc))
 #define sampleRGB(tc) (texture2D(SamplerRGB, tc).rgb)

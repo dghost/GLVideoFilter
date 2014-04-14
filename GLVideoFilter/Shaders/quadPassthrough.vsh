@@ -1,4 +1,9 @@
-// pass through vertex shader for full screen quad
+// quadPassthrough.vsh
+//
+// Pass through vertex shader for full screen quad
+// Also transforms the vertices to account for screen rotation
+//   and screen aspect ratio
+//
 
 attribute vec4 position;
 attribute vec2 texCoord;

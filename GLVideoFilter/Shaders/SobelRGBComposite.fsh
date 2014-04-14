@@ -1,5 +1,8 @@
+// SobelRGBComposite.fsh
+//
 // Composite Sobel pass
-// Shows the scene in grayscale with Sobel results overlaid in red
+// Shows the RGB frame with Sobel results overlaid in red
+//
 
 uniform sampler2D SamplerRGB;
 
@@ -13,16 +16,12 @@ varying mediump vec2 tc31;
 varying mediump vec2 tc32;
 varying mediump vec2 tc33;
 
-//const mediump float pi2 = 1.0 /  3.1415926535;
-const mediump float pi = 3.1415926535;
-
 #define sampleRGBA(tc) (texture2D(SamplerRGB, tc))
 #define sampleRGB(tc) (texture2D(SamplerRGB, tc).rgb)
 #define sampleA(tc) (texture2D(SamplerRGB, tc).a)
 
 void main()
 {
-    
     mediump float m11 = sampleA(tc11);
     mediump float m12 = sampleA(tc12);
     mediump float m13 = sampleA(tc13);
@@ -39,14 +38,12 @@ void main()
     
     mediump vec3 inColor = sampleRGB(tc22);
 
-    // set base value to be grayscale value at that pixel
+    // set base value to be rgb value at that pixel
     mediump vec4 outColor = vec4(inColor,1.0);
 
     // add sobel result to red channel
     outColor.r += sobel;
 
     gl_FragColor = outColor;
-    
-    
 }
 

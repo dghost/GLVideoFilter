@@ -1,4 +1,12 @@
-// pass through vertex shader for full screen quad
+// quadScreenKernel.vsh
+//
+// It pre-computes the texture coordinates for the 3x3 kernel
+//   and passes them as varyings to the fragment shaders
+//
+// It also transforms the vertices to account for screen rotation
+//   and screen aspect ratio
+//
+
 
 attribute vec4 position;
 attribute vec2 texCoord;

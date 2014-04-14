@@ -1,4 +1,8 @@
-// pass through vertex shader for full screen quad
+// quadKernel.vsh
+//
+// Pre-computes the texture coordinates for the 3x3 kernel
+//   and passes them as varyings to the fragment shaders
+//
 
 attribute vec4 position;
 attribute vec2 texCoord;

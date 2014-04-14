@@ -1,5 +1,8 @@
+// SobelBW.fsh
+//
 // Simple Sobel pass
-// Operates on Illumination (graysacle) source
+// Operates on Illumination (grayscale) source
+//
 
 uniform sampler2D SamplerRGB;
 
@@ -7,18 +10,16 @@ varying mediump vec2 tc11;
 varying mediump vec2 tc12;
 varying mediump vec2 tc13;
 varying mediump vec2 tc21;
-varying mediump vec2 tc22;
+//varying mediump vec2 tc22;
 varying mediump vec2 tc23;
 varying mediump vec2 tc31;
 varying mediump vec2 tc32;
 varying mediump vec2 tc33;
 
-//const mediump float pi2 = 1.0 /  3.1415926535;
-const mediump float pi = 3.1415926535;
-
 #define sampleRGBA(tc) (texture2D(SamplerRGB, tc))
 #define sampleRGB(tc) (texture2D(SamplerRGB, tc).rgb)
 #define sampleA(tc) (texture2D(SamplerRGB, tc).a)
+
 void main()
 {
     
@@ -36,6 +37,8 @@ void main()
       
     mediump float H = -m11 - 2.0*m12 - m13 +m31 + 2.0*m32 + m33;
     mediump float V =  m11  - m13 + 2.0*m21 - 2.0*m23 +     m31  -     m33;
+    
+    // for a single channel, sqrt(H*H+V*V) is equal to the length
     mediump float sobel = length(vec2(H,V));
     
     

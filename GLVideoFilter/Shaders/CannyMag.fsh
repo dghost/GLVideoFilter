@@ -1,4 +1,9 @@
+// CannyMag.fsh
+//
 // Canny Edge Detector
+// Takes the result of SobelCanny.fsh and discards pixels that fail
+//   to meet the critera applied by the Canny edge detection algorithms
+//
 
 uniform sampler2D SamplerRGB;
 
@@ -29,27 +34,27 @@ mediump float mag(mediump vec2 hv)
 // sample the angle
 mediump float unpack(lowp float angle)
 {
+    // convert it from 0.0 - 1.0 to -pi/2 to pi/2   
     mediump float theta = angle - 0.5;
-    // cast it from - pi/2 to pi/2
     theta = degrees(theta * pi);
     if (theta < 0.0)
         theta += 180.0;
     return theta;
 }
 
-#define sampleMag(tc) (mag(texture2D(SamplerRGB,tc).gb))
+#define sampleMag(tc) ((texture2D(SamplerRGB,tc).g))
 
 #define sampleTheta(tc) (unpack(sampleA(tc)))
 
 void main()
 {
-    mediump vec4 temp = sampleRGBA(tc22);
-    mediump float angle = unpack(temp.a);
+    mediump vec3 temp = sampleRGB(tc22);
+    mediump float angle = unpack(temp.b);
     mediump float m11 = sampleMag(tc11);
     mediump float m12 = sampleMag(tc12);
     mediump float m13 = sampleMag(tc13);
     mediump float m21 = sampleMag(tc21);
-    mediump float m22 = mag(temp.gb);
+    mediump float m22 = temp.g;
     mediump float m23 = sampleMag(tc23);
     mediump float m31 = sampleMag(tc31);
     mediump float m32 = sampleMag(tc32);
@@ -65,7 +70,7 @@ void main()
     mediump vec4 outColor = vec4(vec3(0),temp.r);
     
     if (test)
-        outColor.rgb += vec3(m22);
+        outColor.rgb = vec3(m22);
     
     gl_FragColor = outColor;
 }

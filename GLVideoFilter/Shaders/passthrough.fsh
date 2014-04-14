@@ -1,4 +1,7 @@
-// pass through fragment shader
+// passthrough.fsh
+//
+// Samples the texture and writes the result to the pixel
+//
 
 uniform sampler2D SamplerRGB;
 

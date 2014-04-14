@@ -1,4 +1,7 @@
+// quadInvertY.vsh
+//
 // Shader that inverts Y axis on source texture
+//
 
 attribute vec4 position;
 attribute vec2 texCoord;

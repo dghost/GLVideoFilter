@@ -1,4 +1,8 @@
-// Convert Y'UV output of camera into packed RGB/Y output
+// blurYPass.fsh
+//
+// Performs vertical Gaussian blur
+//
+
 
 uniform sampler2D SamplerRGB;
 

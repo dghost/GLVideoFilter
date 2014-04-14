@@ -65,13 +65,6 @@
 		<key>Fragment</key>
 		<string>SobelRGBComposite</string>
 	</dict>
-	<key>canny</key>
-	<dict>
-		<key>Vertex</key>
-		<string>quadKernel</string>
-		<key>Fragment</key>
-		<string>Canny</string>
-	</dict>
 	<key>canny-composite</key>
 	<dict>
 		<key>Vertex</key>

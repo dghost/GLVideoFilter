@@ -48,7 +48,7 @@ GLKMatrix3 _lms2rgb;
 GLKMatrix3 _rgb2lms;
 GLKMatrix3 _error;
 
-unsigned int _blurMode;
+bool _blurMode;
 Boolean _modeLock;
 
 bool _newFrame;
@@ -160,7 +160,7 @@ shader_t _yuv2rgb;
     GLKView *view = (GLKView *)self.view;
     view.context = _context;
     self.preferredFramesPerSecond = 60;
-    _blurMode = 0;
+    _blurMode = true;
     _modeLock = NO;
     
     view.contentScaleFactor = [UIScreen mainScreen].scale;
@@ -524,7 +524,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [_shaders setRgbConvolution:_rgbConvolution];
     [_shaders setColorConvolution:_colorConvolution];
     [_shaders setLowThreshold:0.1f];
-    [_shaders setHighThreshold:0.3f];
+    [_shaders setHighThreshold:0.25f];
 
     _filters = [[FilterManager alloc] init];
     [self updateOverlayWithText:[_filters getCurrentName]];
@@ -776,14 +776,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 -(void)updateOverlayBlur {
     // update the overlay
      NSString *blur;
-    switch (_blurMode) {
-        case BLUR_NONE:
-            blur = @"Blur Disabled";
-            break;
-        case BLUR_TWOPASS:
-            blur = @"Blur Enabled";
-            break;     
+    if (_blurMode) {
+        blur = @"Blur Enabled";
+    } else {
+        blur = @"Blur Disabled";
     }
+    
     [self updateOverlayWithText:blur];
 }
 
@@ -812,15 +810,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         
         if (sender.direction == UISwipeGestureRecognizerDirectionUp)
         {
-            _blurMode--;
-            if (_blurMode == UINT_MAX)
-                _blurMode = NUM_BLURS - 1;
+            _blurMode = !_blurMode;
             [self updateOverlayBlur];
         } else if (sender.direction == UISwipeGestureRecognizerDirectionDown)
         {
-            _blurMode++;
-            if (_blurMode == NUM_BLURS)
-                _blurMode = 0;
+            _blurMode = !_blurMode;
             [self updateOverlayBlur];
         }
     }

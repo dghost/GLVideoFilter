@@ -1,7 +1,9 @@
-// Convert Y'UV output of camera into packed RGB/Y output
+// blurXPass.fsh
+//
+// Performs horizontal Gaussian blur
+//
 
 uniform sampler2D SamplerRGB;
-
 
 varying mediump vec2 tc21;
 varying mediump vec2 tc22;
@@ -18,8 +20,6 @@ void main()
     mediump vec4 m22 = sampleRGBA(tc22);
     mediump vec4 m23 = sampleRGBA(tc23);
 
-    gl_FragColor =  blur1 * (m21 + m23)
-                    + blur2 * m22;
-
+    gl_FragColor =  blur1 * (m21 + m23) + blur2 * m22;
 }
 
