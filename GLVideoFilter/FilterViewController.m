@@ -199,15 +199,20 @@ shader_t _yuv2rgb;
     // Camera image orientation on screen is fixed
     // with respect to the physical camera orientation.
     
+ //   [UIView setAnimationsEnabled:NO];
+    /* Your original orientation booleans*/
+    
     return UIInterfaceOrientationIsLandscape(interfaceOrientation);
 }
 
+-(void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    [UIView setAnimationsEnabled:NO];
+}
+
+
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    GLfloat xScale = 1.0;
-    GLfloat yScale = (_screenWidth/ _screenHeight) * ((GLfloat) _textureHeight / (GLfloat) _textureWidth);
-    float orient = (self.interfaceOrientation == UIDeviceOrientationLandscapeRight) ? -1.0 : 1.0;
-    [_shaders setScale:GLKVector2Make(xScale * orient, yScale * orient)];
+    [UIView setAnimationsEnabled:YES];
 }
 
 #pragma mark - AV Foundation methods
@@ -328,7 +333,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
     // bind the Y'UV to RGB/Y shader
     [_shaders setShader:_yuv2rgb];
-
+    [_shaders setRgbConvolution:_rgbConvolution];
+    [_shaders setColorConvolution:_colorConvolution];
+    
     glBindFramebuffer(GL_FRAMEBUFFER, _fbo[FBO_RGB]);
     glViewport(0, 0, _textureWidth,_textureHeight);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -397,7 +404,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 [videoDevice unlockForConfiguration];
             }
         }
-        
+        self.preferredFramesPerSecond = bestFrameRateRange.maxFrameRate;       
         sessionPreset = AVCaptureSessionPresetInputPriority;
         
         //NSLog(@"64bit executable");
@@ -453,7 +460,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                     [videoDevice unlockForConfiguration];
                 }
             }
-            
+            self.preferredFramesPerSecond = bestFrameRateRange.maxFrameRate;
             sessionPreset = AVCaptureSessionPresetInputPriority;
         } else {
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
@@ -519,12 +526,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     [ShaderManager loadShaderNamed:@"blur-x" into:&_blurX];
     [ShaderManager loadShaderNamed:@"blur-y" into:&_blurY];
-    [ShaderManager loadShaderNamed:@"yuv-rgb" into:&_yuv2rgb];    
-    
-    [_shaders setRgbConvolution:_rgbConvolution];
-    [_shaders setColorConvolution:_colorConvolution];
-    [_shaders setLowThreshold:0.1f];
-    [_shaders setHighThreshold:0.25f];
+    [ShaderManager loadShaderNamed:@"yuv-rgb" into:&_yuv2rgb];
 
     _filters = [[FilterManager alloc] init];
     [self updateOverlayWithText:[_filters getCurrentName]];
@@ -729,6 +731,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
     if (_newFrame)
     {
+        GLfloat xScale = 1.0;
+        GLfloat yScale = (_screenWidth/ _screenHeight) * ((GLfloat) _textureHeight / (GLfloat) _textureWidth);
+        float orient = (self.interfaceOrientation == UIDeviceOrientationLandscapeRight) ? -1.0 : 1.0;
+        [_shaders setScale:GLKVector2Make(xScale * orient, yScale * orient)];
+        [_shaders setTexelSize:GLKVector2Divide(GLKVector2Make(1.0, 1.0), GLKVector2Make(_textureWidth, _textureHeight))];
+        [_shaders setLowThreshold:0.1f];
+        [_shaders setHighThreshold:0.25f];
+        
         [self filterFrame:FBO_RGB intoView:view];
         _newFrame = false;
     }
