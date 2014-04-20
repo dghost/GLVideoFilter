@@ -31,14 +31,16 @@
 		DF4740B516E6EEFA0073DDB8 /* SobelBlend.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF4740B416E6EEEC0073DDB8 /* SobelBlend.fsh */; };
 		DF59483E16E5B91E00C16079 /* quadPassthrough.vsh in Resources */ = {isa = PBXBuildFile; fileRef = DF59483D16E5B90F00C16079 /* quadPassthrough.vsh */; };
 		DF59484016E5BB0900C16079 /* passthrough.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF59483F16E5BB0000C16079 /* passthrough.fsh */; };
+		DF64315419045D4C00D5B401 /* quadBlurX.vsh in Resources */ = {isa = PBXBuildFile; fileRef = DF64315219045D4C00D5B401 /* quadBlurX.vsh */; };
+		DF64315519045D4C00D5B401 /* quadBlurY.vsh in Resources */ = {isa = PBXBuildFile; fileRef = DF64315319045D4C00D5B401 /* quadBlurY.vsh */; };
+		DF64315719045D6D00D5B401 /* blurPassHQ.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF64315619045D6D00D5B401 /* blurPassHQ.fsh */; };
 		DF7EE77518F8C16C000CD7AA /* Filters.plist in Resources */ = {isa = PBXBuildFile; fileRef = DF7EE77418F8C16C000CD7AA /* Filters.plist */; };
 		DF7EE77718F8C45A000CD7AA /* Shaders.plist in Resources */ = {isa = PBXBuildFile; fileRef = DF7EE77618F8C45A000CD7AA /* Shaders.plist */; };
 		DF7EE78218F915A3000CD7AA /* FilterManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DF7EE77D18F915A3000CD7AA /* FilterManager.m */; };
 		DF7EE78318F915A3000CD7AA /* QuadModel.m in Sources */ = {isa = PBXBuildFile; fileRef = DF7EE77F18F915A3000CD7AA /* QuadModel.m */; };
 		DF7EE78418F915A3000CD7AA /* ShaderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DF7EE78118F915A3000CD7AA /* ShaderManager.m */; };
 		DF93BCCA16E4983C00C062FC /* SobelBW.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF93BCC816E495B200C062FC /* SobelBW.fsh */; };
-		DF9CAE8A1824C18800CE3945 /* blurXPass.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF9CAE881824C16800CE3945 /* blurXPass.fsh */; };
-		DF9CAE8B1824C18800CE3945 /* blurYPass.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF9CAE891824C16800CE3945 /* blurYPass.fsh */; };
+		DF9CAE8A1824C18800CE3945 /* blurPass.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DF9CAE881824C16800CE3945 /* blurPass.fsh */; };
 		DFA4C5EA18F9D1B90099F4DE /* CannyMag.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DFA4C5E818F9D1B90099F4DE /* CannyMag.fsh */; };
 		DFA4C5EB18F9D1B90099F4DE /* CannyThreshold.fsh in Resources */ = {isa = PBXBuildFile; fileRef = DFA4C5E918F9D1B90099F4DE /* CannyThreshold.fsh */; };
 		DFA4C5ED18F9E7820099F4DE /* quadScreenKernel.vsh in Resources */ = {isa = PBXBuildFile; fileRef = DFA4C5EC18F9E7820099F4DE /* quadScreenKernel.vsh */; };
@@ -78,6 +80,9 @@
 		DF4740B416E6EEEC0073DDB8 /* SobelBlend.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SobelBlend.fsh; path = Shaders/SobelBlend.fsh; sourceTree = "<group>"; };
 		DF59483D16E5B90F00C16079 /* quadPassthrough.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = quadPassthrough.vsh; path = Shaders/quadPassthrough.vsh; sourceTree = "<group>"; };
 		DF59483F16E5BB0000C16079 /* passthrough.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = passthrough.fsh; path = Shaders/passthrough.fsh; sourceTree = "<group>"; };
+		DF64315219045D4C00D5B401 /* quadBlurX.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = quadBlurX.vsh; path = Shaders/quadBlurX.vsh; sourceTree = "<group>"; };
+		DF64315319045D4C00D5B401 /* quadBlurY.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = quadBlurY.vsh; path = Shaders/quadBlurY.vsh; sourceTree = "<group>"; };
+		DF64315619045D6D00D5B401 /* blurPassHQ.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = blurPassHQ.fsh; path = Shaders/blurPassHQ.fsh; sourceTree = "<group>"; };
 		DF7EE77418F8C16C000CD7AA /* Filters.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Filters.plist; sourceTree = "<group>"; };
 		DF7EE77618F8C45A000CD7AA /* Shaders.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Shaders.plist; sourceTree = "<group>"; };
 		DF7EE77C18F915A3000CD7AA /* FilterManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FilterManager.h; path = Classes/FilterManager.h; sourceTree = "<group>"; };
@@ -87,8 +92,7 @@
 		DF7EE78018F915A3000CD7AA /* ShaderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShaderManager.h; path = Classes/ShaderManager.h; sourceTree = "<group>"; };
 		DF7EE78118F915A3000CD7AA /* ShaderManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ShaderManager.m; path = Classes/ShaderManager.m; sourceTree = "<group>"; };
 		DF93BCC816E495B200C062FC /* SobelBW.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = SobelBW.fsh; path = Shaders/SobelBW.fsh; sourceTree = "<group>"; };
-		DF9CAE881824C16800CE3945 /* blurXPass.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = blurXPass.fsh; path = Shaders/blurXPass.fsh; sourceTree = "<group>"; };
-		DF9CAE891824C16800CE3945 /* blurYPass.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = blurYPass.fsh; path = Shaders/blurYPass.fsh; sourceTree = "<group>"; };
+		DF9CAE881824C16800CE3945 /* blurPass.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = blurPass.fsh; path = Shaders/blurPass.fsh; sourceTree = "<group>"; };
 		DFA4C5E818F9D1B90099F4DE /* CannyMag.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = CannyMag.fsh; path = Shaders/CannyMag.fsh; sourceTree = "<group>"; };
 		DFA4C5E918F9D1B90099F4DE /* CannyThreshold.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = CannyThreshold.fsh; path = Shaders/CannyThreshold.fsh; sourceTree = "<group>"; };
 		DFA4C5EC18F9E7820099F4DE /* quadScreenKernel.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = quadScreenKernel.vsh; path = Shaders/quadScreenKernel.vsh; sourceTree = "<group>"; };
@@ -210,8 +214,10 @@
 		DF9CAE8C1824C19900CE3945 /* Blurs */ = {
 			isa = PBXGroup;
 			children = (
-				DF9CAE881824C16800CE3945 /* blurXPass.fsh */,
-				DF9CAE891824C16800CE3945 /* blurYPass.fsh */,
+				DF64315619045D6D00D5B401 /* blurPassHQ.fsh */,
+				DF64315219045D4C00D5B401 /* quadBlurX.vsh */,
+				DF64315319045D4C00D5B401 /* quadBlurY.vsh */,
+				DF9CAE881824C16800CE3945 /* blurPass.fsh */,
 			);
 			name = Blurs;
 			sourceTree = "<group>";
@@ -288,10 +294,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DF9CAE8A1824C18800CE3945 /* blurXPass.fsh in Resources */,
-				DF9CAE8B1824C18800CE3945 /* blurYPass.fsh in Resources */,
+				DF9CAE8A1824C18800CE3945 /* blurPass.fsh in Resources */,
+				DF64315519045D4C00D5B401 /* quadBlurY.vsh in Resources */,
 				DF3F45581821C7A80069D69F /* quadKernel.vsh in Resources */,
 				DF143B7416EB317E006D35F9 /* SobelRGBComposite.fsh in Resources */,
+				DF64315419045D4C00D5B401 /* quadBlurX.vsh in Resources */,
 				DF143B7516EB317E006D35F9 /* yuv2rgb.fsh in Resources */,
 				DF7EE77718F8C45A000CD7AA /* Shaders.plist in Resources */,
 				DFA4C5F118F9ED6D0099F4DE /* CannyThresholdInvert.fsh in Resources */,
@@ -305,6 +312,7 @@
 				DFA4C5EF18F9EBD40099F4DE /* CannyThresholdComposite.fsh in Resources */,
 				DF59483E16E5B91E00C16079 /* quadPassthrough.vsh in Resources */,
 				DF93BCCA16E4983C00C062FC /* SobelBW.fsh in Resources */,
+				DF64315719045D6D00D5B401 /* blurPassHQ.fsh in Resources */,
 				B66E3E4713E9E79C00D2ACF0 /* Sobel.fsh in Resources */,
 				B66E3E4913E9E79C00D2ACF0 /* quadInvertY.vsh in Resources */,
 				DF7EE77518F8C16C000CD7AA /* Filters.plist in Resources */,

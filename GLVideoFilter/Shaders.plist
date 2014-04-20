@@ -19,16 +19,30 @@
 	<key>blur-x</key>
 	<dict>
 		<key>Vertex</key>
-		<string>quadKernel</string>
+		<string>quadBlurX</string>
 		<key>Fragment</key>
-		<string>blurXPass</string>
+		<string>blurPass</string>
+	</dict>
+	<key>blur-x-hq</key>
+	<dict>
+		<key>Vertex</key>
+		<string>quadBlurX</string>
+		<key>Fragment</key>
+		<string>blurPassHQ</string>
 	</dict>
 	<key>blur-y</key>
 	<dict>
 		<key>Vertex</key>
-		<string>quadKernel</string>
+		<string>quadBlurY</string>
 		<key>Fragment</key>
-		<string>blurYPass</string>
+		<string>blurPass</string>
+	</dict>
+	<key>blur-y-hq</key>
+	<dict>
+		<key>Vertex</key>
+		<string>quadBlurY</string>
+		<key>Fragment</key>
+		<string>blurPassHQ</string>
 	</dict>
 	<key>sobel-rgb</key>
 	<dict>
