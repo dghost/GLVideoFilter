@@ -73,24 +73,12 @@
 	</dict>
 	<dict>
 		<key>Name</key>
-		<string>Chained Sobel-&gt;Canny</string>
+		<string>Comic</string>
 		<key>Passes</key>
 		<array>
-			<string>sobel-bw</string>
 			<string>canny-pre</string>
 			<string>canny-mag</string>
-			<string>canny-threshold</string>
-		</array>
-	</dict>
-	<dict>
-		<key>Name</key>
-		<string>Chained Sobel-&gt;Canny Inverse</string>
-		<key>Passes</key>
-		<array>
-			<string>sobel-bw</string>
-			<string>canny-pre</string>
-			<string>canny-mag</string>
-			<string>canny-inverse</string>
+			<string>canny-comic</string>
 		</array>
 	</dict>
 </array>

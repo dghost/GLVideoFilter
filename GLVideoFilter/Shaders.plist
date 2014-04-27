@@ -19,30 +19,16 @@
 	<key>blur-x</key>
 	<dict>
 		<key>Vertex</key>
-		<string>quadBlurX</string>
+		<string>quadKernel</string>
 		<key>Fragment</key>
-		<string>blurPass</string>
-	</dict>
-	<key>blur-x-hq</key>
-	<dict>
-		<key>Vertex</key>
-		<string>quadBlurX</string>
-		<key>Fragment</key>
-		<string>blurPassHQ</string>
+		<string>blurXPass</string>
 	</dict>
 	<key>blur-y</key>
 	<dict>
 		<key>Vertex</key>
-		<string>quadBlurY</string>
+		<string>quadKernel</string>
 		<key>Fragment</key>
-		<string>blurPass</string>
-	</dict>
-	<key>blur-y-hq</key>
-	<dict>
-		<key>Vertex</key>
-		<string>quadBlurY</string>
-		<key>Fragment</key>
-		<string>blurPassHQ</string>
+		<string>blurYPass</string>
 	</dict>
 	<key>sobel-rgb</key>
 	<dict>
@@ -99,6 +85,13 @@
 		<string>quadScreenKernel</string>
 		<key>Fragment</key>
 		<string>CannyThresholdInvert</string>
+	</dict>
+	<key>canny-comic</key>
+	<dict>
+		<key>Vertex</key>
+		<string>quadScreenKernel</string>
+		<key>Fragment</key>
+		<string>CannyComic</string>
 	</dict>
 	<key>canny-mag</key>
 	<dict>

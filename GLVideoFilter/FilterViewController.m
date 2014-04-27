@@ -524,14 +524,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     _shaders = [[ShaderManager alloc] init];
     
-    if (_is64bit) {
-        [ShaderManager loadShaderNamed:@"blur-x-hq" into:&_blurX];
-        [ShaderManager loadShaderNamed:@"blur-y-hq" into:&_blurY];
-    } else {
-        [ShaderManager loadShaderNamed:@"blur-x" into:&_blurX];
-        [ShaderManager loadShaderNamed:@"blur-y" into:&_blurY];
-    }
-    
+    [ShaderManager loadShaderNamed:@"blur-x" into:&_blurX];
+    [ShaderManager loadShaderNamed:@"blur-y" into:&_blurY];
     [ShaderManager loadShaderNamed:@"yuv-rgb" into:&_yuv2rgb];
 
     _filters = [[FilterManager alloc] init];
