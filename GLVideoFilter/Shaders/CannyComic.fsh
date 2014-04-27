@@ -35,8 +35,8 @@ varying mediump vec2 tc33;
 #define LINE_SLOPE -0.9
 #define LINE_INTERVAL 10.0
 #define LINE_STRENGTH 1.0
-#define COMIC_LOW_THRESHOLD 0.2
-#define COMIC_HIGH_THRESHOLD 0.45
+#define BLACK_THRESHOLD 0.2
+#define WHITE_THRESHOLD 0.45
 
 
 void main()
@@ -75,10 +75,10 @@ void main()
         outColor = vec3(0.0);
     else
     {
-        if (temp.a > COMIC_HIGH_THRESHOLD)
+        if (temp.a > WHITE_THRESHOLD)
         {
             outColor = vec3(1.0);
-        } else if (temp.a < COMIC_LOW_THRESHOLD)
+        } else if (temp.a < BLACK_THRESHOLD)
         {
             outColor = vec3(0.0);
         } else
