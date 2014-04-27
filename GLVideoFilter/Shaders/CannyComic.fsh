@@ -1,15 +1,13 @@
 // CannyComic.fsh
 //
-// Canny Edge Detector Thresholding w/ Greyscale Composite
+// Comic effect using Canny edge detection + thresholding
 //
 // Takes the input of CannyMag.fsh
 //
-// Outputs a red pixel if it is over the high threshold
+// Outputs a black pixel if it is over the high threshold
 //  or if it is over the low threshold and a neighbor is
-//  over the high threshold. Otherwise, outputs the greyscale
-//  value for that pixel.
-//
-// Future work would be to expand it to a 5x5 area
+//  over the high threshold. Otherwise, outputs a pixel value
+//  based on intensity and a simple cell shading filter
 //
 
 
@@ -33,6 +31,7 @@ varying mediump vec2 tc33;
 #define sampleR(tc) (texture2D(SamplerRGB, tc).r)
 #define sampleRGBA(tc) (texture2D(SamplerRGB, tc))
 
+// parameters that define the comic effect
 #define LINE_SLOPE -0.9
 #define LINE_INTERVAL 10.0
 #define LINE_STRENGTH 1.0
@@ -86,7 +85,6 @@ void main()
         {
             mediump vec2 pixel = tc22 / texelSize;
             mediump float b = LINE_SLOPE * pixel.x - pixel.y;
-            
             mediump float value = (floor(mod(b,LINE_INTERVAL)) - LINE_STRENGTH  > 0.0) ? 1.0 : 0.0;
             outColor = vec3(value);
         }
