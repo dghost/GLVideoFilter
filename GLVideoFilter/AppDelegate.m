@@ -9,6 +9,9 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    // get changes that might have happened while this
+    // instance of your app wasn't running
+    [[NSUbiquitousKeyValueStore defaultStore] synchronize];
     return YES;
 }
 

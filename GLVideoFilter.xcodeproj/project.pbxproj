@@ -96,6 +96,7 @@
 		DFA4C5EE18F9EBD40099F4DE /* CannyThresholdComposite.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = CannyThresholdComposite.fsh; path = Shaders/CannyThresholdComposite.fsh; sourceTree = "<group>"; };
 		DFA4C5F018F9ED6D0099F4DE /* CannyThresholdInvert.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = CannyThresholdInvert.fsh; path = Shaders/CannyThresholdInvert.fsh; sourceTree = "<group>"; };
 		DFC5BABF190C9D7C004FF2B1 /* CannyComic.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = CannyComic.fsh; path = Shaders/CannyComic.fsh; sourceTree = "<group>"; };
+		DFC5BAC1190D7F63004FF2B1 /* GLVideoFilter.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = GLVideoFilter.entitlements; sourceTree = "<group>"; };
 		DFC750F416E5C3E80036CDD8 /* SobelBWComposite.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SobelBWComposite.fsh; path = Shaders/SobelBWComposite.fsh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -153,6 +154,7 @@
 		B66E3E3A13E9E79C00D2ACF0 /* GLVideoFilter */ = {
 			isa = PBXGroup;
 			children = (
+				DFC5BAC1190D7F63004FF2B1 /* GLVideoFilter.entitlements */,
 				B66E3E4313E9E79C00D2ACF0 /* AppDelegate.h */,
 				B66E3E4413E9E79C00D2ACF0 /* AppDelegate.m */,
 				B66E3E4A13E9E79C00D2ACF0 /* FilterViewController.h */,
@@ -266,6 +268,11 @@
 				TargetAttributes = {
 					B66E3E2D13E9E79C00D2ACF0 = {
 						DevelopmentTeam = G8X4XMPVS9;
+						SystemCapabilities = {
+							com.apple.iCloud = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -403,6 +410,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_ENTITLEMENTS = GLVideoFilter/GLVideoFilter.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -423,6 +431,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_ENTITLEMENTS = GLVideoFilter/GLVideoFilter.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;

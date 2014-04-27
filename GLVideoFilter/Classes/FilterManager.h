@@ -14,5 +14,5 @@
 -(void)prevFilter;
 -(NSArray*)getCurrentFilter;
 -(NSString*)getCurrentName;
-
+-(void)setFilterByName:(NSString *)name;
 @end

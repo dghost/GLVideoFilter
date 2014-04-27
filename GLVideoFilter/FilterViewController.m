@@ -1,8 +1,6 @@
 #import <CoreVideo/CVOpenGLESTextureCache.h>
 #import "FilterViewController.h"
-#import "QuadModel.h"
-#import "ShaderManager.h"
-#import "FilterManager.h"
+
 
 #if __LP64__
 static const bool _is64bit = true;
@@ -36,20 +34,15 @@ enum
     NUM_CONVOLUTIONS
 };
 
-MBProgressHUD *_HUD;
-UIImage *_lockedIcon;
-UIImage *_unlockedIcon;
 
 GLKMatrix3 _rgbConvolution;
-GLKMatrix3 _colorConvolution;
+NSArray *_colorConvolutionNames;
 
 GLKMatrix3 _cvdConvolutions[NUM_CONVOLUTIONS];
 GLKMatrix3 _lms2rgb;
 GLKMatrix3 _rgb2lms;
 GLKMatrix3 _error;
 
-bool _blurMode;
-Boolean _modeLock;
 
 bool _newFrame;
 GLuint _positionVBO;
@@ -72,9 +65,6 @@ CVOpenGLESTextureRef _chromaTexture;
 AVCaptureSession *_session;
 CVOpenGLESTextureCacheRef _videoTextureCache;
 
-QuadModel *_quad;
-FilterManager *_filters;
-ShaderManager *_shaders;
 
 // utility shaders
 shader_t _blurX, _blurY;
@@ -98,6 +88,69 @@ shader_t _yuv2rgb;
     return YES;
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [[UIApplication sharedApplication] setIdleTimerDisabled: YES];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(externalUpdate:)
+                                                 name:NSUbiquitousKeyValueStoreDidChangeExternallyNotification
+                                               object:nil];
+    
+    
+    _context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+    if (!_context) {
+        NSLog(@"Failed to create ES context");
+    }
+    
+    GLKView *view = (GLKView *)self.view;
+    view.context = _context;
+    view.contentScaleFactor = [UIScreen mainScreen].scale;
+    
+    _screenHeight = [UIScreen mainScreen].bounds.size.width * [UIScreen mainScreen].scale;
+    _screenWidth = [UIScreen mainScreen].bounds.size.height * [UIScreen mainScreen].scale;
+    
+    _lockedIcon = [UIImage imageNamed:@"Locked"];
+    _unlockedIcon = [UIImage imageNamed:@"Unlocked"];
+    
+    [self setupGL];
+    
+    
+    _filters = [[FilterManager alloc] init];
+    
+    [self setupAVCapture];
+    _newFrame = false;
+
+    
+    [self setBlurMode:[defaults boolForKey:@"blurMode"]];
+    [self setLockMode:[defaults boolForKey:@"modeLock"]];
+    [self setFilterByName:[defaults stringForKey:@"currentFilter"]];
+    [self setColorConvolution:(NSInteger)[defaults doubleForKey:@"colorMode"]];
+    [super viewWillAppear:animated];
+    
+}
+
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [_HUD hide:YES];
+    [self tearDownAVCapture];
+    [self tearDownGL];
+    [defaults synchronize];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:NSUbiquitousKeyValueStoreDidChangeExternallyNotification
+                                                  object:nil];
+    
+    if ([EAGLContext currentContext] == _context) {
+        [EAGLContext setCurrentContext:nil];
+    }
+    _lockedIcon = nil;
+    _unlockedIcon = nil;
+    
+    [super viewWillDisappear:animated];
+}
+
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -112,21 +165,14 @@ shader_t _yuv2rgb;
         // iOS 6
         [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
     }
-
     
-    [[UIApplication sharedApplication] setIdleTimerDisabled: YES];
-    _context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
-    
-    
-    if (!_context) {
-        NSLog(@"Failed to create ES context");
-    }
+    self.preferredFramesPerSecond = 60;
+    defaults = [NSUbiquitousKeyValueStore defaultStore];
     
     _rgbConvolution = GLKMatrix3Make(  1       ,1          ,      1,
                                      0       ,-.18732    , 1.8556,
                                      1.57481 , -.46813   ,      0);
     
-    _colorConvolution = GLKMatrix3Identity;
     
     
     _rgb2lms = GLKMatrix3MakeAndTranspose(17.8824,43.5161,4.11935,
@@ -151,41 +197,12 @@ shader_t _yuv2rgb;
     _cvdConvolutions[TRITANOPE] = GLKMatrix3MakeAndTranspose(1.0,       0.0,      0.0,
                                                              0.0,       1.0,      0.0,
                                                              -0.395913, 0.801109, 0.0);
+    
+    _colorConvolutionNames = @[ @"None", @"Protanope", @"Deuteranope", @"Tritanope"];
+    
     _error = GLKMatrix3MakeAndTranspose(0.0, 0.0, 0.0,
                                         0.7, 1.0, 0.0,
                                         0.7, 0.0, 1.0);
-    
-    _colorConvolution = _cvdConvolutions[REGULAR];
-    _newFrame = false;
-    GLKView *view = (GLKView *)self.view;
-    view.context = _context;
-    self.preferredFramesPerSecond = 60;
-    _blurMode = true;
-    _modeLock = NO;
-    
-    view.contentScaleFactor = [UIScreen mainScreen].scale;
-    
-    _screenHeight = [UIScreen mainScreen].bounds.size.width * [UIScreen mainScreen].scale;
-    _screenWidth = [UIScreen mainScreen].bounds.size.height * [UIScreen mainScreen].scale;
-    
-    _lockedIcon = [UIImage imageNamed:@"Locked"];
-    _unlockedIcon = [UIImage imageNamed:@"Unlocked"];
-    
-    [self setupGL];
-    
-    [self setupAVCapture];
-}
-
-- (void)viewDidUnload
-{
- //   [super viewDidUnload];
-    [_HUD hide:YES];
-    [self tearDownAVCapture];
-    [self tearDownGL];
-    
-    if ([EAGLContext currentContext] == _context) {
-        [EAGLContext setCurrentContext:nil];
-    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -260,7 +277,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         
         float scale = screenHeight / width;
         
-        if (scale < 1.0)
+        if (scale <= 1.0)
         {
             _textureWidth = ceil(width * scale);
             _textureHeight = ceil(height * scale);
@@ -334,7 +351,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // bind the Y'UV to RGB/Y shader
     [_shaders setShader:_yuv2rgb];
     [_shaders setRgbConvolution:_rgbConvolution];
-    [_shaders setColorConvolution:_colorConvolution];
+    [_shaders setColorConvolution:_cvdConvolutions[_colorMode]];
     
     glBindFramebuffer(GL_FRAMEBUFFER, _fbo[FBO_RGB]);
     glViewport(0, 0, _textureWidth,_textureHeight);
@@ -528,8 +545,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [ShaderManager loadShaderNamed:@"blur-y" into:&_blurY];
     [ShaderManager loadShaderNamed:@"yuv-rgb" into:&_yuv2rgb];
 
-    _filters = [[FilterManager alloc] init];
-    [self updateOverlayWithText:[_filters getCurrentName]];
 }
 
 
@@ -795,13 +810,82 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [self updateOverlayWithText:blur];
 }
 
+-(void)setBlurMode:(BOOL)newMode
+{
+    if (_blurMode != newMode)
+    {
+        _blurMode = newMode;
+        [self updateOverlayBlur];
+        [defaults setBool:_blurMode forKey:@"blurMode"];
+        [defaults synchronize];
+    }
+}
+
+-(void)setLockMode:(BOOL)newMode
+{
+    if (_modeLock != newMode)
+    {
+        _modeLock = newMode;
+        [self updateOverlayLock];
+        [defaults setBool:_modeLock forKey:@"modeLock"];
+        [defaults synchronize];
+    }
+    
+}
+
+-(void)setFilterByName:(NSString *)name
+{
+    if (![name isEqualToString:[_filters getCurrentName]])
+    {
+        [_filters setFilterByName:name];
+        NSString *filterName = [_filters getCurrentName];
+        [self updateOverlayWithText:filterName];
+        [defaults setString:filterName forKey:@"currentFilter"];
+        [defaults synchronize];
+    }
+}
+
+-(void)setColorConvolution:(NSInteger)mode
+{
+    if (_colorMode != mode)
+    {
+        if (mode >= NUM_CONVOLUTIONS)
+            mode = 0;
+        else if (mode < 0)
+            mode = NUM_CONVOLUTIONS - 1;
+
+        _colorMode = mode;
+        
+        [self updateOverlayWithText:[_colorConvolutionNames objectAtIndex:_colorMode]];
+        [defaults setDouble:(double)_colorMode forKey:@"colorMode"];
+        [defaults synchronize];
+    }
+}
+
+-(void)setNextFilter
+{
+    [_filters nextFilter];
+    NSString *filterName = [_filters getCurrentName];
+    [self updateOverlayWithText:filterName];
+    [defaults setString:filterName forKey:@"currentFilter"];
+    [defaults synchronize];
+}
+
+-(void)setPrevFilter
+{
+    [_filters prevFilter];
+    NSString *filterName = [_filters getCurrentName];
+    [self updateOverlayWithText:filterName];
+    [defaults setString:filterName forKey:@"currentFilter"];
+    [defaults synchronize];
+}
+
 #pragma mark - Touch handling methods
 
 - (IBAction)tapGestureRecgonizer:(UITapGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateRecognized)
     {
-        _modeLock = !_modeLock;
-        [self updateOverlayLock];
+        [self setLockMode:!_modeLock];
     }
 }
 
@@ -810,24 +894,57 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     {
         if (sender.direction == UISwipeGestureRecognizerDirectionLeft)
         {
-            [_filters nextFilter];
-            [self updateOverlayWithText:[_filters getCurrentName]];
+            [self setNextFilter];
         } else if (sender.direction == UISwipeGestureRecognizerDirectionRight)
         {
-            [_filters prevFilter];
-            [self updateOverlayWithText:[_filters getCurrentName]];
-       }
+            [self setPrevFilter];
+        }
         
         if (sender.direction == UISwipeGestureRecognizerDirectionUp)
         {
-            _blurMode = !_blurMode;
-            [self updateOverlayBlur];
+            [self setBlurMode:!_blurMode];
         } else if (sender.direction == UISwipeGestureRecognizerDirectionDown)
         {
-            _blurMode = !_blurMode;
-            [self updateOverlayBlur];
+            [self setBlurMode:!_blurMode];
         }
     }
+}
+
+-(void) externalUpdate:(NSNotification*) notificationObject {
+    
+    
+    // prevent NSUserDefaultsDidChangeNotification from being posted while we update from iCloud
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:NSUserDefaultsDidChangeNotification
+                                                  object:nil];
+    
+    NSArray *keys = [[notificationObject userInfo] objectForKey:@"NSUbiquitousKeyValueStoreChangedKeysKey"];
+    for (NSString *key in keys)
+    {
+#if defined(DEBUG)
+        NSLog(@"Key '%@' changed",key);
+#endif
+        if ([key isEqualToString:@"modeLock"])
+        {
+            [self setLockMode:[defaults boolForKey:key]];
+        } else if ([key isEqualToString:@"blurMode"])
+        {
+            [self setBlurMode:[defaults boolForKey:key]];
+        } else if ([key isEqualToString:@"currentFilter"])
+        {
+            [self setFilterByName:[defaults stringForKey:key]];
+        } else if ([key isEqualToString:@"colorMode"])
+        {
+            [self setColorConvolution:(NSInteger)[defaults doubleForKey:key]];
+        }
+    }
+    // enable NSUserDefaultsDidChangeNotification notifications again
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(externalUpdate:)
+                                                 name:NSUserDefaultsDidChangeNotification
+                                               object:nil];
 }
 
 

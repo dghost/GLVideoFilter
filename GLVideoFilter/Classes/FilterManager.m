@@ -80,5 +80,16 @@ NSUInteger currentFilter;
     return name;
 }
 
+-(void)setFilterByName:(NSString *)name
+{
+    if (name == nil || [name isEqualToString:@""])
+        currentFilter = 0;
+    for (int i = 0; i < [_filterList count]; i++)
+    {
+        if ([name isEqualToString:[[_filterList objectAtIndex:i]  objectForKey:@"Name"]])
+            currentFilter = i;
+    }
+}
+
 
 @end
