@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="5056" systemVersion="13D38" targetRuntime="iOS.CocoaTouch" variant="6xAndEarlier" propertyAccessControl="none" useAutolayout="YES" initialViewController="JDV-vs-bhg">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="5056" systemVersion="13D45a" targetRuntime="iOS.CocoaTouch" variant="6xAndEarlier" propertyAccessControl="none" useAutolayout="YES" initialViewController="JDV-vs-bhg">
     <dependencies>
         <deployment defaultVersion="1536" identifier="iOS"/>
         <development version="4600" identifier="xcode"/>
@@ -22,10 +22,15 @@
                             <outletCollection property="gestureRecognizers" destination="KFR-PZ-dmG" appends="YES" id="PVj-iF-pTQ"/>
                             <outletCollection property="gestureRecognizers" destination="TiH-WB-psk" appends="YES" id="nZD-iL-4DD"/>
                             <outletCollection property="gestureRecognizers" destination="gVQ-Li-jdf" appends="YES" id="vV7-io-TSt"/>
+                            <outletCollection property="gestureRecognizers" destination="p93-1W-Ogs" appends="YES" id="jzT-NC-zog"/>
                         </connections>
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
+                    <connections>
+                        <outlet property="doubleTapGestureRecognizer" destination="p93-1W-Ogs" id="lQk-RC-xME"/>
+                        <outlet property="singleTapGestureRecognizer" destination="gVQ-Li-jdf" id="ANa-gZ-7oo"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="8BK-16-CE7" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <swipeGestureRecognizer direction="right" id="rKR-1c-7dn" userLabel="Right Single Finger Swipe">
@@ -56,6 +61,12 @@
                     <connections>
                         <action selector="tapGestureRecgonizer:" destination="JDV-vs-bhg" id="Oe8-dm-Lfz"/>
                         <outlet property="delegate" destination="Oug-gN-tbM" id="2F1-f5-CZ4"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer numberOfTapsRequired="2" id="p93-1W-Ogs" userLabel="Double Tap Gesture Recognizer">
+                    <connections>
+                        <action selector="tapGestureRecgonizer:" destination="JDV-vs-bhg" id="Alq-92-bjY"/>
+                        <outlet property="delegate" destination="Oug-gN-tbM" id="5de-f3-W1R"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>

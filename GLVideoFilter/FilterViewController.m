@@ -36,13 +36,8 @@ enum
 
 
 GLKMatrix3 _rgbConvolution;
+GLKMatrix3 _colorConvolution[NUM_CONVOLUTIONS];
 NSArray *_colorConvolutionNames;
-
-GLKMatrix3 _cvdConvolutions[NUM_CONVOLUTIONS];
-GLKMatrix3 _lms2rgb;
-GLKMatrix3 _rgb2lms;
-GLKMatrix3 _error;
-
 
 bool _newFrame;
 GLuint _positionVBO;
@@ -113,6 +108,7 @@ shader_t _yuv2rgb;
     _lockedIcon = [UIImage imageNamed:@"Locked"];
     _unlockedIcon = [UIImage imageNamed:@"Unlocked"];
     
+    [self generateColorConvolutions];
     [self setupGL];
     
     
@@ -121,8 +117,10 @@ shader_t _yuv2rgb;
     [self setupAVCapture];
     _newFrame = false;
 
-    
-    [self setBlurMode:[defaults boolForKey:@"blurMode"]];
+    if ([defaults objectForKey:@"blurMode"] != nil)
+        [self setBlurMode:[defaults boolForKey:@"blurMode"]];
+    else
+        [self setBlurMode:YES];
     [self setLockMode:[defaults boolForKey:@"modeLock"]];
     [self setFilterByName:[defaults stringForKey:@"currentFilter"]];
     [self setColorConvolution:(NSInteger)[defaults doubleForKey:@"colorMode"]];
@@ -166,44 +164,10 @@ shader_t _yuv2rgb;
         [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
     }
     
+    [singleTapGestureRecognizer requireGestureRecognizerToFail:doubleTapGestureRecognizer];
     self.preferredFramesPerSecond = 60;
     defaults = [NSUbiquitousKeyValueStore defaultStore];
-    
-    _rgbConvolution = GLKMatrix3Make(  1       ,1          ,      1,
-                                     0       ,-.18732    , 1.8556,
-                                     1.57481 , -.46813   ,      0);
-    
-    
-    
-    _rgb2lms = GLKMatrix3MakeAndTranspose(17.8824,43.5161,4.11935,
-                              3.45565,27.1554,3.86714,
-                              0.0299566,0.184309,1.46709);
-    /*
-    _lms2rgb =  GLKMatrix3Make(0.0809444479, -0.0102485335, -0.000365296938,
-                               -0.130504409, 0.0540193266, -0.00412161469,
-                               0.116721066, -0.113614708, 0.693511405);
-    */
-    _lms2rgb = GLKMatrix3Invert(_rgb2lms, NULL);
-    
-    _cvdConvolutions[REGULAR] = GLKMatrix3Identity;
-    _cvdConvolutions[PROTANOPE] = GLKMatrix3MakeAndTranspose(0.0, 2.02344, -2.52581,
-                                                             0.0, 1.0,      0.0,
-                                                             0.0, 0.0,      1.0);
-    
-    _cvdConvolutions[DEUTERANOPE] = GLKMatrix3MakeAndTranspose(1.0,      0.0, 0.0,
-                                                               0.494207, 0.0, 1.24827,
-                                                               0.0,      0.0, 1.0);
-    
-    _cvdConvolutions[TRITANOPE] = GLKMatrix3MakeAndTranspose(1.0,       0.0,      0.0,
-                                                             0.0,       1.0,      0.0,
-                                                             -0.395913, 0.801109, 0.0);
-    
-    _colorConvolutionNames = @[ @"None", @"Protanope", @"Deuteranope", @"Tritanope"];
-    
-    _error = GLKMatrix3MakeAndTranspose(0.0, 0.0, 0.0,
-                                        0.7, 1.0, 0.0,
-                                        0.7, 0.0, 1.0);
-}
+ }
 
 - (void)didReceiveMemoryWarning
 {
@@ -351,7 +315,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // bind the Y'UV to RGB/Y shader
     [_shaders setShader:_yuv2rgb];
     [_shaders setRgbConvolution:_rgbConvolution];
-    [_shaders setColorConvolution:_cvdConvolutions[_colorMode]];
+    [_shaders setColorConvolution:_colorConvolution[_colorMode]];
     
     glBindFramebuffer(GL_FRAMEBUFFER, _fbo[FBO_RGB]);
     glViewport(0, 0, _textureWidth,_textureHeight);
@@ -880,12 +844,37 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [defaults synchronize];
 }
 
+-(void)generateColorConvolutions
+{
+    _rgbConvolution = GLKMatrix3Make(  1       ,1          ,      1,
+                                     0       ,-.18732    , 1.8556,
+                                     1.57481 , -.46813   ,      0);
+    
+    _colorConvolution[REGULAR] = GLKMatrix3Identity;
+    _colorConvolution[PROTANOPE] = GLKMatrix3MakeAndTranspose(0.20,  0.99, -0.19,
+                                                             0.16,  0.79,  0.04,
+                                                             0.01, -0.01,  1.00);
+    
+    _colorConvolution[DEUTERANOPE] = GLKMatrix3MakeAndTranspose(0.43,  0.72, -0.15,
+                                                               0.34,  0.57,  0.09,
+                                                               -0.02,  0.03,  1.00);
+    
+    _colorConvolution[TRITANOPE] = GLKMatrix3MakeAndTranspose(0.97,  0.11, -0.08,
+                                                             0.02,  0.82,  0.16,
+                                                            -0.06,  0.88,  0.18);
+    
+    _colorConvolutionNames = @[ @"Regular colorspace", @"Simulated Protanope", @"Simulated Deuteranope", @"Simulated Tritanope"];
+}
+
 #pragma mark - Touch handling methods
 
 - (IBAction)tapGestureRecgonizer:(UITapGestureRecognizer *)sender {
-    if (sender.state == UIGestureRecognizerStateRecognized)
+    if (sender.state == UIGestureRecognizerStateEnded)
     {
-        [self setLockMode:!_modeLock];
+        if (sender.numberOfTapsRequired == 1)
+            [self setLockMode:!_modeLock];
+        else if (sender.numberOfTapsRequired == 2 && !_modeLock)
+            [self setBlurMode:!_blurMode];        
     }
 }
 
@@ -902,10 +891,13 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         
         if (sender.direction == UISwipeGestureRecognizerDirectionUp)
         {
-            [self setBlurMode:!_blurMode];
+            [self setColorConvolution:_colorMode + 1];
+//            [self setBlurMode:!_blurMode];
         } else if (sender.direction == UISwipeGestureRecognizerDirectionDown)
         {
-            [self setBlurMode:!_blurMode];
+            [self setColorConvolution:_colorMode - 1];
+  
+//            [self setBlurMode:!_blurMode];
         }
     }
 }

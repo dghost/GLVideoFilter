@@ -12,6 +12,15 @@
     // get changes that might have happened while this
     // instance of your app wasn't running
     [[NSUbiquitousKeyValueStore defaultStore] synchronize];
+  
+    // clear the key value store on launch
+    /*
+    NSDictionary *dict = [[NSUbiquitousKeyValueStore defaultStore] dictionaryRepresentation];
+    for (NSString *key in dict) {
+        [[NSUbiquitousKeyValueStore defaultStore] removeObjectForKey:key];
+    }
+    [[NSUbiquitousKeyValueStore defaultStore] synchronize];
+     */
     return YES;
 }
 

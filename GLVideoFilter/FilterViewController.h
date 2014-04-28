@@ -19,6 +19,8 @@
     FilterManager *_filters;
     ShaderManager *_shaders;
 
+    IBOutlet UITapGestureRecognizer *singleTapGestureRecognizer;
+    IBOutlet UITapGestureRecognizer *doubleTapGestureRecognizer;
 }
 
 - (IBAction)tapGestureRecgonizer:(UITapGestureRecognizer *)sender;
