@@ -86,12 +86,13 @@ shader_t _yuv2rgb;
 - (void)viewWillAppear:(BOOL)animated
 {
     [[UIApplication sharedApplication] setIdleTimerDisabled: YES];
-    
+    defaults = [NSUbiquitousKeyValueStore defaultStore];
+   
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(externalUpdate:)
                                                  name:NSUbiquitousKeyValueStoreDidChangeExternallyNotification
                                                object:nil];
-    
+    [defaults synchronize];
     
     _context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
     if (!_context) {
@@ -134,7 +135,7 @@ shader_t _yuv2rgb;
     [_HUD hide:YES];
     [self tearDownAVCapture];
     [self tearDownGL];
-    [defaults synchronize];
+    [self updateDefaults];
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:NSUbiquitousKeyValueStoreDidChangeExternallyNotification
                                                   object:nil];
@@ -166,7 +167,6 @@ shader_t _yuv2rgb;
     
     [singleTapGestureRecognizer requireGestureRecognizerToFail:doubleTapGestureRecognizer];
     self.preferredFramesPerSecond = 60;
-    defaults = [NSUbiquitousKeyValueStore defaultStore];
  }
 
 - (void)didReceiveMemoryWarning
@@ -780,8 +780,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     {
         _blurMode = newMode;
         [self updateOverlayBlur];
-        [defaults setBool:_blurMode forKey:@"blurMode"];
-        [defaults synchronize];
+        [self saveDefaults];
     }
 }
 
@@ -791,8 +790,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     {
         _modeLock = newMode;
         [self updateOverlayLock];
-        [defaults setBool:_modeLock forKey:@"modeLock"];
-        [defaults synchronize];
+        [self saveDefaults];
     }
     
 }
@@ -804,8 +802,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         [_filters setFilterByName:name];
         NSString *filterName = [_filters getCurrentName];
         [self updateOverlayWithText:filterName];
-        [defaults setString:filterName forKey:@"currentFilter"];
-        [defaults synchronize];
+        [self saveDefaults];
     }
 }
 
@@ -821,8 +818,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         _colorMode = mode;
         
         [self updateOverlayWithText:[_colorConvolutionNames objectAtIndex:_colorMode]];
-        [defaults setDouble:(double)_colorMode forKey:@"colorMode"];
-        [defaults synchronize];
+        [self saveDefaults];
     }
 }
 
@@ -831,8 +827,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [_filters nextFilter];
     NSString *filterName = [_filters getCurrentName];
     [self updateOverlayWithText:filterName];
-    [defaults setString:filterName forKey:@"currentFilter"];
-    [defaults synchronize];
+    [self saveDefaults];
 }
 
 -(void)setPrevFilter
@@ -840,8 +835,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [_filters prevFilter];
     NSString *filterName = [_filters getCurrentName];
     [self updateOverlayWithText:filterName];
-    [defaults setString:filterName forKey:@"currentFilter"];
-    [defaults synchronize];
+    [self saveDefaults];
 }
 
 -(void)generateColorConvolutions
@@ -900,6 +894,23 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 //            [self setBlurMode:!_blurMode];
         }
     }
+}
+
+-(void) updateDefaults
+{
+    NSLog(@"Updating defaults...");
+    [defaults setDouble:(double)_colorMode forKey:@"colorMode"];
+    NSString *filterName = [_filters getCurrentName];
+    [defaults setString:filterName forKey:@"currentFilter"];
+    [defaults setBool:_modeLock forKey:@"modeLock"];
+    [defaults setBool:_blurMode forKey:@"blurMode"];
+    [defaults synchronize];
+}
+
+-(void) saveDefaults
+{
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(updateDefaults) object:nil];
+    [self performSelector:@selector(updateDefaults) withObject:nil afterDelay:(NSTimeInterval) 2.0];
 }
 
 -(void) externalUpdate:(NSNotification*) notificationObject {
