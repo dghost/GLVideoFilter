@@ -1,4 +1,8 @@
-###GLVideoFilter v2.0 [![Build Status](https://travis-ci.org/dghost/GLVideoFilter.svg)](https://travis-ci.org/dghost/GLVideoFilter)
+##3Note: This repository is now deprecated. 
+
+Please see the [AccessibleVideo](https://github.com/dghost/AccessibleVideo) repository for a modern replacement implemented in Swift/Metal.
+
+###GLVideoFilter v2.0 
 Real-time image processing on a live video stream on iOS devices. This project was based on the [GLCameraRipple demo](http://developer.apple.com/library/ios/#samplecode/GLCameraRipple/Introduction/Intro.html), but has been updated to require iOS 6 and take advantage of iOS 7 features when available.
 
 Note: This only runs on actual devices, and will not run in the simulator.
@@ -36,6 +40,5 @@ Additionally, an optional blur pre-pass can be enabled for any video filter.
 - One-finger tap locks or unlocks mode changing.
 
 #####Thanks go out to...
-- [Isla Schanuel](http://www.islaes.com), for being awesome to work with.
 - [Jonathan George](http://jdg.net), for making [MBProgressHUD](https://github.com/jdg/MBProgressHUD).
 - [Gary Gehiere](http://blog.iamgary.com/helloworld/), for creating the [Lock/Unlock icons](http://www.pixelpressicons.com/?p=108) and licsensing them as [Creative Commons CA 2.5](http://creativecommons.org/licenses/by/2.5/ca/).
